@@ -303,6 +303,94 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * Testing the `extend` method with 'Drop share' policy.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.0
+	 */
+	public function testExtendDropShare()
+	{
+		$container = new Container(null, Container::DROP_SHARE_ON_REWRITE);
+
+		$container->share(
+			'foo',
+			function ()
+			{
+				return new \stdClass;
+			}
+		);
+
+		$foo = $container->get('foo');
+
+		$value = 42;
+
+		$container->extend(
+			'foo',
+			function ($shared) use ($value)
+			{
+				$shared->value = $value;
+
+				return $shared;
+			}
+		);
+
+		$one = $container->get('foo');
+		$this->assertInstanceOf('stdClass', $one);
+		$this->assertEquals($value, $one->value);
+
+		$two = $container->get('foo');
+		$this->assertInstanceOf('stdClass', $two);
+		$this->assertEquals($value, $two->value);
+
+		$this->assertSame($one, $two);
+		$this->assertNotSame($one, $foo, 'Stored share instance must be dropped on rewrite');
+	}
+
+	/**
+	 * Testing the `extend` method with no 'Drop share' policy.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.0
+	 */
+	public function testExtendNoDrop()
+	{
+		$container = new Container(null, null);
+
+		$container->share(
+			'foo',
+			function ()
+			{
+				return new \stdClass;
+			}
+		);
+
+		$foo = $container->get('foo');
+
+		$value = 42;
+
+		$container->extend(
+			'foo',
+			function ($shared) use ($value)
+			{
+				$shared->value = $value;
+
+				return $shared;
+			}
+		);
+
+		$one = $container->get('foo');
+		$this->assertInstanceOf('stdClass', $one);
+		$this->assertSame($foo, $one, 'Stored share instance must not be dropped on rewrite');
+
+		$two = $container->get('foo', true);
+		$this->assertInstanceOf('stdClass', $two);
+		$this->assertEquals($value, $two->value);
+		$this->assertNotSame($one, $two);
+	}
+
+	/**
 	 * Testing the extend method to ensure that a valid key is present to extend.
 	 *
 	 * @return  void
@@ -519,6 +607,84 @@ class ContainerTest extends \PHPUnit_Framework_TestCase
 			false,
 			true
 		);
+	}
+
+	/**
+	 * Tests the set method with already read and locked key.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.0
+	 *
+	 * @expectedException  \OutOfBoundsException
+	 */
+	public function testSetLocked()
+	{
+		$this->fixture->set(
+			'foo',
+			function ()
+			{
+				return new \stdClass;
+			},
+			false,
+			false
+		);
+
+		$this->fixture->get('foo');
+
+		$this->fixture->set(
+			'foo',
+			function ()
+			{
+				return new \stdClass;
+			},
+			false,
+			false
+		);
+	}
+
+	/**
+	 * Tests the set method with already read but not locked key.
+	 *
+	 * @return  void
+	 *
+	 * @since   1.0
+	 */
+	public function testNoLockPolicy()
+	{
+		$container = new Container(null, null);
+
+		$container->set(
+			'foo',
+			function ()
+			{
+				return new \stdClass;
+			},
+			false,
+			false
+		);
+
+		$a = $container->get('foo');
+
+		$obj = new \stdClass;
+		$obj->foo = 'bar';
+
+		$container->set(
+			'foo',
+			function ()
+			{
+				$obj = new \stdClass;
+				$obj->foo = 'bar';
+				return $obj;
+			},
+			false,
+			false
+		);
+
+		$b = $container->get('foo');
+
+		$this->assertEquals($b, $obj);
+		$this->assertNotEquals($a, $b, 'The key must be overwritten when "No Lock" policy is active.');
 	}
 
 	/**

@@ -18,6 +18,16 @@ use Joomla\DI\Exception\DependencyResolutionException;
 class Container
 {
 	/**
+	 * Policy flag that forces instances to be locked after first get
+	 */
+	const LOCK_AFTER_GET = 0x00000001;
+
+	/**
+	 * Policy flag that drops shared instances on rewrite
+	 */
+	const DROP_SHARE_ON_REWRITE = 0x00000010;
+
+	/**
 	 * Holds the key aliases.
 	 *
 	 * @var    array  $aliases
@@ -51,15 +61,25 @@ class Container
 	protected $parent;
 
 	/**
+	 * Indicates container policy on handling objects
+	 *
+	 * @var    integet
+	 * @since  2.0
+	 */
+	protected $policy;
+
+	/**
 	 * Constructor for the DI Container
 	 *
 	 * @param   Container  $parent  Parent for hierarchical containers.
+	 * @param   integer    $policy  Bitmask of policies to apply
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(Container $parent = null)
+	public function __construct(Container $parent = null, $policy = 0x00000011)
 	{
 		$this->parent = $parent;
+		$this->policy = $policy;
 	}
 
 	/**
@@ -166,7 +186,7 @@ class Container
 	 */
 	public function createChild()
 	{
-		return new static($this);
+		return new static($this, $this->policy);
 	}
 
 	/**
@@ -184,7 +204,13 @@ class Container
 	 */
 	public function extend($key, \Closure $callable)
 	{
-		$raw = $this->getRaw($key);
+		if (isset($this->dataStore[$key]) && $this->dataStore[$key]['locked'] === true)
+		{
+			throw new \OutOfBoundsException(sprintf('Key %s is locked and can\'t be extended.', $key));
+		}
+
+		// Get the instance with ignoring the lock
+		$raw = $this->getRaw($key, true);
 
 		if (is_null($raw))
 		{
@@ -269,11 +295,21 @@ class Container
 	 */
 	public function set($key, $value, $shared = false, $protected = false)
 	{
-		if (isset($this->dataStore[$key]) && $this->dataStore[$key]['protected'] === true)
+		if (isset($this->dataStore[$key]))
 		{
-			throw new \OutOfBoundsException(sprintf('Key %s is protected and can\'t be overwritten.', $key));
+			if ($this->dataStore[$key]['protected'] === true)
+			{
+				throw new \OutOfBoundsException(sprintf('Key %s is protected and can\'t be overwritten.', $key));
+			}
+			elseif ($this->dataStore[$key]['locked'] === true)
+			{
+				throw new \OutOfBoundsException(sprintf('Key %s is locked and can\'t be overwritten.', $key));
+			}
+			elseif ($this->dataStore[$key]['shared'] === true && isset($this->instances[$key]) && ($this->policy & self::DROP_SHARE_ON_REWRITE))
+			{
+				unset($this->instances[$key]);
+			}
 		}
-
 		// If the provided $value is not a closure, make it one now for easy resolution.
 		if (!is_callable($value))
 		{
@@ -285,7 +321,8 @@ class Container
 		$this->dataStore[$key] = array(
 			'callback' => $value,
 			'shared' => $shared,
-			'protected' => $protected
+			'protected' => $protected,
+			'locked' => false,
 		);
 
 		return $this;
@@ -367,24 +404,31 @@ class Container
 	 */
 	public function exists($key)
 	{
-		return (bool) $this->getRaw($key);
+		return (bool) $this->getRaw($key, true);
 	}
 
 	/**
 	 * Get the raw data assigned to a key.
 	 *
-	 * @param   string  $key  The key for which to get the stored item.
+	 * @param   string   $key         The key for which to get the stored item.
+	 * @param   boolean  $ignoreLock  Allows to disable lock for internal calls
 	 *
 	 * @return  mixed
 	 *
 	 * @since   1.0
 	 */
-	protected function getRaw($key)
+	protected function getRaw($key, $ignoreLock = false)
 	{
 		$key = $this->resolveAlias($key);
 
 		if (isset($this->dataStore[$key]))
 		{
+			if (!$ignoreLock && ($this->policy & self::LOCK_AFTER_GET))
+			{
+				// Lock the instance so it cannot be further overwritten
+				$this->dataStore[$key]['locked'] = true;
+			}
+
 			return $this->dataStore[$key];
 		}
 		elseif ($this->parent instanceof Container)
@@ -408,6 +452,64 @@ class Container
 	public function getNewInstance($key)
 	{
 		return $this->get($key, true);
+	}
+
+	/**
+	 * Method to check if a key is shared
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  TRUE if the key is shared
+	 */
+	public function isShared($key)
+	{
+		return (isset($this->dataStore[$key]) && $this->dataStore[$key]['shared'] === true);
+	}
+
+	/**
+	 * Method to check if a key is protected
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  TRUE if the key is protected
+	 */
+	public function isProtected($key)
+	{
+		return (isset($this->dataStore[$key]) && $this->dataStore[$key]['protected'] === true);
+	}
+
+	/**
+	 * Method to check if a key is locked
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  TRUE if the key is locked
+	 */
+	public function isLocked($key)
+	{
+		return (isset($this->dataStore[$key]) && $this->dataStore[$key]['locked'] === true);
+	}
+
+	/**
+	 * Method to get container policies
+	 *
+	 * @return  integet  A bitmask of policies
+	 */
+	public function getPolicies()
+	{
+		return $this->policies;
+	}
+
+	/**
+	 * Method to check if a policy is active
+	 *
+	 * @param   integer  $policy  Policy to check
+	 *
+	 * @return  boolean  TRUE if the policy is active
+	 */
+	public function hasPolicy($policy)
+	{
+		return ($policy & $this->policies);
 	}
 
 	/**
