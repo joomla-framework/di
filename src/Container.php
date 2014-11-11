@@ -72,6 +72,7 @@ class Container
 	 * Constructor for the DI Container
 	 *
 	 * @param   Container  $parent  Parent for hierarchical containers.
+	 * @param   integer    $policy  Bitmask of policies to apply
 	 *
 	 * @since   1.0
 	 */
@@ -208,7 +209,7 @@ class Container
 			throw new \OutOfBoundsException(sprintf('Key %s is locked and can\'t be extended.', $key));
 		}
 
-		//Get the instance with ignoring the lock
+		// Get the instance with ignoring the lock
 		$raw = $this->getRaw($key, true);
 
 		if (is_null($raw))
@@ -304,7 +305,7 @@ class Container
 			{
 				throw new \OutOfBoundsException(sprintf('Key %s is locked and can\'t be overwritten.', $key));
 			}
-			elseif ($this->dataStore[$key]['shared'] === true && isset($this->instances[$key]) && ($this->policy & Container::DROP_SHARE_ON_REWRITE))
+			elseif ($this->dataStore[$key]['shared'] === true && isset($this->instances[$key]) && ($this->policy & self::DROP_SHARE_ON_REWRITE))
 			{
 				unset($this->instances[$key]);
 			}
@@ -409,7 +410,8 @@ class Container
 	/**
 	 * Get the raw data assigned to a key.
 	 *
-	 * @param   string  $key  The key for which to get the stored item.
+	 * @param   string   $key         The key for which to get the stored item.
+	 * @param   boolean  $ignoreLock  Allows to disable lock for internal calls
 	 *
 	 * @return  mixed
 	 *
@@ -421,9 +423,9 @@ class Container
 
 		if (isset($this->dataStore[$key]))
 		{
-			if (!$ignoreLock && ($this->policy & Container::LOCK_AFTER_GET))
+			if (!$ignoreLock && ($this->policy & self::LOCK_AFTER_GET))
 			{
-				//Lock the instance so it cannot be further overwritten
+				// Lock the instance so it cannot be further overwritten
 				$this->dataStore[$key]['locked'] = true;
 			}
 
@@ -519,7 +521,7 @@ class Container
 	 *
 	 * @since   1.0
 	 */
-	public function registerServiceProvider(ServiceProviderInterface $provider, $arguments = array())
+	public function registerServiceProvider(ServiceProviderInterface $provider)
 	{
 		$provider->register($this);
 
