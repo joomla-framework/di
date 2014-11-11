@@ -453,6 +453,64 @@ class Container
 	}
 
 	/**
+	 * Method to check if a key is shared
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  TRUE if the key is shared
+	 */
+	public function isShared($key)
+	{
+		return (isset($this->dataStore[$key]) && $this->dataStore[$key]['shared'] === true);
+	}
+
+	/**
+	 * Method to check if a key is protected
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  TRUE if the key is protected
+	 */
+	public function isProtected($key)
+	{
+		return (isset($this->dataStore[$key]) && $this->dataStore[$key]['protected'] === true);
+	}
+
+	/**
+	 * Method to check if a key is locked
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  TRUE if the key is locked
+	 */
+	public function isLocked($key)
+	{
+		return (isset($this->dataStore[$key]) && $this->dataStore[$key]['locked'] === true);
+	}
+
+	/**
+	 * Method to get container policies
+	 *
+	 * @return  integet  A bitmask of policies
+	 */
+	public function getPolicies()
+	{
+		return $this->policies;
+	}
+
+	/**
+	 * Method to check if a policy is active
+	 *
+	 * @param   integer  $policy  Policy to check
+	 *
+	 * @return  boolean  TRUE if the policy is active
+	 */
+	public function hasPolicy($policy)
+	{
+		return ($policy & $this->policies);
+	}
+
+	/**
 	 * Register a service provider to the container.
 	 *
 	 * @param   ServiceProviderInterface  $provider  The service provider to register.
