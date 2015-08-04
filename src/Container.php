@@ -361,13 +361,26 @@ class Container
 	/**
 	 * Method to check if specified dataStore key exists.
 	 *
-	 * @param   string  $key  Name of the dataStore key to check.
+	 * @param   string $key Name of the dataStore key to check.
 	 *
 	 * @return  boolean  True for success
 	 *
 	 * @since   1.0
+	 * @deprecated 2.0 Use has() instead
 	 */
 	public function exists($key)
+	{
+		return $this->has($key);
+	}
+
+	/**
+	 * Method to check if specified dataStore key exists.
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  True for success
+	 */
+	public function has($key)
 	{
 		$key = $this->resolveAlias($key);
 
