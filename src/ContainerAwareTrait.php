@@ -9,6 +9,7 @@
 namespace Joomla\DI;
 
 use Joomla\DI\Container;
+use Joomla\DI\Exception\ContainerNotFoundException;
 
 /**
  * Defines the trait for a Container Aware Class.
@@ -34,7 +35,7 @@ trait ContainerAwareTrait
 	 *
 	 * @since   1.2
 	 *
-	 * @throws  \UnexpectedValueException May be thrown if the container has not been set.
+	 * @throws  ContainerNotFoundException May be thrown if the container has not been set.
 	 */
 	public function getContainer()
 	{
@@ -43,7 +44,7 @@ trait ContainerAwareTrait
 			return $this->container;
 		}
 
-		throw new \UnexpectedValueException('Container not set in ' . __CLASS__);
+		throw new ContainerNotFoundException('Container not set in ' . __CLASS__);
 	}
 
 	/**

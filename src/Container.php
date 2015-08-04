@@ -9,6 +9,8 @@
 namespace Joomla\DI;
 
 use Joomla\DI\Exception\DependencyResolutionException;
+use Joomla\DI\Exception\KeyNotFoundException;
+use Joomla\DI\Exception\ProtectedKeyException;
 
 /**
  * The Container class.
@@ -259,7 +261,7 @@ class Container
 	 *
 	 * @return  Container  This object for chaining.
 	 *
-	 * @throws  \OutOfBoundsException  Thrown if the provided key is already set and is protected.
+	 * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
 	 *
 	 * @since   1.0
 	 */
@@ -267,7 +269,7 @@ class Container
 	{
 		if (isset($this->dataStore[$key]) && $this->dataStore[$key]['protected'] === true)
 		{
-			throw new \OutOfBoundsException(sprintf('Key %s is protected and can\'t be overwritten.', $key));
+			throw new ProtectedKeyException(sprintf('Key %s is protected and can\'t be overwritten.', $key));
 		}
 
 		// If the provided $value is not a closure, make it one now for easy resolution.
@@ -472,7 +474,7 @@ class Container
 
 		if (is_null($raw))
 		{
-			throw new \InvalidArgumentException(sprintf('Key %s has not been registered with the container.', $key));
+			throw new KeyNotFoundException(sprintf('Key %s has not been registered with the container.', $key));
 		}
 
 		return $raw;
