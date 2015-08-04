@@ -8,6 +8,7 @@
 
 namespace Joomla\DI;
 
+use Interop\Container\ContainerInterface;
 use Joomla\DI\Exception\DependencyResolutionException;
 use Joomla\DI\Exception\KeyNotFoundException;
 use Joomla\DI\Exception\ProtectedKeyException;
@@ -17,7 +18,7 @@ use Joomla\DI\Exception\ProtectedKeyException;
  *
  * @since  1.0
  */
-class Container
+class Container implements ContainerInterface
 {
 	/**
 	 * Holds the key aliases.
@@ -47,7 +48,7 @@ class Container
 	/**
 	 * Parent for hierarchical containers.
 	 *
-	 * @var    Container
+	 * @var    ContainerInterface
 	 * @since  1.0
 	 */
 	protected $parent;
@@ -55,11 +56,11 @@ class Container
 	/**
 	 * Constructor for the DI Container
 	 *
-	 * @param   Container  $parent  Parent for hierarchical containers.
+	 * @param   ContainerInterface  $parent  Parent for hierarchical containers.
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(Container $parent = null)
+	public function __construct(ContainerInterface $parent = null)
 	{
 		$this->parent = $parent;
 	}
