@@ -185,12 +185,7 @@ class Container
 	public function extend($key, \Closure $callable)
 	{
 		$key = $this->resolveAlias($key);
-		$raw = $this->getRaw($key);
-
-		if (is_null($raw))
-		{
-			throw new \InvalidArgumentException(sprintf('The requested key %s does not exist to extend.', $key));
-		}
+		$raw = $this->getRawGuarded($key);
 
 		$closure = function ($c) use($callable, $raw) {
 			return $callable($raw['callback']($c), $c);
@@ -325,10 +320,34 @@ class Container
 	}
 
 	/**
-	 * Method to retrieve the results of running the $callback for the specified $key;
+	 * Recreate the instance for the specified $key (shared only)
 	 *
 	 * @param   string   $key       Name of the dataStore key to get.
-	 * @param   boolean  $forceNew  True to force creation and return of a new instance.
+	 *
+	 * @return  bool  true, if the instance was recreated, false otherwise
+	 *
+	 * @throws  \InvalidArgumentException
+	 */
+	public function recreate($key)
+	{
+		$key = $this->resolveAlias($key);
+		$raw = $this->getRawGuarded($key);
+
+		if ($raw['shared'])
+		{
+			$this->instances[$key] = $raw['callback']($this);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Method to retrieve the results of running the $callback for the specified $key;
+	 *
+	 * @param   string  $key      Name of the dataStore key to get.
+	 * @param   boolean $forceNew True to force creation and return of a new instance. @deprecated 2.0 Use recreate() instead
 	 *
 	 * @return  mixed   Results of running the $callback for the specified $key.
 	 *
@@ -338,16 +357,16 @@ class Container
 	public function get($key, $forceNew = false)
 	{
 		$key = $this->resolveAlias($key);
-		$raw = $this->getRaw($key);
-
-		if (is_null($raw))
-		{
-			throw new \InvalidArgumentException(sprintf('Key %s has not been registered with the container.', $key));
-		}
+		$raw = $this->getRawGuarded($key);
 
 		if ($raw['shared'])
 		{
-			if (!isset($this->instances[$key]) || $forceNew)
+			if ($forceNew)
+			{
+				$this->recreate($key);
+			}
+
+			if (!isset($this->instances[$key]))
 			{
 				$this->instances[$key] = $raw['callback']($this);
 			}
@@ -422,7 +441,8 @@ class Container
 	 */
 	public function getNewInstance($key)
 	{
-		return $this->get($key, true);
+		$this->recreate($key);
+		return $this->get($key);
 	}
 
 	/**
@@ -439,5 +459,22 @@ class Container
 		$provider->register($this);
 
 		return $this;
+	}
+
+	/**
+	 * @param $key
+	 *
+	 * @return array
+	 */
+	private function getRawGuarded($key)
+	{
+		$raw = $this->getRaw($key);
+
+		if (is_null($raw))
+		{
+			throw new \InvalidArgumentException(sprintf('Key %s has not been registered with the container.', $key));
+		}
+
+		return $raw;
 	}
 }
