@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright  Copyright (C) 2013 - 2014 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2013 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -14,7 +14,7 @@ class Stub1 implements StubInterface {}
 
 class Stub2 implements StubInterface
 {
-	protected $stub;
+	public $stub;
 
 	public function __construct(StubInterface $stub)
 	{
@@ -24,12 +24,12 @@ class Stub2 implements StubInterface
 
 class Stub3
 {
-	protected $stub;
-	protected $stub2;
+	public $stub1;
+	public $stub2;
 
 	public function __construct(StubInterface $stub, StubInterface $stub2)
 	{
-		$this->stub = $stub;
+		$this->stub1 = $stub;
 		$this->stub2 = $stub2;
 	}
 }
@@ -38,7 +38,7 @@ class Stub4 implements StubInterface {}
 
 class Stub5
 {
-	protected $stub;
+	public $stub;
 
 	public function __construct(Stub4 $stub)
 	{
@@ -48,7 +48,7 @@ class Stub5
 
 class Stub6
 {
-	protected $stub;
+	public $stub;
 
 	public function __construct($stub = 'foo')
 	{
@@ -58,7 +58,7 @@ class Stub6
 
 class Stub7
 {
-	protected $stub;
+	public $stub;
 
 	public function __construct($stub)
 	{
@@ -68,7 +68,7 @@ class Stub7
 
 class Stub8
 {
-	protected $stub;
+	public $stub;
 
 	public function __construct(DoesntExist $stub)
 	{
