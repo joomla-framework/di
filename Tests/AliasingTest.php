@@ -44,8 +44,8 @@ class AliasingTest extends \PHPUnit_Framework_TestCase
 			->set('foo', function () {return new \stdClass;}, true, true)
 			->alias('bar', 'foo');
 
-		$this->assertTrue($container->exists('foo'), "Original 'foo' was not resolved");
-		$this->assertTrue($container->exists('bar'), "Alias 'bar' was not resolved");
+		$this->assertTrue($container->has('foo'), "Original 'foo' was not resolved");
+		$this->assertTrue($container->has('bar'), "Alias 'bar' was not resolved");
 	}
 
 	/**
@@ -53,7 +53,6 @@ class AliasingTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testChildResolveAlias()
 	{
-		$this->markTestSkipped('Feature not implemented in 1.3.1');
 		$container = new Container();
 		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
 		{

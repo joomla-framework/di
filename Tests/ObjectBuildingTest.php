@@ -113,8 +113,6 @@ class ObjectBuildingTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGetMethodArgsResolvedIsNotInstanceOfHintedDependency()
 	{
-		$this->markTestSkipped('Known bug in current implementation: buildObject() tries to instantiate an interface directly.');
-
 		$container = new Container();
 		$container->buildObject('Joomla\\DI\\Tests\\Stub2');
 	}

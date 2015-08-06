@@ -69,8 +69,8 @@ class ContainerAccessTest extends \PHPUnit_Framework_TestCase
 		$container = new Container();
 		$container->set('foo', 'bar');
 
-		$this->assertTrue($container->exists('foo'), "'foo' should be present");
-		$this->assertFalse($container->exists('baz'), "'baz' should not be present");
+		$this->assertTrue($container->has('foo'), "'foo' should be present");
+		$this->assertFalse($container->has('baz'), "'baz' should not be present");
 	}
 
 	/**

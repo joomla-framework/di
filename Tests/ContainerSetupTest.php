@@ -129,18 +129,8 @@ class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 			}
 		);
 
-		// There is no isShared() method, so it must be checked indirectly
-		$this->assertNotSame($container->get('foo'), $container->get('foo'));
-
-		// There is no isProtected() method, so it must be checked indirectly
-		$container->set(
-			'foo',
-			function ()
-			{
-				return 'changed';
-			}
-		);
-		$this->assertEquals('changed', $container->get('foo'));
+		$this->assertFalse($container->isShared('foo'));
+		$this->assertFalse($container->isProtected('foo'));
 	}
 
 	public function dataForSetFlags()
@@ -182,7 +172,8 @@ class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 			$protected
 		);
 
-		$this->checkMode($container, $shared, $protected);
+		$this->assertEquals($shared, $container->isShared('foo'));
+		$this->assertEquals($protected, $container->isProtected('foo'));
 	}
 
 	/**
@@ -199,7 +190,8 @@ class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 			}
 		);
 
-		$this->checkMode($container, false, true);
+		$this->assertFalse($container->isShared('foo'));
+		$this->assertTrue($container->isProtected('foo'));
 	}
 
 	/**
@@ -217,7 +209,8 @@ class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 			true
 		);
 
-		$this->checkMode($container, true, true);
+		$this->assertTrue($container->isShared('foo'));
+		$this->assertTrue($container->isProtected('foo'));
 	}
 
 	/**
@@ -234,7 +227,8 @@ class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 			}
 		);
 
-		$this->checkMode($container, true, false);
+		$this->assertTrue($container->isShared('foo'));
+		$this->assertFalse($container->isProtected('foo'));
 	}
 
 	/**
@@ -252,56 +246,8 @@ class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 			true
 		);
 
-		$this->checkMode($container, true, true);
-	}
-
-	/**
-	 * @param Container $container
-	 * @param bool      $shared
-	 * @param bool      $protected
-	 */
-	private function checkMode($container, $shared, $protected)
-	{
-		// There is no isShared() method, so it must be checked indirectly
-		if ($shared)
-		{
-			$this->assertSame($container->get('foo'), $container->get('foo'));
-		}
-		else
-		{
-			$this->assertNotSame($container->get('foo'), $container->get('foo'));
-		}
-
-		// There is no isProtected() method, so it must be checked indirectly
-		try
-		{
-			$container->set(
-				'foo',
-				function ()
-				{
-					return 'changed';
-				}
-			);
-
-			if ($protected)
-			{
-				$this->fail('Was able to override the resource.');
-			}
-			else
-			{
-				$this->assertEquals('changed', $container->get('foo'));
-			}
-		} catch (\Exception $e)
-		{
-			if ($protected)
-			{
-				$this->assertInstanceOf('OutOfBoundsException', $e);
-			}
-			else
-			{
-				$this->fail('Was not able to override the resource. ' . $e->getMessage());
-			}
-		}
+		$this->assertTrue($container->isShared('foo'));
+		$this->assertTrue($container->isProtected('foo'));
 	}
 
 	/**
