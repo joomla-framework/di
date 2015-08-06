@@ -11,7 +11,6 @@ namespace Joomla\DI;
 use Interop\Container\ContainerInterface;
 use Joomla\DI\Exception\DependencyResolutionException;
 use Joomla\DI\Exception\KeyNotFoundException;
-use Joomla\DI\Exception\NotInstantiableException;
 use Joomla\DI\Exception\ProtectedKeyException;
 
 /**
@@ -30,28 +29,11 @@ class Container implements ContainerInterface
 	protected $aliases = array();
 
 	/**
-	 * Holds the shared instances.
+	 * Holds the resources.
 	 *
-	 * Format:
-	 * 'key' => 'instance' (the value returned by the callback)
-	 *
-	 * @var    array
+	 * @var    \Joomla\DI\Resource[]
 	 */
-	protected $instances = array();
-
-	/**
-	 * Holds the keys, their callbacks, and whether or not the item is meant to be a shared resource.
-	 *
-	 * Format:
-	 * 'key' => array(
-	 *     'callback'  => Callable|Closure (function returning a resource instance),
-	 *     'shared'    => boolean,
-	 *     'protected' => boolean
-	 * )
-	 *
-	 * @var    array
-	 */
-	protected $dataStore = array();
+	protected $resources = array();
 
 	/**
 	 * Parent for hierarchical containers.
@@ -83,9 +65,9 @@ class Container implements ContainerInterface
 	{
 		$key = $this->resolveAlias($resourceName);
 
-		if (!isset($this->dataStore[$key]))
+		if (!isset($this->resources[$key]))
 		{
-			if (is_object($this->parent) && $this->parent->has($key))
+			if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
 			{
 				return $this->parent->get($key);
 			}
@@ -93,17 +75,7 @@ class Container implements ContainerInterface
 			throw new KeyNotFoundException(sprintf("Resource '%s' has not been registered with the container.", $resourceName));
 		}
 
-		if ($this->dataStore[$key]['shared'])
-		{
-			if (!isset($this->instances[$key]))
-			{
-				$this->instances[$key] = $this->dataStore[$key]['callback']($this);
-			}
-
-			return $this->instances[$key];
-		}
-
-		return $this->dataStore[$key]['callback']($this);
+		return $this->resources[$key]->getInstance();
 	}
 
 	/**
@@ -117,7 +89,7 @@ class Container implements ContainerInterface
 	{
 		$key = $this->resolveAlias($resourceName);
 
-		if (!isset($this->dataStore[$key]))
+		if (!isset($this->resources[$key]))
 		{
 			if ($this->parent instanceof ContainerInterface)
 			{
@@ -174,7 +146,7 @@ class Container implements ContainerInterface
 	 */
 	public function isShared($resourceName)
 	{
-		return $this->hasFlag($resourceName, 'shared');
+		return $this->hasFlag($resourceName, 'isShared', true);
 	}
 
 	/**
@@ -186,38 +158,36 @@ class Container implements ContainerInterface
 	 */
 	public function isProtected($resourceName)
 	{
-		return $this->hasFlag($resourceName, 'protected');
+		return $this->hasFlag($resourceName, 'isProtected', true);
 	}
 
 	/**
 	 * Check whether a flag (i.e., one of 'shared' or 'protected') is set
 	 *
 	 * @param   string $resourceName
-	 * @param   string $flag
+	 * @param   string $method
+	 * @param   bool   $default
 	 *
-	 * @return bool
-	 * @throws KeyNotFoundException if key is not defined
+	 * @return  bool
 	 */
-	private function hasFlag($resourceName, $flag)
+	private function hasFlag($resourceName, $method, $default = true)
 	{
 		$key = $this->resolveAlias($resourceName);
 
-		if (isset($this->dataStore[$key]))
+		if (isset($this->resources[$key]))
 		{
-			return $this->dataStore[$key][$flag];
+			return call_user_func(array($this->resources[$key], $method));
 		}
 
 		if ($this->parent instanceof Container)
 		{
-			$method = 'is' . ucfirst($flag);
-
 			return call_user_func(array($this->parent, $method), $key);
 		}
 
-		if ($this->parent instanceof ContainerInterface)
+		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
 		{
-			// We don't know, if parent supports the 'shared' or 'protected' concept, so we assume 'shared' and 'protected'
-			return true;
+			// We don't know, if parent supports the 'shared' or 'protected' concept, so we assume the default
+			return $default;
 		}
 
 		throw new KeyNotFoundException(sprintf("Resource '%s' has not been registered with the container.", $resourceName));
@@ -252,7 +222,6 @@ class Container implements ContainerInterface
 
 		if ($this->has($key))
 		{
-
 			$resource = $this->get($key);
 			array_pop($buildStack);
 
@@ -262,7 +231,8 @@ class Container implements ContainerInterface
 		try
 		{
 			$reflection = new \ReflectionClass($key);
-		} catch (\ReflectionException $e)
+		}
+		catch (\ReflectionException $e)
 		{
 			array_pop($buildStack);
 
@@ -339,14 +309,14 @@ class Container implements ContainerInterface
 	public function extend($resourceName, \Closure $callable)
 	{
 		$key = $this->resolveAlias($resourceName);
-		$raw = $this->getRawGuarded($key);
+		$resource = $this->getResource($key, true);
 
-		$closure = function ($c) use ($callable, $raw)
+		$closure = function ($c) use ($callable, $resource)
 		{
-			return $callable($raw['callback']($c), $c);
+			return $callable($resource->getInstance(), $c);
 		};
 
-		$this->set($key, $closure, $raw['shared']);
+		$this->set($key, $closure, $resource->isShared());
 	}
 
 	/**
@@ -372,7 +342,7 @@ class Container implements ContainerInterface
 				$dependencyClassName = $dependency->getName();
 
 				// If the dependency class name is registered with this container or a parent, use it.
-				if ($this->getRaw($dependencyClassName) !== null)
+				if ($this->getResource($dependencyClassName) !== null)
 				{
 					$depObject = $this->get($dependencyClassName);
 				}
@@ -405,7 +375,7 @@ class Container implements ContainerInterface
 	/**
 	 * Set a resource
 	 *
-	 * @param   string  $key       Name of dataStore key to set.
+	 * @param   string  $key       Name of resources key to set.
 	 * @param   mixed   $value     Callable function to run or string to retrive when requesting the specified $key.
 	 * @param   boolean $shared    True to create and store a shared instance.
 	 * @param   boolean $protected True to protect this item from being overwritten. Useful for services.
@@ -423,20 +393,10 @@ class Container implements ContainerInterface
 			throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
 		}
 
-		// If the provided $value is not a closure, make it one now for easy resolution.
-		if (!is_callable($value))
-		{
-			$value = function () use ($value)
-			{
-				return $value;
-			};
-		}
+		$mode = $shared ? Resource::SHARE : Resource::NO_SHARE;
+		$mode |= $protected ? Resource::PROTECT : Resource::NO_PROTECT;
 
-		$this->dataStore[$key] = array(
-			'callback'  => $value,
-			'shared'    => $shared,
-			'protected' => $protected
-		);
+		$this->resources[$key] = new Resource($this, $value, $mode);
 
 		return $this;
 	}
@@ -444,7 +404,7 @@ class Container implements ContainerInterface
 	/**
 	 * Convenience method for creating protected keys.
 	 *
-	 * @param   string   $key      Name of dataStore key to set.
+	 * @param   string   $key      Name of resources key to set.
 	 * @param   callable $callback Callable function to run when requesting the specified $key.
 	 * @param   bool     $shared   True to create and store a shared instance.
 	 *
@@ -458,7 +418,7 @@ class Container implements ContainerInterface
 	/**
 	 * Convenience method for creating shared keys.
 	 *
-	 * @param   string   $key       Name of dataStore key to set.
+	 * @param   string   $key       Name of resources key to set.
 	 * @param   callable $callback  Callable function to run when requesting the specified $key.
 	 * @param   bool     $protected True to create and store a shared instance.
 	 *
@@ -470,58 +430,32 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Recreate the instance for the specified $key (shared only)
-	 *
-	 * @param   string $key Name of the dataStore key to get.
-	 *
-	 * @return  bool  true, if the instance was recreated, false otherwise
-	 *
-	 * @throws  \InvalidArgumentException
-	 */
-	private function recreate($key)
-	{
-		$key = $this->resolveAlias($key);
-
-		$raw = $this->getRawGuarded($key);
-
-		if ($raw['shared'])
-		{
-			$this->instances[$key] = $raw['callback']($this);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
 	 * Get the raw data assigned to a key.
 	 *
 	 * @param   string $key The key for which to get the stored item.
 	 *
-	 * @return  mixed
+	 * @param bool     $bail Throw an exception, if the key is not found
+	 *
+	 * @return \Joomla\DI\Resource
 	 */
-	public function getRaw($key)
+	public function getResource($key, $bail = false)
 	{
-		if (isset($this->dataStore[$key]))
+		if (isset($this->resources[$key]))
 		{
-			return $this->dataStore[$key];
+			return $this->resources[$key];
 		}
 		elseif ($this->parent instanceof Container)
 		{
-			return $this->parent->getRaw($key);
+			return $this->parent->getResource($key);
 		}
 		elseif ($this->parent instanceof ContainerInterface && $this->parent->has($key))
 		{
-			$value = $this->parent->get($key);
-			return array(
-				'callback'  => function () use ($value)
-				{
-					return $value;
-				},
-				'shared'    => true,
-				'protected' => true
-			);
+			return new Resource($this, $this->parent->get($key), Resource::SHARE | Resource::PROTECT);
+		}
+
+		if ($bail)
+		{
+			throw new KeyNotFoundException(sprintf('Key %s has not been registered with the container.', $key));
 		}
 
 		return null;
@@ -531,7 +465,7 @@ class Container implements ContainerInterface
 	 * Method to force the container to return a new instance
 	 * of the results of the callback for requested $key.
 	 *
-	 * @param   string $key Name of the dataStore key to get.
+	 * @param   string $key Name of the resources key to get.
 	 *
 	 * @return  mixed   Results of running the $callback for the specified $key.
 	 */
@@ -539,7 +473,7 @@ class Container implements ContainerInterface
 	{
 		$key = $this->resolveAlias($key);
 
-		$this->recreate($key);
+		$this->getResource($key, true)->reset();
 
 		return $this->get($key);
 	}
@@ -556,22 +490,5 @@ class Container implements ContainerInterface
 		$provider->register($this);
 
 		return $this;
-	}
-
-	/**
-	 * @param $key
-	 *
-	 * @return array
-	 */
-	private function getRawGuarded($key)
-	{
-		$raw = $this->getRaw($key);
-
-		if (is_null($raw))
-		{
-			throw new KeyNotFoundException(sprintf('Key %s has not been registered with the container.', $key));
-		}
-
-		return $raw;
 	}
 }
