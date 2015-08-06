@@ -14,7 +14,7 @@ include_once 'Stubs/ArbitraryInteropContainer.php';
 /**
  * Tests for Container class.
  */
-class DelegateLookupTest extends \PHPUnit_Framework_TestCase
+class HierachicalTest extends \PHPUnit_Framework_TestCase
 {
 	/**
 	 * @testdox Child container has access to parent's resources
