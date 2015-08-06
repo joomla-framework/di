@@ -35,7 +35,7 @@ class AliasingTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @testdox exists() also resolves the alias if set.
+	 * @testdox has() also resolves the alias if set.
 	 */
 	public function testExistsResolvesAlias()
 	{

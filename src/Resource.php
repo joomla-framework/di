@@ -43,6 +43,8 @@ class Resource
 	public function __construct(Container $container, $value, $mode = 0)
 	{
 		$this->container = $container;
+		$this->shared    = ($mode & self::SHARE) == self::SHARE;
+		$this->protected = ($mode & self::PROTECT) == self::PROTECT;
 
 		if (is_callable($value))
 		{
@@ -50,15 +52,25 @@ class Resource
 		}
 		else
 		{
-			$this->instance = $value;
-			$this->factory  = function () use ($value)
+			if ($this->shared)
 			{
-				return $value;
-			};
+				$this->instance = $value;
+			}
+			if (is_object($value))
+			{
+				$this->factory = function () use ($value)
+				{
+					return clone $value;
+				};
+			}
+			else
+			{
+				$this->factory = function () use ($value)
+				{
+					return $value;
+				};
+			}
 		}
-
-		$this->shared    = ($mode & self::SHARE) == self::SHARE;
-		$this->protected = ($mode & self::PROTECT) == self::PROTECT;
 	}
 
 	/**
@@ -128,8 +140,10 @@ class Resource
 		if ($this->isShared() && !$this->isProtected())
 		{
 			$this->instance = null;
+
 			return true;
 		}
+
 		return false;
 	}
 }
