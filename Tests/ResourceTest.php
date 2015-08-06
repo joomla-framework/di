@@ -9,6 +9,8 @@ namespace Joomla\DI\Tests;
 use Joomla\DI\Container;
 use Joomla\DI\Resource;
 
+include_once 'Stubs/stubs.php';
+
 /**
  * Tests for Resource class.
  */
@@ -56,7 +58,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @testdox The resource descriptor supports 'shared' and 'protected' modes, defaulting to 'not shared' and 'not protected'
+	 * @testdox The resource supports 'shared' and 'protected' modes, defaulting to 'not shared' and 'not protected'
 	 * @dataProvider dataInstantiation
 	 */
 	public function testInstantiation($mode, $shared, $protected)
@@ -76,8 +78,132 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals($protected, $descriptor->isProtected());
 	}
 
-	/*
-	 * If a factory was provided, the resource is created and - if it is a shared resource - cached internally.
-	 * If the resource was provided directly, that resource is returned.
+	/**
+	 * @testdox If a factory is provided, the instance is created on retrieval
 	 */
+	public function testGetInstanceWithFactory()
+	{
+		$container = new Container();
+		$resource = new Resource(
+			$container,
+			function ()
+			{
+				return new Stub6();
+			}
+		);
+
+		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub6', $resource->getInstance());
+	}
+
+	/**
+	 * @testdox If a factory is provided in non-shared mode, the instance is not cached
+	 */
+	public function testGetInstanceWithFactoryInNonSharedMode()
+	{
+		$container = new Container();
+		$resource  = new Resource(
+			$container,
+			function ()
+			{
+				return new Stub6();
+			},
+			Resource::NO_SHARE
+		);
+
+		$one = $resource->getInstance();
+		$two = $resource->getInstance();
+		$this->assertNotSame($one, $two);
+	}
+
+	/**
+	 * @testdox If a factory is provided in shared mode, the instance is cached
+	 */
+	public function testGetInstanceWithFactoryInSharedMode()
+	{
+		$container = new Container();
+		$resource  = new Resource(
+			$container,
+			function ()
+			{
+				return new Stub6();
+			},
+			Resource::SHARE
+		);
+
+		$one = $resource->getInstance();
+		$two = $resource->getInstance();
+		$this->assertSame($one, $two);
+	}
+
+	/**
+	 * @testdox If an instance is provided directly in shared mode, that instance is returned
+	 */
+	public function testGetInstanceWithInstanceInSharedMode()
+	{
+		$stub = new Stub6();
+		$container = new Container();
+		$resource  = new Resource(
+			$container,
+			$stub,
+			Resource::SHARE
+		);
+
+		$this->assertSame($stub, $resource->getInstance());
+	}
+
+	/**
+	 * @testdox If an instance is provided directly in non-shared mode, a copy (clone) of that instance is returned
+	 */
+	public function testGetInstanceWithInstanceInNonSharedMode()
+	{
+		$stub      = new Stub6();
+		$container = new Container();
+		$resource  = new Resource(
+			$container,
+			$stub,
+			Resource::NO_SHARE
+		);
+
+		$this->assertNotSame($stub, $resource->getInstance());
+	}
+
+	/**
+	 * @testdox After a reset, a new instance is returned even for shared resources
+	 */
+	public function testResetWithFactory()
+	{
+		$container = new Container();
+		$resource  = new Resource(
+			$container,
+			function ()
+			{
+				return new Stub6();
+			},
+			Resource::SHARE
+		);
+
+		$one = $resource->getInstance();
+		$resource->reset();
+		$two = $resource->getInstance();
+		$this->assertNotSame($one, $two);
+	}
+
+	/**
+	 * @testdox After a reset, a new instance is returned even for shared resources
+	 */
+	public function testResetWithInstance()
+	{
+		$stub      = new Stub6();
+		$container = new Container();
+		$resource  = new Resource(
+			$container,
+			$stub,
+			Resource::SHARE
+		);
+
+		$one = $resource->getInstance();
+		$resource->reset();
+		$two = $resource->getInstance();
+		$this->assertNotSame($one, $two);
+	}
 }
