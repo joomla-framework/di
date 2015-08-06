@@ -31,18 +31,18 @@ class DelegateLookupTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @testdox When registering a service provider, its register() method is called with the container instance
+	 * @testdox Child container resolves parent's alias to parent's resource
 	 */
-	public function testRegisterServiceProvider()
+	public function testChildResolveAlias()
 	{
 		$container = new Container();
+		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
+		{
+			return new Stub1;
+		});
+		$container->alias('stub', 'Joomla\\DI\\Tests\\StubInterface');
 
-		$mock = $this->getMock('Joomla\\DI\\ServiceProviderInterface');
-		$mock
-			->expects($this->once())
-			->method('register')
-			->with($container);
-
-		$container->registerServiceProvider($mock);
+		$child = $container->createChild();
+		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $child->get('stub'));
 	}
 }

@@ -47,20 +47,4 @@ class AliasingTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($container->has('foo'), "Original 'foo' was not resolved");
 		$this->assertTrue($container->has('bar'), "Alias 'bar' was not resolved");
 	}
-
-	/**
-	 * @testdox Child container resolves parent's alias to parent's resource
-	 */
-	public function testChildResolveAlias()
-	{
-		$container = new Container();
-		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
-		{
-			return new Stub1;
-		});
-		$container->alias('stub', 'Joomla\\DI\\Tests\\StubInterface');
-
-		$child = $container->createChild();
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $child->get('stub'));
-	}
 }
