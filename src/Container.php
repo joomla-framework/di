@@ -119,7 +119,7 @@ class Container implements ContainerInterface
 
 		if (!isset($this->dataStore[$key]))
 		{
-			if (is_object($this->parent))
+			if ($this->parent instanceof ContainerInterface)
 			{
 				return $this->parent->has($key);
 			}
@@ -330,16 +330,15 @@ class Container implements ContainerInterface
 	 * works very similar to a decorator pattern.  Note that this only works on service Closures
 	 * that have been defined in the current Provider, not parent providers.
 	 *
-	 * @param   string   $key      The unique identifier for the Closure or property.
-	 * @param   \Closure $callable A Closure to wrap the original service Closure.
+	 * @param   string   $resourceName The unique identifier for the Closure or property.
+	 * @param   \Closure $callable     A Closure to wrap the original service Closure.
 	 *
 	 * @return  void
 	 * @throws  \InvalidArgumentException
 	 */
-	public function extend($key, \Closure $callable)
+	public function extend($resourceName, \Closure $callable)
 	{
-		$key = $this->resolveAlias($key);
-
+		$key = $this->resolveAlias($resourceName);
 		$raw = $this->getRawGuarded($key);
 
 		$closure = function ($c) use ($callable, $raw)
@@ -419,9 +418,9 @@ class Container implements ContainerInterface
 	{
 		$key = $this->resolveAlias($key);
 
-		if (isset($this->dataStore[$key]) && $this->dataStore[$key]['protected'] === true)
+		if ($this->has($key) && $this->isProtected($key))
 		{
-			throw new ProtectedKeyException(sprintf('Key %s is protected and can\'t be overwritten.', $key));
+			throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
 		}
 
 		// If the provided $value is not a closure, make it one now for easy resolution.
@@ -502,7 +501,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  mixed
 	 */
-	private function getRaw($key)
+	public function getRaw($key)
 	{
 		if (isset($this->dataStore[$key]))
 		{
@@ -511,6 +510,18 @@ class Container implements ContainerInterface
 		elseif ($this->parent instanceof Container)
 		{
 			return $this->parent->getRaw($key);
+		}
+		elseif ($this->parent instanceof ContainerInterface && $this->parent->has($key))
+		{
+			$value = $this->parent->get($key);
+			return array(
+				'callback'  => function () use ($value)
+				{
+					return $value;
+				},
+				'shared'    => true,
+				'protected' => true
+			);
 		}
 
 		return null;

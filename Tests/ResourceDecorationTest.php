@@ -26,7 +26,8 @@ class ResourceDecoration extends \PHPUnit_Framework_TestCase
 			function ()
 			{
 				return new \stdClass;
-			});
+			}
+		);
 
 		$value = 42;
 
@@ -57,5 +58,33 @@ class ResourceDecoration extends \PHPUnit_Framework_TestCase
 	{
 		$container = new Container();
 		$container->extend('foo', function () {});
+	}
+
+	/**
+	 * @testdox A protected resource can not be extended
+	 * @expectedException \Joomla\DI\Exception\ProtectedKeyException
+	 */
+	public function testExtendProtected()
+	{
+		$container = new Container();
+		$container->protect(
+			'foo',
+			function ()
+			{
+				return new \stdClass;
+			}
+		);
+
+		$value = 42;
+
+		$container->extend(
+			'foo',
+			function ($shared) use ($value)
+			{
+				$shared->value = $value;
+
+				return $shared;
+			}
+		);
 	}
 }
