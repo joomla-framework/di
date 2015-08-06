@@ -237,11 +237,26 @@ class Container implements ContainerInterface
 	 */
 	public function buildObject($resourceName, $shared = false)
 	{
+		static $buildStack = array();
+
 		$key = $this->resolveAlias($resourceName);
+
+		if (in_array($key, $buildStack))
+		{
+			$buildStack = array();
+
+			throw new DependencyResolutionException("Can't resolve circular dependency");
+		}
+
+		array_push($buildStack, $key);
 
 		if ($this->has($key))
 		{
-			return $this->get($key);
+
+			$resource = $this->get($key);
+			array_pop($buildStack);
+
+			return $resource;
 		}
 
 		try
@@ -249,11 +264,15 @@ class Container implements ContainerInterface
 			$reflection = new \ReflectionClass($key);
 		} catch (\ReflectionException $e)
 		{
+			array_pop($buildStack);
+
 			return false;
 		}
 
 		if (!$reflection->isInstantiable())
 		{
+			$buildStack = array();
+
 			throw new DependencyResolutionException("$key can not be instantiated.");
 		}
 
@@ -278,7 +297,10 @@ class Container implements ContainerInterface
 		}
 		$this->set($key, $callback, $shared);
 
-		return $this->get($key);
+		$resource = $this->get($key);
+		array_pop($buildStack);
+
+		return $resource;
 	}
 
 	/**
