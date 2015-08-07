@@ -112,13 +112,13 @@ class Resource
 		{
 			if ($this->instance === null)
 			{
-				$this->instance = $callable($this->container);
+				$this->instance = call_user_func($callable, $this->container);
 			}
 
 			return $this->instance;
 		}
 
-		return $callable($this->container);
+		return call_user_func($callable, $this->container);
 	}
 
 	/**
