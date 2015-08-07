@@ -16,7 +16,7 @@ use Joomla\DI\Exception\ProtectedKeyException;
 /**
  * The Container class.
  *
- * @since 1.0
+ * @since  1.0
  */
 class Container implements ContainerInterface
 {
@@ -49,7 +49,7 @@ class Container implements ContainerInterface
 	/**
 	 * Constructor for the DI Container
 	 *
-	 * @param   ContainerInterface $parent  Parent for hierarchical containers.
+	 * @param   ContainerInterface  $parent  Parent for hierarchical containers.
 	 */
 	public function __construct(ContainerInterface $parent = null)
 	{
@@ -125,7 +125,7 @@ class Container implements ContainerInterface
 	 * If the resource name is an alias, the corresponding key is returned.
 	 * If the resource name is not an alias, the resource name is returned unchanged.
 	 *
-	 * @param   string $resourceName The key to search for.
+	 * @param   string  $resourceName  The key to search for.
 	 *
 	 * @return  string
 	 */

@@ -11,7 +11,7 @@ namespace Joomla\DI;
 /**
  * Defines the representation of a resource.
  *
- * @since 2.0
+ * @since  2.0
  */
 class Resource
 {
