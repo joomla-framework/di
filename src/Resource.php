@@ -10,6 +10,8 @@ namespace Joomla\DI;
 
 /**
  * Defines the representation of a resource.
+ *
+ * @since 2.0
  */
 class Resource
 {
@@ -36,9 +38,9 @@ class Resource
 	/**
 	 * Create a resource representation
 	 *
-	 * @param Container $container The container
-	 * @param mixed     $value     The resource or its factory closure
-	 * @param int       $mode      Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
+	 * @param   Container  $container  The container
+	 * @param   mixed      $value      The resource or its factory closure
+	 * @param   int        $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
 	 */
 	public function __construct(Container $container, $value, $mode = 0)
 	{
@@ -56,6 +58,7 @@ class Resource
 			{
 				$this->instance = $value;
 			}
+
 			if (is_object($value))
 			{
 				$this->factory = function () use ($value)
@@ -104,6 +107,7 @@ class Resource
 	public function getInstance()
 	{
 		$callable = $this->factory;
+
 		if ($this->isShared())
 		{
 			if ($this->instance === null)

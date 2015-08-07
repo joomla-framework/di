@@ -15,6 +15,8 @@ use Joomla\DI\Exception\ProtectedKeyException;
 
 /**
  * The Container class.
+ *
+ * @since 1.0
  */
 class Container implements ContainerInterface
 {
@@ -47,7 +49,7 @@ class Container implements ContainerInterface
 	/**
 	 * Constructor for the DI Container
 	 *
-	 * @param   ContainerInterface $parent Parent for hierarchical containers.
+	 * @param   ContainerInterface $parent  Parent for hierarchical containers.
 	 */
 	public function __construct(ContainerInterface $parent = null)
 	{
@@ -57,7 +59,7 @@ class Container implements ContainerInterface
 	/**
 	 * Retrieve a resource
 	 *
-	 * @param   string $resourceName Name of the resource to get.
+	 * @param   string  $resourceName  Name of the resource to get.
 	 *
 	 * @return  mixed  The requested resource
 	 */
@@ -81,7 +83,7 @@ class Container implements ContainerInterface
 	/**
 	 * Check if specified resource exists.
 	 *
-	 * @param   string $resourceName Name of the resource to check.
+	 * @param   string  $resourceName  Name of the resource to check.
 	 *
 	 * @return  boolean  true if key is defined, false otherwise
 	 */
@@ -105,8 +107,8 @@ class Container implements ContainerInterface
 	/**
 	 * Create an alias for a given key for easy access.
 	 *
-	 * @param   string $alias The alias name
-	 * @param   string $key   The key to alias
+	 * @param   string  $alias  The alias name
+	 * @param   string  $key    The key to alias
 	 *
 	 * @return $this for chaining
 	 */
@@ -140,7 +142,7 @@ class Container implements ContainerInterface
 	/**
 	 * Check whether a resource is shared
 	 *
-	 * @param   string $resourceName Name of the resource to check.
+	 * @param   string  $resourceName  Name of the resource to check.
 	 *
 	 * @return bool
 	 */
@@ -152,7 +154,7 @@ class Container implements ContainerInterface
 	/**
 	 * Check whether a resource is protected
 	 *
-	 * @param   string $resourceName Name of the resource to check.
+	 * @param   string  $resourceName  Name of the resource to check.
 	 *
 	 * @return bool
 	 */
@@ -164,9 +166,9 @@ class Container implements ContainerInterface
 	/**
 	 * Check whether a flag (i.e., one of 'shared' or 'protected') is set
 	 *
-	 * @param   string $resourceName
-	 * @param   string $method
-	 * @param   bool   $default
+	 * @param   string  $resourceName  Name of the resource to check.
+	 * @param   string  $method        Method to delegate to
+	 * @param   bool    $default       Default return value
 	 *
 	 * @return  bool
 	 */
@@ -199,10 +201,11 @@ class Container implements ContainerInterface
 	 * Creates an instance of the class specified by $resourceName with all dependencies injected.
 	 * If the dependencies cannot be completely resolved, a DependencyResolutionException is thrown.
 	 *
-	 * @param   string  $resourceName The class name to build.
-	 * @param   boolean $shared       True to create a shared resource.
+	 * @param   string   $resourceName  The class name to build.
+	 * @param   boolean  $shared        True to create a shared resource.
 	 *
 	 * @return  mixed  An object if the class exists and false otherwise
+	 *
 	 * @throws  DependencyResolutionException if the object could not be built (due to missing information)
 	 */
 	public function buildObject($resourceName, $shared = false)
@@ -265,6 +268,7 @@ class Container implements ContainerInterface
 				return $reflection->newInstanceArgs($newInstanceArgs);
 			};
 		}
+
 		$this->set($key, $callback, $shared);
 
 		$resource = $this->get($key);
@@ -276,7 +280,7 @@ class Container implements ContainerInterface
 	/**
 	 * Convenience method for building a shared object.
 	 *
-	 * @param   string $resourceName The class name to build.
+	 * @param   string  $resourceName  The class name to build.
 	 *
 	 * @return  object  Instance of class specified by $resourceName with all dependencies injected.
 	 */
@@ -300,10 +304,11 @@ class Container implements ContainerInterface
 	 * works very similar to a decorator pattern.  Note that this only works on service Closures
 	 * that have been defined in the current Provider, not parent providers.
 	 *
-	 * @param   string   $resourceName The unique identifier for the Closure or property.
-	 * @param   \Closure $callable     A Closure to wrap the original service Closure.
+	 * @param   string    $resourceName  The unique identifier for the Closure or property.
+	 * @param   \Closure  $callable      A Closure to wrap the original service Closure.
 	 *
 	 * @return  void
+	 *
 	 * @throws  \InvalidArgumentException
 	 */
 	public function extend($resourceName, \Closure $callable)
@@ -322,9 +327,10 @@ class Container implements ContainerInterface
 	/**
 	 * Build an array of constructor parameters.
 	 *
-	 * @param   \ReflectionMethod $method Method for which to build the argument array.
+	 * @param   \ReflectionMethod  $method  Method for which to build the argument array.
 	 *
 	 * @return  array  Array of arguments to pass to the method.
+	 *
 	 * @throws  DependencyResolutionException
 	 */
 	private function getMethodArgs(\ReflectionMethod $method)
@@ -375,10 +381,10 @@ class Container implements ContainerInterface
 	/**
 	 * Set a resource
 	 *
-	 * @param   string  $key       Name of resources key to set.
-	 * @param   mixed   $value     Callable function to run or string to retrive when requesting the specified $key.
-	 * @param   boolean $shared    True to create and store a shared instance.
-	 * @param   boolean $protected True to protect this item from being overwritten. Useful for services.
+	 * @param   string   $key        Name of resources key to set.
+	 * @param   mixed    $value      Callable function to run or string to retrive when requesting the specified $key.
+	 * @param   boolean  $shared     True to create and store a shared instance.
+	 * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
 	 *
 	 * @return $this for chaining
 	 *
@@ -404,9 +410,9 @@ class Container implements ContainerInterface
 	/**
 	 * Convenience method for creating protected keys.
 	 *
-	 * @param   string   $key      Name of resources key to set.
-	 * @param   callable $callback Callable function to run when requesting the specified $key.
-	 * @param   bool     $shared   True to create and store a shared instance.
+	 * @param   string    $key       Name of resources key to set.
+	 * @param   callable  $callback  Callable function to run when requesting the specified $key.
+	 * @param   bool      $shared    True to create and store a shared instance.
 	 *
 	 * @return $this for chaining
 	 */
@@ -418,9 +424,9 @@ class Container implements ContainerInterface
 	/**
 	 * Convenience method for creating shared keys.
 	 *
-	 * @param   string   $key       Name of resources key to set.
-	 * @param   callable $callback  Callable function to run when requesting the specified $key.
-	 * @param   bool     $protected True to create and store a shared instance.
+	 * @param   string    $key        Name of resources key to set.
+	 * @param   callable  $callback   Callable function to run when requesting the specified $key.
+	 * @param   bool      $protected  True to create and store a shared instance.
 	 *
 	 * @return $this for chaining
 	 */
@@ -432,9 +438,8 @@ class Container implements ContainerInterface
 	/**
 	 * Get the raw data assigned to a key.
 	 *
-	 * @param   string $key The key for which to get the stored item.
-	 *
-	 * @param bool     $bail Throw an exception, if the key is not found
+	 * @param   string  $key   The key for which to get the stored item.
+	 * @param   bool    $bail  Throw an exception, if the key is not found
 	 *
 	 * @return \Joomla\DI\Resource
 	 */
@@ -465,7 +470,7 @@ class Container implements ContainerInterface
 	 * Method to force the container to return a new instance
 	 * of the results of the callback for requested $key.
 	 *
-	 * @param   string $key Name of the resources key to get.
+	 * @param   string  $key  Name of the resources key to get.
 	 *
 	 * @return  mixed   Results of running the $callback for the specified $key.
 	 */
@@ -481,7 +486,7 @@ class Container implements ContainerInterface
 	/**
 	 * Register a service provider to the container.
 	 *
-	 * @param   ServiceProviderInterface $provider The service provider to register.
+	 * @param   ServiceProviderInterface  $provider  The service provider to register.
 	 *
 	 * @return  Container  This object for chaining.
 	 */

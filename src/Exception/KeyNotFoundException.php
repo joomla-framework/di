@@ -10,6 +10,8 @@ namespace Joomla\DI\Exception;
 
 /**
  * No entry was found in the container.
+ *
+ * @since 2.0
  */
 class KeyNotFoundException extends \InvalidArgumentException implements \Interop\Container\Exception\NotFoundException
 {

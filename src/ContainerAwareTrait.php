@@ -26,6 +26,7 @@ trait ContainerAwareTrait
 	 * Get the DI container.
 	 *
 	 * @return  Container
+	 *
 	 * @throws  ContainerNotFoundException May be thrown if the container has not been set.
 	 */
 	public function getContainer()
