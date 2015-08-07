@@ -5,7 +5,7 @@ The source of this file contains inline HTML comments starting with '[x]'.
 These are the lines from the test results in testdox format, which are verifying the statement made
 in this documentation.
 
-Use this as an example on how to transform test documentation into user documentation.
+Use this as an example on how to turn test documentation into user documentation.
 Of course that requires a good testbase.
 
 To reproduce the test results, run `phpunit --testdox`
@@ -138,6 +138,8 @@ in a closure and that closure will be set as the resolving callback for the `$ke
 > the calling container. This allows access to the container within your resolving callback.
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 // Setting a scalar
@@ -168,6 +170,8 @@ When setting items in the container, you can specify whether or not the item is 
 shared or protected item.
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 $shared = true;
@@ -202,6 +206,8 @@ callback will be fired once, and the value will be stored and used on every subs
 item. You can set a shared resource using the `share` method.
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 $container->share(
@@ -224,7 +230,7 @@ be a database connection that you only want one of, and you don't want it to be 
 You can check whether a resource is shared with the `isShared` method.
 
 ```php
-var_dump($container->isShared('foo'); // prints bool(true) for the example above
+var_dump($container->isShared('foo')); // prints bool(true) for the example above
 ```
 
 ##### Protected Resources
@@ -236,6 +242,8 @@ overwritten.
 <!-- [x] Setting an existing non-protected resource replaces the resource -->
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 // Don't overwrite my db connection.
@@ -260,7 +268,7 @@ If you pass `true` as third argument, you can both share AND protect an item.
 You can check whether a resource is protected with the `isProtected` method.
 
 ```php
-var_dump($container->isProtected('bar'); // prints bool(true) for the example above
+var_dump($container->isProtected('bar')); // prints bool(true) for the example above
 ```
 
 ### Item Aliases
@@ -271,6 +279,8 @@ dependency for object resolution, but also have a "shortcut" access to the item 
 You get the same resource with the alias as you would with the original key.
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 $container->set(
@@ -295,6 +305,8 @@ you did when you set the method in the container.
 > If you've aliased a set item, you can also retrieve it using the alias key.
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 $container->set('foo', 'bar');
@@ -306,6 +318,8 @@ Normally, the value you'll be passing will be a closure. When you fetch the item
 the closure is executed, and the result is returned.
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 $container->set(
@@ -327,7 +341,7 @@ var_dump($github instanceof \Joomla\Github\Github); // prints bool(true)
 If you get the item again, the closure is executed again and the result is returned.
 
 ```php
-// Picking up from the previous codeblock
+// Picking up from the previous code block
 
 $github2 = $container->get('github');
 
@@ -340,6 +354,8 @@ only be executed once (the first time it is requested). The value will be stored
 on every subsequent request.
 
 ```php
+use Joomla\DI\Container;
+
 $container = new Container;
 
 $container->share(
@@ -366,7 +382,7 @@ can force the creation of a new instance by using the `getNewInstance` method.
 > that is stored in the container and will be used on subsequent requests.
 
 ```php
-// Picking up from the previous codeblock
+// Picking up from the previous code block
 
 $twitter3 = $container->getNewInstance('twitter');
 
@@ -386,18 +402,18 @@ Of course, `has` also resolves an alias (if set).
 
 ### Building Objects
 
-The most useful function of the container is its ability to build complete objects, instantiating
-any needed dependency along the way. When you use the container in this way, it looks at a class'
-constructor declared dependencies and then automatically passes them into the object.
+<!-- [x] Building an object returns an instance of the requested class -->
+The most powerful feature of setting an item in the container is the ability to bind an implementation
+to an interface. This is useful when using the container to build your app objects. You can typehint
+against an interface, and when the object gets built, the container will pass your implementation.
 
-> Classes will only receive dependencies that have been properly typehinted or given a default value.
-
-Since the container allows you to bind an implementation to an interface, this gives you great flexibility
-to build your classes within the container. If your model class requires a user repository, you can typehint
-against a `UserRepositoryInterface` and then bind an implementation to that interface to be passed into
-the model when it's created.
+This gives you great flexibility to build your objects within the container.
+If your model class requires a user repository, you can typehint against a `UserRepositoryInterface`
+and then bind an implementation to that interface to be passed into the model when it is created.
 
 ```php
+use Joomla\DI\Container;
+
 class User implements UserRepositoryInterface
 {
     // ...snip
@@ -405,7 +421,8 @@ class User implements UserRepositoryInterface
 
 class UserProfile
 {
-    protected $user;
+    /** @var UserRepositoryInterface The user (property should not be public in production code!) */
+    public $user;
 
     public function __construct(UserRepositoryInterface $user)
     {
@@ -413,56 +430,103 @@ class UserProfile
     }
 }
 
-// Assume a created $container
+$container = new Container;
+
+// Tell the container, that we want `User` to fulfill the `UserRepositoryInterface` dependency
 $container->set(
     'UserRepositoryInterface',
     function ()
     {
-        retur new User;
+        return new User;
     }
 );
 
+// Create the `UserProfile` object. 
 $userProfile = $container->buildObject('UserProfile');
 
-// Use reflection to get the $user property from $userProfile
-var_dump($user instanceof User); // prints bool(true)
-var_dump($user instanceof UserRepositoryInterface); // prints bool(true)
+var_dump($userProfile->user instanceof User); // prints bool(true)
+var_dump($userProfile->user instanceof UserRepositoryInterface); // prints bool(true)
 ```
 
-When you build an object, the information required to actually build it (dependencies, etc) are
-stored in a callable and set in the container with the class name as the key. You can then fetch
-the item from the container by name later on. Alias support applies here as well.
+As the last example shows, the power lies in the container's ability to build complete objects, instantiating
+any needed dependency along the way.
 
-You can also specify to build a shared object by using the function `buildSharedObject($key)`. This
-works exactly as you would expect. The information required to build it is discovered, stored in a
-callable, then the callable is executed and the result returned. The result is stored as an instance
-within the container and is returned on subsequent requests.
+#### How it works
 
-<!-- [x] Building an object returns an instance of the requested class -->
-<!-- [x] Building a non-shared object returns a new object whenever requested -->
-<!-- [x] Building a shared object returns the same object whenever requested -->
-<!-- [x] Attempting to build a non-class returns false -->
+To do that, the container looks at the constructor of the class being instantiated.
+It then tries to resolve the dependencies using the typehints.
 <!-- [x] Dependencies are resolved from the container's known resources -->
+If a typehint requires an interface, the dependency is resolved from the container's known resources.
 <!-- [x] Resources are created, if they are not present in the container -->
+Dependencies not known by the container are created, if possible, following the same rules as the current resource.
 <!-- [x] Dependencies are resolved from their default values -->
+Scalar arguments are provided with their default value.
+
+#### When it does not work
+
 <!-- [x] A DependencyResolutionException is thrown, if an object can not be built due to unspecified constructor parameter types -->
 <!-- [x] A DependencyResolutionException is thrown, if an object can not be built due to dependency on unknown interfaces -->
+The container can only resolve dependencies that have been properly typehinted or given a default value.
+If the resource can not be built, a `DependencyResolutionException` is thrown.
+
+<!-- [x] Attempting to build a non-class returns false -->
+When you try to build a non-class, `buildObject` and `buildSharedObject` both return `false`. 
+
 <!-- [x] When a circular dependency is detected, a DependencyResolutionException is thrown (Bug #4) -->
+Sometimes circular dependencies are encountered. 
+
+```php
+use Joomla\DI\Container;
+
+$container = new Container();
+
+$fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';
+$data = array();
+
+$container->set(
+    $fqcn,
+    function (Container $c) use ($fqcn, $data)
+    {
+        $instance = $c->buildObject($fqcn);
+        $instance->setData($data);
+
+        return $instance;
+    }
+);
+
+$container->get($fqcn);
+```
+
+It is not possible for the container to resolve that, as it produces an endless loop.
+However, `Container` detects that and throws a `DependencyResolutionException`.
+
+#### Shared and non-shared Objects
+
+<!-- [x] Building a non-shared object returns a new object whenever requested -->
+When you build an object, it is stored as a known resource in the container with the class name as the key.
+You can then `get` the item from the container by class name later on. Alias support applies here as well.
+
+<!-- [x] Building a shared object returns the same object whenever requested -->
+You can also specify to build a shared object by using the function `buildSharedObject($key)`. This
+works exactly as you would expect. The instantiated object is cached and returned on subsequent requests.
 
 ### Extending an Item
 
 The Container also allows you to extend items. Extending an item can be thought of as a way to
-implement the decorator pattern, although it's not really in the strict sense. When you extend an
-item, you must pass the key for the item you want to extend, and then a closure as the second
-argument. The closure will receive 2 arguments. The first is result of the callable for the given key,
-and the second will be the container itself. When extending an item, the new extended version overwrites
-the existing item in the container. If you try to extend an item that does not exist, an `\InvalidArgumentException`
-will be thrown.
-
-> When extending an item, normal rules apply. A protected object cannot be overwritten, so you also can not extend them.
+implement the decorator pattern, although it's not really in the strict sense.
+When you `extend` an item, you must pass the key for the item you want to extend, and then a closure as the second
+argument.
+The closure will receive 2 arguments.
+The first is result of the callable for the given key,
+and the second will be the container itself.
+<!-- [x] An extended resource replaces the original resource -->
+When extending an item, the new extended version overwrites the existing item in the container.
 
 ```php
-// Assume a created $container
+use Joomla\DI\Container;
+
+$container = new Container();
+
 $container->set('foo', 'bar');
 
 var_dump($container->get('foo')); // prints string(3) "bar"
@@ -471,30 +535,32 @@ $container->extend(
     'foo',
     function ($originalResult, Container $c)
     {
-        return $originalResult .= 'baz';
+        return $originalResult . 'baz';
     }
 );
 
 var_dump($container->get('foo')); // prints string(6) "barbaz"
 ```
 
-<!-- [x] An extended resource replaces the original resource -->
 <!-- [x] Attempting to extend an undefined resource throws an InvalidArgumentException -->
+If you try to extend an item that does not exist, an `\InvalidArgumentException` will be thrown.
+
 <!-- [x] A protected resource can not be extended -->
+> When extending an item, normal rules apply. A protected object cannot be overwritten, so you also can not extend them.
 
 ### Service Providers
 
 Another strong feature of the Container is the ability register a _service provider_ to the container.
 Service providers are useful in that they are a simple way to encapsulate setup logic for your objects.
 In order to use create a service provider, you must implement the `Joomla\DI\ServiceProviderInterface`.
+<!-- [x] When registering a service provider, its register() method is called with the container instance -->
 The `ServiceProviderInterface` tells the container that your object has a `register` method that takes
-the container as it's only argument.
+the container as its only argument.
 
 > Registering service providers is typically done very early in the application lifecycle. Usually
 > right after the container is created.
 
 ```php
-// Assume a created $container
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Database\DatabaseDriver;
@@ -505,9 +571,9 @@ class DatabaseServiceProvider implements ServiceProviderInterface
     {
         $container->share(
             'Joomla\Database\DatabaseDriver',
-            function () use ($container)
+            function (Container $c)
             {
-                $databaseConfig = (array) $container->get('config')->get('database');
+                $databaseConfig = (array) $c->get('config')->get('database');
 
                 return new DatabaseDriver($databaseConfig);
             },
@@ -518,13 +584,14 @@ class DatabaseServiceProvider implements ServiceProviderInterface
     }
 }
 
+$container = new Container();
+
 $container->registerServiceProvider(new DatabaseServiceProvider);
 ```
 
 Here is an alternative using a callable.
 
 ```php
-// Assume a created $container
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
@@ -535,11 +602,13 @@ class CallableServiceProvider implements ServiceProviderInterface
         return 'something';
     }
 
-    public function register(Container $container)
+    public function register(Container $c)
     {
-        $container->set('callable', array($this, 'getCallable');
+        $c->set('callable', array($this, 'getCallable');
     }
 }
+
+$container = new Container();
 
 $container->registerServiceProvider(new CallableServiceProvider);
 ```
@@ -547,11 +616,9 @@ $container->registerServiceProvider(new CallableServiceProvider);
 The advantage here is that it is easier to write unit tests for the callable method (closures can be awkward to isolate
 and test).
 
-<!-- [x] When registering a service provider, its register() method is called with the container instance -->
-
 ### Container Aware Objects
 
-You are able to make objects _ContainerAware_ by implementing the `Joomla\DI\ContainerAwareInterface` within your
+You are able to make objects _ContainerAware_ by implementing the `Joomla\DI\ContainerAwareInterface` in your
 class. This can be useful when used within the construction level of your application. The construction
 level is considered to be anything that is responsible for the creation of other objects. When using
 the MVC pattern as recommended by Joomla, this can be at the application or controller level. Controllers
@@ -561,30 +628,31 @@ be reasonable for the controllers to have access to the container in order to bu
 > __NOTE:__ The business layer of your app (eg: Models) should _never_ be container aware. Doing so will
 > make your code harder to test, and is a far cry from best practices.
 
-### Container Aware Trait
+#### Container Aware Trait
 
-Since PHP 5.4 traits are [available](http://www.php.net/traits), so you can use `ContainerAwareTrait`.
+Since PHP 5.4 [traits are available](http://www.php.net/traits), so you can use `ContainerAwareTrait`.
+<!-- [x] Container can be set with setContainer() and retrieved with getContainer() -->
+It implements the `setContainer` and `getContainer` methods.
+<!-- [x] getContainer() throws an ContainerNotFoundException, if no container is set -->
+If you try to retrieve a container that was not set before, a `ContainerNotFoundException` is thrown. 
 
 Usage:
 
 ```php
 use Joomla\DI\ContainerAwareInterface,
-	Joomla\DI\ContainerAwareTrait,
-	Joomla\Controller\AbstractController;
+    Joomla\DI\ContainerAwareTrait,
+    Joomla\Controller\AbstractController;
 
 class MyConroller extends AbstractController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
-	public function execute()
-	{
-		$container = $this->getContainer();
-	}
+    
+    public function execute()
+    {
+        $container = $this->getContainer();
+    }
 }
 ```
-
-<!-- [x] Container can be set with setContainer() and retrieved with getContainer() -->
-<!-- [x] getContainer() throws an ContainerNotFoundException, if no container is set -->
 
 ### Internal Representation of Resources
 
@@ -595,6 +663,8 @@ class MyConroller extends AbstractController implements ContainerAwareInterface
 <!-- [x] If an instance is provided directly in shared mode, that instance is returned -->
 <!-- [x] If an instance is provided directly in non-shared mode, a copy (clone) of that instance is returned -->
 <!-- [x] After a reset, a new instance is returned even for shared resources -->
+@todo
 
 ### Exceptions
 
+@todo

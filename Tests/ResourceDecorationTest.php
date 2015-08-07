@@ -51,6 +51,28 @@ class ResourceDecoration extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @testdox Scalar resources can be extended
+	 */
+	public function testExtendScalar()
+	{
+		$container = new Container();
+
+		$container->set('foo', 'bar');
+
+		$this->assertEquals('bar', $container->get('foo'));
+
+		$container->extend(
+			'foo',
+			function ($originalResult, Container $c)
+			{
+				return $originalResult . 'baz';
+			}
+		);
+
+		$this->assertEquals('barbaz', $container->get('foo'));
+	}
+
+	/**
 	 * @testdox Attempting to extend an undefined resource throws an InvalidArgumentException
 	 * @expectedException  \InvalidArgumentException
 	 */
