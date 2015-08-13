@@ -42,7 +42,7 @@ class Resource
 	 * @param   mixed      $value      The resource or its factory closure
 	 * @param   int        $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
 	 */
-	public function __construct(Container $container, $value, $mode = self::NO_SHARE | self::NO_PROTECT)
+	public function __construct(Container $container, $value, $mode = 0)
 	{
 		$this->container = $container;
 		$this->shared    = ($mode & self::SHARE) == self::SHARE;
