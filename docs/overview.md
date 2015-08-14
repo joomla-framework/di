@@ -41,29 +41,22 @@ namespace.
 
 ### Creating a Container object
 
-Creating a container usually happens very early in the application lifecycle. For a Joomla! MVC app, this
-typically happens in the application's `doExecute` method. This allows your application access to the DI
-Container, which you can then use within the app class to build your controllers and their dependencies.
+Creating a container usually happens very early in the application lifecycle.
+It can be created even before the application is instantiated,
+and provided to the application as an external dependency.
+This allows your application access to the DI Container,
+which you can then use within the app class to build your controllers and their dependencies.
 
 ```php
-namespace My\App;
-
-use Joomla\DI\Container;
-use Joomla\Application\AbstractWebApplication;
-
-class WebApp extends AbstractWebApplication
-{
-    protected $container;
-
-    // ...snip
-
-    protected function doExecute()
-    {
-        $this->container = new Container;
-
-        // ...snip
-    }
+$container = (new Joomla\DI\Container)
+    ->registerServiceProvider(new MyApp\Service\CoolProvider)
+    ->registerServiceProvider(new MyApp\Other\CoolStuffProvider)
+    ...
+    ->registerServiceProvider(new MyApp\ApplicationProvider);
 }
+
+$app = $container->get('MyApp\\Application');
+$app->execute();
 ```
 
 ### Hierachical Containers
