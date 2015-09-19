@@ -35,7 +35,7 @@ class AliasingTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @testdox exists() also resolves the alias if set.
+	 * @testdox has() also resolves the alias if set.
 	 */
 	public function testExistsResolvesAlias()
 	{
@@ -44,24 +44,7 @@ class AliasingTest extends \PHPUnit_Framework_TestCase
 			->set('foo', function () {return new \stdClass;}, true, true)
 			->alias('bar', 'foo');
 
-		$this->assertTrue($container->exists('foo'), "Original 'foo' was not resolved");
-		$this->assertTrue($container->exists('bar'), "Alias 'bar' was not resolved");
-	}
-
-	/**
-	 * @testdox Child container resolves parent's alias to parent's resource
-	 */
-	public function testChildResolveAlias()
-	{
-		$this->markTestSkipped('Feature not implemented in 1.3.1');
-		$container = new Container();
-		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
-		{
-			return new Stub1;
-		});
-		$container->alias('stub', 'Joomla\\DI\\Tests\\StubInterface');
-
-		$child = $container->createChild();
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $child->get('stub'));
+		$this->assertTrue($container->has('foo'), "Original 'foo' was not resolved");
+		$this->assertTrue($container->has('bar'), "Alias 'bar' was not resolved");
 	}
 }

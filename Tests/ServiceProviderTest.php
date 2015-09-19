@@ -8,28 +8,11 @@ namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
 
-include_once 'Stubs/stubs.php';
-
 /**
  * Tests for Container class.
  */
-class DelegateLookupTest extends \PHPUnit_Framework_TestCase
+class ServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
-	/**
-	 * @testdox Child container has access to parent's resources
-	 */
-	public function testCreateChild()
-	{
-		$container = new Container();
-		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
-		{
-			return new Stub1;
-		});
-
-		$child = $container->createChild();
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $child->get('Joomla\\DI\\Tests\\StubInterface'));
-	}
-
 	/**
 	 * @testdox When registering a service provider, its register() method is called with the container instance
 	 */
@@ -43,6 +26,7 @@ class DelegateLookupTest extends \PHPUnit_Framework_TestCase
 			->method('register')
 			->with($container);
 
+		/** @noinspection PhpParamsInspection */
 		$container->registerServiceProvider($mock);
 	}
 }

@@ -7,6 +7,7 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\Exception\ContainerNotFoundException;
 
 /**
  * Tests for ContainerAwareTrait class.
@@ -41,8 +42,8 @@ class ContainerAwareTraitTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @testdox getContainer() throws an UnexpectedValueException, if no container is set
-	 * @expectedException   \UnexpectedValueException
+	 * @testdox getContainer() throws an ContainerNotFoundException, if no container is set
+	 * @expectedException   \Joomla\DI\Exception\ContainerNotFoundException
 	 */
 	public function testGetContainerException()
 	{

@@ -113,9 +113,32 @@ class ObjectBuildingTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testGetMethodArgsResolvedIsNotInstanceOfHintedDependency()
 	{
-		$this->markTestSkipped('Known bug in current implementation: buildObject() tries to instantiate an interface directly.');
-
 		$container = new Container();
 		$container->buildObject('Joomla\\DI\\Tests\\Stub2');
+	}
+
+	/**
+	 * @testdox When a circular dependency is detected, a DependencyResolutionException is thrown (Bug #4)
+	 * @expectedException \Joomla\DI\Exception\DependencyResolutionException
+	 */
+	public function testBug4()
+	{
+		$container = new Container();
+
+		$fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';
+		$data = array();
+
+		$container->set(
+			$fqcn,
+			function (Container $c) use ($fqcn, $data)
+			{
+				$instance = $c->buildObject($fqcn);
+				$instance->setData($data);
+
+				return $instance;
+			}
+		);
+
+		$container->get($fqcn);
 	}
 }
