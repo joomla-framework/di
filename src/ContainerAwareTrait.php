@@ -12,6 +12,8 @@ use Joomla\DI\Exception\ContainerNotFoundException;
 
 /**
  * Defines the trait for a Container Aware Class.
+ *
+ * @since  1.2
  */
 trait ContainerAwareTrait
 {
@@ -19,6 +21,7 @@ trait ContainerAwareTrait
 	 * DI Container
 	 *
 	 * @var    Container
+	 * @since  1.2
 	 */
 	private $container;
 
@@ -27,6 +30,7 @@ trait ContainerAwareTrait
 	 *
 	 * @return  Container
 	 *
+	 * @since   1.2
 	 * @throws  ContainerNotFoundException May be thrown if the container has not been set.
 	 */
 	public function getContainer()
@@ -44,7 +48,9 @@ trait ContainerAwareTrait
 	 *
 	 * @param   Container  $container  The DI container.
 	 *
-	 * @return  mixed  Returns itself to support chaining.
+	 * @return  $this
+	 *
+	 * @since   1.2
 	 */
 	public function setContainer(Container $container)
 	{

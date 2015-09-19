@@ -11,28 +11,80 @@ namespace Joomla\DI;
 /**
  * Defines the representation of a resource.
  *
- * @since  2.0
+ * @since  __DEPLOY_VERSION__
  */
 class Resource
 {
+	/**
+	 * Defines the resource as non-shared
+	 *
+	 * @const  integer
+	 * @since  __DEPLOY_VERSION__
+	 */
 	const NO_SHARE = 0;
+
+	/**
+	 * Defines the resource as shared
+	 *
+	 * @const  integer
+	 * @since  __DEPLOY_VERSION__
+	 */
 	const SHARE = 1;
+
+	/**
+	 * Defines the resource as non-protected
+	 *
+	 * @const  integer
+	 * @since  __DEPLOY_VERSION__
+	 */
 	const NO_PROTECT = 0;
+
+	/**
+	 * Defines the resource as protected
+	 *
+	 * @const  integer
+	 * @since  __DEPLOY_VERSION__
+	 */
 	const PROTECT = 2;
 
-	/** @var Container */
+	/**
+	 * The container the resource is assigned to
+	 *
+	 * @var    Container
+	 * @since  __DEPLOY_VERSION__
+	 */
 	private $container;
 
-	/** @var  mixed */
+	/**
+	 * The object instance for a shared object
+	 *
+	 * @var    mixed
+	 * @since  __DEPLOY_VERSION__
+	 */
 	private $instance = null;
 
-	/** @var \Callable */
+	/**
+	 * The factory object
+	 *
+	 * @var    callable
+	 * @since  __DEPLOY_VERSION__
+	 */
 	private $factory = null;
 
-	/** @var bool */
+	/**
+	 * Flag if the resource is shared
+	 *
+	 * @var    boolean
+	 * @since  __DEPLOY_VERSION__
+	 */
 	private $shared = false;
 
-	/** @var bool */
+	/**
+	 * Flag if the resource is protected
+	 *
+	 * @var    boolean
+	 * @since  __DEPLOY_VERSION__
+	 */
 	private $protected = false;
 
 	/**
@@ -40,7 +92,9 @@ class Resource
 	 *
 	 * @param   Container  $container  The container
 	 * @param   mixed      $value      The resource or its factory closure
-	 * @param   int        $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
+	 * @param   integer    $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function __construct(Container $container, $value, $mode = 0)
 	{
@@ -79,7 +133,9 @@ class Resource
 	/**
 	 * Check whether the resource is shared
 	 *
-	 * @return boolean
+	 * @return  boolean
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function isShared()
 	{
@@ -89,7 +145,9 @@ class Resource
 	/**
 	 * Check whether the resource is protected
 	 *
-	 * @return boolean
+	 * @return  boolean
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function isProtected()
 	{
@@ -102,7 +160,9 @@ class Resource
 	 * If a factory was provided, the resource is created and - if it is a shared resource - cached internally.
 	 * If the resource was provided directly, that resource is returned.
 	 *
-	 * @return mixed
+	 * @return  mixed
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function getInstance()
 	{
@@ -124,7 +184,9 @@ class Resource
 	/**
 	 * Get the factory
 	 *
-	 * @return Callable
+	 * @return  callable
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function getFactory()
 	{
@@ -137,7 +199,9 @@ class Resource
 	 * The instance cache is cleared, so that the next call to get() returns a new instance.
 	 * This has an effect on shared, non-protected resources only.
 	 *
-	 * @return bool true, if the resource was reset, false otherwise
+	 * @return  boolean  True if the resource was reset, false otherwise
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function reset()
 	{

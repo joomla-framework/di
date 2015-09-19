@@ -27,6 +27,7 @@ class Container implements ContainerInterface
 	 * 'alias' => 'key'
 	 *
 	 * @var    array
+	 * @since  1.0
 	 */
 	protected $aliases = array();
 
@@ -34,6 +35,7 @@ class Container implements ContainerInterface
 	 * Holds the resources.
 	 *
 	 * @var    \Joomla\DI\Resource[]
+	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $resources = array();
 
@@ -43,6 +45,7 @@ class Container implements ContainerInterface
 	 * In fact, this can be any Interop compatible container, which gets decorated by this
 	 *
 	 * @var    ContainerInterface
+	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $parent;
 
@@ -50,6 +53,8 @@ class Container implements ContainerInterface
 	 * Constructor for the DI Container
 	 *
 	 * @param   ContainerInterface  $parent  Parent for hierarchical containers.
+	 *
+	 * @since   1.0
 	 */
 	public function __construct(ContainerInterface $parent = null)
 	{
@@ -62,6 +67,9 @@ class Container implements ContainerInterface
 	 * @param   string  $resourceName  Name of the resource to get.
 	 *
 	 * @return  mixed  The requested resource
+	 *
+	 * @since   1.0
+	 * @throws  KeyNotFoundException
 	 */
 	public function get($resourceName)
 	{
@@ -86,6 +94,8 @@ class Container implements ContainerInterface
 	 * @param   string  $resourceName  Name of the resource to check.
 	 *
 	 * @return  boolean  true if key is defined, false otherwise
+	 *
+	 * @since   1.0
 	 */
 	public function has($resourceName)
 	{
@@ -105,12 +115,29 @@ class Container implements ContainerInterface
 	}
 
 	/**
+	 * Method to check if specified dataStore key exists.
+	 *
+	 * @param   string  $key  Name of the dataStore key to check.
+	 *
+	 * @return  boolean  True for success
+	 *
+	 * @since   1.0
+	 * @deprecated  3.0  Use ContainerInterface::has() instead
+	 */
+	public function exists($key)
+	{
+		return $this->has($key);
+	}
+
+	/**
 	 * Create an alias for a given key for easy access.
 	 *
 	 * @param   string  $alias  The alias name
 	 * @param   string  $key    The key to alias
 	 *
-	 * @return $this for chaining
+	 * @return  $this
+	 *
+	 * @since   1.0
 	 */
 	public function alias($alias, $key)
 	{
@@ -128,6 +155,8 @@ class Container implements ContainerInterface
 	 * @param   string  $resourceName  The key to search for.
 	 *
 	 * @return  string
+	 *
+	 * @since   1.0
 	 */
 	protected function resolveAlias($resourceName)
 	{
@@ -144,7 +173,9 @@ class Container implements ContainerInterface
 	 *
 	 * @param   string  $resourceName  Name of the resource to check.
 	 *
-	 * @return bool
+	 * @return  boolean
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function isShared($resourceName)
 	{
@@ -156,7 +187,9 @@ class Container implements ContainerInterface
 	 *
 	 * @param   string  $resourceName  Name of the resource to check.
 	 *
-	 * @return bool
+	 * @return  boolean
+	 *
+	 * @since   __DEPLOY_VERSION__
 	 */
 	public function isProtected($resourceName)
 	{
@@ -166,11 +199,14 @@ class Container implements ContainerInterface
 	/**
 	 * Check whether a flag (i.e., one of 'shared' or 'protected') is set
 	 *
-	 * @param   string  $resourceName  Name of the resource to check.
-	 * @param   string  $method        Method to delegate to
-	 * @param   bool    $default       Default return value
+	 * @param   string   $resourceName  Name of the resource to check.
+	 * @param   string   $method        Method to delegate to
+	 * @param   boolean  $default       Default return value
 	 *
-	 * @return  bool
+	 * @return  boolean
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 * @throws  KeyNotFoundException
 	 */
 	private function hasFlag($resourceName, $method, $default = true)
 	{
@@ -206,6 +242,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  mixed  An object if the class exists and false otherwise
 	 *
+	 * @since   1.0
 	 * @throws  DependencyResolutionException if the object could not be built (due to missing information)
 	 */
 	public function buildObject($resourceName, $shared = false)
@@ -283,6 +320,8 @@ class Container implements ContainerInterface
 	 * @param   string  $resourceName  The class name to build.
 	 *
 	 * @return  object  Instance of class specified by $resourceName with all dependencies injected.
+	 *
+	 * @since   1.0
 	 */
 	public function buildSharedObject($resourceName)
 	{
@@ -293,6 +332,8 @@ class Container implements ContainerInterface
 	 * Create a child Container with a new property scope that has the ability to access the parent scope when resolving.
 	 *
 	 * @return  Container  A new container with the current as a parent
+	 *
+	 * @since   1.0
 	 */
 	public function createChild()
 	{
@@ -309,6 +350,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  void
 	 *
+	 * @since   1.0
 	 * @throws  \InvalidArgumentException
 	 */
 	public function extend($resourceName, \Closure $callable)
@@ -331,6 +373,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  array  Array of arguments to pass to the method.
 	 *
+	 * @since   1.0
 	 * @throws  DependencyResolutionException
 	 */
 	private function getMethodArgs(\ReflectionMethod $method)
@@ -386,8 +429,9 @@ class Container implements ContainerInterface
 	 * @param   boolean  $shared     True to create and store a shared instance.
 	 * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
 	 *
-	 * @return $this for chaining
+	 * @return  $this
 	 *
+	 * @since   1.0
 	 * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
 	 */
 	public function set($key, $value, $shared = false, $protected = false)
@@ -412,9 +456,11 @@ class Container implements ContainerInterface
 	 *
 	 * @param   string    $key       Name of resources key to set.
 	 * @param   callable  $callback  Callable function to run when requesting the specified $key.
-	 * @param   bool      $shared    True to create and store a shared instance.
+	 * @param   boolean   $shared    True to create and store a shared instance.
 	 *
-	 * @return $this for chaining
+	 * @return  $this
+	 *
+	 * @since   1.0
 	 */
 	public function protect($key, $callback, $shared = false)
 	{
@@ -426,9 +472,11 @@ class Container implements ContainerInterface
 	 *
 	 * @param   string    $key        Name of resources key to set.
 	 * @param   callable  $callback   Callable function to run when requesting the specified $key.
-	 * @param   bool      $protected  True to create and store a shared instance.
+	 * @param   boolean   $protected  True to create and store a shared instance.
 	 *
-	 * @return $this for chaining
+	 * @return  $this
+	 *
+	 * @since   1.0
 	 */
 	public function share($key, $callback, $protected = false)
 	{
@@ -438,10 +486,13 @@ class Container implements ContainerInterface
 	/**
 	 * Get the raw data assigned to a key.
 	 *
-	 * @param   string  $key   The key for which to get the stored item.
-	 * @param   bool    $bail  Throw an exception, if the key is not found
+	 * @param   string   $key   The key for which to get the stored item.
+	 * @param   boolean  $bail  Throw an exception, if the key is not found
 	 *
-	 * @return \Joomla\DI\Resource
+	 * @return  \Joomla\DI\Resource
+	 *
+	 * @since   __DEPLOY_VERSION__
+	 * @throws  KeyNotFoundException
 	 */
 	public function getResource($key, $bail = false)
 	{
@@ -473,6 +524,8 @@ class Container implements ContainerInterface
 	 * @param   string  $key  Name of the resources key to get.
 	 *
 	 * @return  mixed   Results of running the $callback for the specified $key.
+	 *
+	 * @since   1.0
 	 */
 	public function getNewInstance($key)
 	{
@@ -489,6 +542,8 @@ class Container implements ContainerInterface
 	 * @param   ServiceProviderInterface  $provider  The service provider to register.
 	 *
 	 * @return  Container  This object for chaining.
+	 *
+	 * @since   1.0
 	 */
 	public function registerServiceProvider(ServiceProviderInterface $provider)
 	{
