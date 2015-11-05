@@ -89,4 +89,90 @@ class ContainerAccessTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertNotSame($container->getNewInstance('foo'), $container->getNewInstance('foo'));
 	}
+
+	/**
+	 * @testdox Getting an object with parameters from the container
+	 */
+	public function testGetWithParameters()
+	{
+		$container = new Container();
+		$container->set(
+			'foo',
+			function ($container, $parameter1, $parameter2)
+			{
+				if (!$container instanceof Container)
+					throw new \InvalidArgumentException('Illegal argument, first parameter must be a container!');
+
+				return $parameter1 . ' ' . $parameter2;
+			}
+		);
+
+		$this->assertSame('joomla di', $container->get('foo', 'joomla', 'di'));
+	}
+
+	/**
+	 * @testdox Getting a shared item with parameters from the container
+	 */
+	public function testGetWithParametersShared()
+	{
+		$container = new Container();
+		$container->set(
+			'foo',
+			function ($container, $parameter1 = null, $parameter2 = null)
+			{
+				if (!$container instanceof Container)
+					throw new \InvalidArgumentException('Illegal argument, first parameter must be a container!');
+
+				return $parameter1 . ' ' . $parameter2;
+			},
+			true
+		);
+
+		$this->assertSame(' ', $container->get('foo'));
+		$this->assertSame('joomla di', $container->get('foo', 'joomla', 'di'));
+		$this->assertSame('joomla2 di2', $container->get('foo', 'joomla2', 'di2'));
+	}
+
+	/**
+	 * @testdox Getting an object with object parameters from the container
+	 */
+	public function testGetWithParametersSharedObjectParameter()
+	{
+		$container = new Container();
+		$container->set(
+			'foo',
+			function ($container, $object1)
+			{
+				if (!$container instanceof Container)
+					throw new \InvalidArgumentException('Illegal argument, first parameter must be a container!');
+
+				return $object1;
+			},
+			true
+		);
+
+		$object = new \stdClass();
+		$object->foo = 'bar';
+		$this->assertSame($object, $container->get('foo', $object));
+		$this->assertSame($object, $container->get('foo', $object));
+		$this->assertSame(null, $container->get('foo', null));
+		$this->assertNotSame($object, $container->get('foo', new \stdClass()));
+	}
+
+	/**
+	 * @testdox Getting an object with object parameters from the container
+	 */
+	public function testGetWithParametersSharedNoCallable()
+	{
+		$container = new Container();
+		$container->set(
+			'foo',
+			'bar',
+			true
+		);
+
+		$this->assertSame('bar', $container->get('foo', 'test'));
+		$this->assertSame('bar', $container->get('foo', null));
+	}
+
 }
