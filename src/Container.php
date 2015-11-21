@@ -422,7 +422,7 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Set a resource
+	 * Set a resource. If the value is null unsets the resource.
 	 *
 	 * @param   string   $key        Name of resources key to set.
 	 * @param   mixed    $value      Callable function to run or string to retrive when requesting the specified $key.
@@ -441,6 +441,12 @@ class Container implements ContainerInterface
 		if ($this->has($key) && $this->isProtected($key))
 		{
 			throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
+		}
+		elseif ($this->has($key) && $value === null)
+		{
+			unset($this->resources[$key]);
+
+			return $this;
 		}
 
 		$mode = $shared ? Resource::SHARE : Resource::NO_SHARE;

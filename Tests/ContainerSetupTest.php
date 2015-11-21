@@ -267,4 +267,27 @@ class ContainerSetupTest extends \PHPUnit_Framework_TestCase
 		$this->assertSame($container, $container->get('foo'));
 	}
 
+	/**
+	 * @testdox The setting an object and then setting it again as null should remove the object
+	 * @expectedException  \Joomla\DI\Exception\KeyNotFoundException
+	 */
+	public function testSettingNullUnsetsAResource()
+	{
+		$container = new Container();
+		$container->set(
+			'foo',
+			function ()
+			{
+				return 'original';
+			}
+		);
+		$this->assertEquals('original', $container->get('foo'));
+
+		$container->set(
+			'foo',
+			null
+		);
+
+		$container->get('foo');
+	}
 }
