@@ -29,7 +29,7 @@ class Container implements ContainerInterface
 	 * @var    array
 	 * @since  1.0
 	 */
-	protected $aliases = array();
+	protected $aliases = [];
 
 	/**
 	 * Holds the resources.
@@ -37,7 +37,7 @@ class Container implements ContainerInterface
 	 * @var    \Joomla\DI\Resource[]
 	 * @since  __DEPLOY_VERSION__
 	 */
-	protected $resources = array();
+	protected $resources = [];
 
 	/**
 	 * Parent for hierarchical containers.
@@ -214,12 +214,12 @@ class Container implements ContainerInterface
 
 		if (isset($this->resources[$key]))
 		{
-			return call_user_func(array($this->resources[$key], $method));
+			return call_user_func([$this->resources[$key], $method]);
 		}
 
 		if ($this->parent instanceof Container)
 		{
-			return call_user_func(array($this->parent, $method), $key);
+			return call_user_func([$this->parent, $method], $key);
 		}
 
 		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
@@ -247,13 +247,13 @@ class Container implements ContainerInterface
 	 */
 	public function buildObject($resourceName, $shared = false)
 	{
-		static $buildStack = array();
+		static $buildStack = [];
 
 		$key = $this->resolveAlias($resourceName);
 
 		if (in_array($key, $buildStack))
 		{
-			$buildStack = array();
+			$buildStack = [];
 
 			throw new DependencyResolutionException("Can't resolve circular dependency");
 		}
@@ -281,7 +281,7 @@ class Container implements ContainerInterface
 
 		if (!$reflection->isInstantiable())
 		{
-			$buildStack = array();
+			$buildStack = [];
 
 			throw new DependencyResolutionException("$key can not be instantiated.");
 		}
@@ -378,7 +378,7 @@ class Container implements ContainerInterface
 	 */
 	private function getMethodArgs(\ReflectionMethod $method)
 	{
-		$methodArgs = array();
+		$methodArgs = [];
 
 		foreach ($method->getParameters() as $param)
 		{
