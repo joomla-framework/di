@@ -20,9 +20,10 @@ class ServiceProviderTest extends \PHPUnit_Framework_TestCase
 	{
 		$container = new Container();
 
-		$mock = $this->getMock('Joomla\\DI\\ServiceProviderInterface');
-		$mock
-			->expects($this->once())
+		$mock = $this->getMockBuilder('Joomla\\DI\\ServiceProviderInterface')
+			->getMock();
+
+		$mock->expects($this->once())
 			->method('register')
 			->with($container);
 
