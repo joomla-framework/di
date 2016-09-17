@@ -18,18 +18,6 @@ class ContainerAwareTraitTest extends \PHPUnit_Framework_TestCase
 	protected $object;
 
 	/**
-	 * This method is called before the first test of this test class is run.
-	 */
-	public static function setUpBeforeClass()
-	{
-		// Only run tests on PHP 5.4+
-		if (version_compare(PHP_VERSION, '5.4', '<'))
-		{
-			static::markTestSkipped('Traits are not available in PHP < 5.4');
-		}
-	}
-
-	/**
 	 * @testdox Container can be set with setContainer() and retrieved with getContainer()
 	 */
 	public function testGetContainer()
