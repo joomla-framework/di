@@ -8,6 +8,7 @@ env:
     - COMPOSER_FLAGS=""
 
 matrix:
+  fast_finish: true
   include:
     - php: 5.3
     - php: 5.3
@@ -19,6 +20,9 @@ matrix:
     - php: 7.0
     - php: 7.1
     - php: hhvm
+      sudo: true
+      dist: trusty
+      group: edge # Until the next major stable image update
   allow_failures:
     - php: hhvm
 
