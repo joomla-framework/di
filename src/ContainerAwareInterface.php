@@ -8,7 +8,7 @@
 
 namespace Joomla\DI;
 
-use Interop\Container\Exception\ContainerException;
+use Psr\Container\ContainerExceptionInterface;
 
 /**
  * Defines the interface for a Container Aware class.
@@ -23,7 +23,7 @@ interface ContainerAwareInterface
 	 * @return  Container
 	 *
 	 * @since   1.0
-	 * @throws  ContainerException May be thrown if the container has not been set.
+	 * @throws  ContainerExceptionInterface May be thrown if the container has not been set.
 	 */
 	public function getContainer();
 

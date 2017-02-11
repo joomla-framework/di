@@ -8,10 +8,10 @@
 
 namespace Joomla\DI;
 
-use Interop\Container\ContainerInterface;
 use Joomla\DI\Exception\DependencyResolutionException;
 use Joomla\DI\Exception\KeyNotFoundException;
 use Joomla\DI\Exception\ProtectedKeyException;
+use Psr\Container\ContainerInterface;
 
 /**
  * The Container class.
@@ -42,7 +42,7 @@ class Container implements ContainerInterface
 	/**
 	 * Parent for hierarchical containers.
 	 *
-	 * In fact, this can be any Interop compatible container, which gets decorated by this
+	 * In fact, this can be any PSR-11 compatible container, which gets decorated by this
 	 *
 	 * @var    ContainerInterface
 	 * @since  __DEPLOY_VERSION__

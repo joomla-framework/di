@@ -1,5 +1,5 @@
 <?php
-class ArbitraryInteropContainer implements \Interop\Container\ContainerInterface
+class ArbitraryInteropContainer implements \Psr\Container\ContainerInterface
 {
 	private $data = array(
 		'aic_foo' => 'aic_foo_content',
@@ -10,8 +10,8 @@ class ArbitraryInteropContainer implements \Interop\Container\ContainerInterface
 	 *
 	 * @param string $id Identifier of the entry to look for.
 	 *
-	 * @throws \Interop\Container\Exception\NotFoundException  No entry was found for this identifier.
-	 * @throws \Interop\Container\Exception\ContainerException Error while retrieving the entry.
+	 * @throws \Psr\Container\NotFoundExceptionInterface  No entry was found for this identifier.
+	 * @throws \Psr\Container\ContainerExceptionInterface Error while retrieving the entry.
 	 *
 	 * @return mixed Entry.
 	 */
@@ -39,7 +39,7 @@ class ArbitraryInteropContainer implements \Interop\Container\ContainerInterface
 	}
 }
 
-class ArbitraryNotFoundException extends \RuntimeException implements \Interop\Container\Exception\NotFoundException
+class ArbitraryNotFoundException extends \RuntimeException implements \Psr\Container\NotFoundExceptionInterface
 {
 
 }
