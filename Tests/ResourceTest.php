@@ -8,13 +8,14 @@ namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
 use Joomla\DI\Resource;
+use PHPUnit\Framework\TestCase;
 
 include_once 'Stubs/stubs.php';
 
 /**
  * Tests for Resource class.
  */
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class ResourceTest extends TestCase
 {
 	public function dataInstantiation()
 	{

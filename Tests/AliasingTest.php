@@ -7,13 +7,14 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use PHPUnit\Framework\TestCase;
 
 include_once 'Stubs/stubs.php';
 
 /**
  * Tests for Container class.
  */
-class AliasingTest extends \PHPUnit_Framework_TestCase
+class AliasingTest extends TestCase
 {
 	/**
 	 * @testdox Both the original key and the alias return the same resource

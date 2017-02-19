@@ -7,13 +7,14 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use PHPUnit\Framework\TestCase;
 
 include_once 'Stubs/stubs.php';
 
 /**
  * Tests for Container class.
  */
-class ResourceDecoration extends \PHPUnit_Framework_TestCase
+class ResourceDecoration extends TestCase
 {
 	/**
 	 * @testdox An extended resource replaces the original resource

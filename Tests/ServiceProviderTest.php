@@ -7,11 +7,12 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for Container class.
  */
-class ServiceProviderTest extends \PHPUnit_Framework_TestCase
+class ServiceProviderTest extends TestCase
 {
 	/**
 	 * @testdox When registering a service provider, its register() method is called with the container instance

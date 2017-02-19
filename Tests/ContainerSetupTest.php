@@ -7,13 +7,14 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use PHPUnit\Framework\TestCase;
 
 include_once 'Stubs/stubs.php';
 
 /**
  * Tests for Container class.
  */
-class ContainerSetupTest extends \PHPUnit_Framework_TestCase
+class ContainerSetupTest extends TestCase
 {
 	/**
 	 * Callable object method.

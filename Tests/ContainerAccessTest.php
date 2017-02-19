@@ -7,13 +7,14 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use PHPUnit\Framework\TestCase;
 
 include_once 'Stubs/stubs.php';
 
 /**
  * Tests for Container class.
  */
-class ContainerAccessTest extends \PHPUnit_Framework_TestCase
+class ContainerAccessTest extends TestCase
 {
 	/**
 	 * @testdox The same resource instance is returned for shared resources
