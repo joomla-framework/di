@@ -7,12 +7,12 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
-use Joomla\DI\Exception\ContainerNotFoundException;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for ContainerAwareTrait class.
  */
-class ContainerAwareTraitTest extends \PHPUnit_Framework_TestCase
+class ContainerAwareTraitTest extends TestCase
 {
 	/** @var    \Joomla\DI\ContainerAwareTrait */
 	protected $object;
