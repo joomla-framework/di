@@ -64,6 +64,8 @@ class Container implements ContainerInterface
 	/**
 	 * Retrieve a resource
 	 *
+	 * A variable number of arguments are supported which are passed to the resource callable.
+	 *
 	 * @param   string  $resourceName  Name of the resource to get.
 	 *
 	 * @return  mixed  The requested resource
@@ -85,7 +87,10 @@ class Container implements ContainerInterface
 			throw new KeyNotFoundException(sprintf("Resource '%s' has not been registered with the container.", $resourceName));
 		}
 
-		return $this->resources[$key]->getInstance();
+		$arguments = func_get_args();
+		array_splice($arguments, 0, 1);
+
+		return call_user_func_array(array($this->resources[$key], 'getInstance'), $arguments);
 	}
 
 	/**

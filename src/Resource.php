@@ -56,12 +56,12 @@ class Resource
 	private $container;
 
 	/**
-	 * The object instance for a shared object
+	 * The object array with instances for a shared object
 	 *
-	 * @var    mixed
+	 * @var    array
 	 * @since  __DEPLOY_VERSION__
 	 */
-	private $instance = null;
+	private $instances = null;
 
 	/**
 	 * The factory object
@@ -101,6 +101,7 @@ class Resource
 		$this->container = $container;
 		$this->shared    = ($mode & self::SHARE) == self::SHARE;
 		$this->protected = ($mode & self::PROTECT) == self::PROTECT;
+		$this->instances = array();
 
 		if (is_callable($value))
 		{
@@ -110,7 +111,8 @@ class Resource
 		{
 			if ($this->shared)
 			{
-				$this->instance = $value;
+				// Adding the value as shared instance for empty arguments
+				$this->instances[md5(serialize(array()))] = $value;
 			}
 
 			if (is_object($value))
@@ -159,6 +161,7 @@ class Resource
 	 *
 	 * If a factory was provided, the resource is created and - if it is a shared resource - cached internally.
 	 * If the resource was provided directly, that resource is returned.
+	 * A variable number of arguments are supported which are passed to the callable.
 	 *
 	 * @return  mixed
 	 *
@@ -167,18 +170,25 @@ class Resource
 	public function getInstance()
 	{
 		$callable = $this->factory;
+		$arguments = func_get_args();
+
+		$key = md5(serialize($arguments));
+
+		// Put the container to the first position
+		array_unshift($arguments, $this->container);
 
 		if ($this->isShared())
 		{
-			if ($this->instance === null)
+			// When there is no key found, create a new object
+			if (!key_exists($key, $this->instances))
 			{
-				$this->instance = call_user_func($callable, $this->container);
+				$this->instances[$key] = call_user_func_array($callable, $arguments);
 			}
 
-			return $this->instance;
+			return $this->instances[$key];
 		}
 
-		return call_user_func($callable, $this->container);
+		return call_user_func_array($callable, $arguments);
 	}
 
 	/**
@@ -207,7 +217,7 @@ class Resource
 	{
 		if ($this->isShared() && !$this->isProtected())
 		{
-			$this->instance = null;
+			$this->instances = array();
 
 			return true;
 		}
