@@ -49,9 +49,9 @@ class HierachicalTest extends TestCase
 	}
 
 	/**
-	 * @testdox Container can decorate an arbitrary Interop compatible container
+	 * @testdox Container can decorate an arbitrary PSR-11 compatible container
 	 */
-	public function testDecorateArbitraryInteropContainer()
+	public function testDecorateArbitraryPsr11Container()
 	{
 		$container = new Container(new \ArbitraryInteropContainer());
 
@@ -60,9 +60,9 @@ class HierachicalTest extends TestCase
 	}
 
 	/**
-	 * @testdox Container can manage an alias for a resource from an arbitrary Interop compatible container
+	 * @testdox Container can manage an alias for a resource from an arbitrary PSR-11 compatible container
 	 */
-	public function testDecorateArbitraryInteropContainerAlias()
+	public function testDecorateArbitraryPsr11ContainerAlias()
 	{
 		$container = new Container(new \ArbitraryInteropContainer());
 		$container->alias('foo', 'aic_foo');
@@ -72,9 +72,9 @@ class HierachicalTest extends TestCase
 	}
 
 	/**
-	 * @testdox Resources from an arbitrary Interop compatible container are 'shared' and 'protected'
+	 * @testdox Resources from an arbitrary PSR-11 compatible container are 'shared' and 'protected'
 	 */
-	public function testDecorateArbitraryInteropContainerModes()
+	public function testDecorateArbitraryPsr11ContainerModes()
 	{
 		$container = new Container(new \ArbitraryInteropContainer());
 

@@ -5,7 +5,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/joomla/di/v/unstable)](https://packagist.org/packages/joomla/di)
 [![License](https://poser.pugx.org/joomla/di/license)](https://packagist.org/packages/joomla/di)
 
-The Joomla! **Dependency Injection** package provides a powerful `container-interop` (upcoming `PSR-11`) compatible
+The Joomla! **Dependency Injection** package provides a powerful `PSR-11` compatible
 Inversion of Control (IoC) Container for your application.
 
 ## Installation via Composer

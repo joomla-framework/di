@@ -10,7 +10,7 @@ Of course that requires a good testbase.
 
 To reproduce the test results, run `phpunit --testdox`
 -->
-The Joomla! Dependency Injection package provides a simple `container-interop` (upcoming `PSR-11`) compatible
+The Joomla! Dependency Injection package provides a simple `PSR-11` compatible
 Inversion of Control (IoC) Container for your application.
 
 The Joomla! Dependency Injection Container supports
@@ -34,10 +34,8 @@ In this document,
 
 ### Container Interoperability
     
-The Joomla! Dependency Injection package implements the [PSR-11 proposal](https://github.com/container-interop/fig-standards/blob/master/proposed/container.md)
+The Joomla! Dependency Injection package implements the [PSR-11 ContainerInterface](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md)
 for Dependency Injection Containers to achieve interoperability.
-Until PSR-11 gets accepted, Joomla! DI uses the [`container-interop`](https://github.com/container-interop/container-interop)
-namespace.
 
 ### Creating a Container object
 
@@ -63,17 +61,17 @@ $app->execute();
 
 #### Decorating other Containers
 
-<!-- [x] Container can decorate an arbitrary Interop compatible container -->
+<!-- [x] Container can decorate an arbitrary PSR-11 compatible container -->
 If you have any other container implementing the `ContainerInterface`, you can pass it to the constructor.
 
 ```php
 use \Joomla\DI\Container;
 
-$container = new Container($arbitraryInteropContainer);
+$container = new Container($arbitraryPsr11Container);
 ```
 
-<!-- [x] Container can manage an alias for a resource from an arbitrary Interop compatible container -->
-You'll then be able to access any resource from `$arbitraryInteropContainer` through `$container`, thus virtually adding 
+<!-- [x] Container can manage an alias for a resource from an arbitrary PSR-11 compatible container -->
+You'll then be able to access any resource from `$arbitraryPsr11Container` through `$container`, thus virtually adding 
 the features (like aliasing) of the Joomla! DI Container to the other one.
 
 #### Scopes
@@ -186,7 +184,7 @@ $container->set(
 <!-- [x] Default mode is 'not shared' and 'not protected' -->
 Default mode is 'not shared' and 'not protected'.
 
-<!-- [x] Resources from an arbitrary Interop compatible container are 'shared' and 'protected' -->
+<!-- [x] Resources from an arbitrary PSR-11 compatible container are 'shared' and 'protected' -->
 If a container was passed to the constructor, which is not a `Joomla\DI\Container`, the resources
 from that container are treated as 'shared' and 'protected'.
 
