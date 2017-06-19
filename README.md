@@ -13,31 +13,9 @@ Inversion of Control (IoC) Container for your application.
 Simply run the following from the command line in your project's root directory (where your `composer.json` file is):
 
 ```sh
-composer require joomla/di "2.0.*@dev"
+composer require joomla/di
 ```
-
-Alternatively, you can manually add `"joomla/di": "2.0.*@dev"` to the require block in your `composer.json`
-and then run `composer install`.
-
-```json
-{
-	"require": {
-		"joomla/di": "2.0.*@dev"
-	}
-}
-```
-
-## Upgrade from 1.x to 2.0
-
-  - The `exists` method was renamed to `has`. Change the method name.
-  - The second (optional) argument on `get` to enforce recreation on shared resources was removed. Use `getNewInstance` instead.
-  
-## Documentation
-
-  1. [Overview](docs/overview.md)
-  2. [Why Dependency Injection](docs/why-dependency-injection.md)
-  
 ## Contributing
 
-Please review [http://framework.joomla.org/contribute](http://framework.joomla.org/contribute) for information
+Please review [https://framework.joomla.org/contribute](https://framework.joomla.org/contribute) for information
 on how to contribute to the Framework's development.
