@@ -341,26 +341,27 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Extend a defined service Closure by wrapping the existing one with a new Closure.  This
-	 * works very similar to a decorator pattern.  Note that this only works on service Closures
+	 * Extend a defined service Closure by wrapping the existing one with a new callable function.
+	 *
+	 * This works very similar to a decorator pattern.  Note that this only works on service Closures
 	 * that have been defined in the current Provider, not parent providers.
 	 *
 	 * @param   string    $resourceName  The unique identifier for the Closure or property.
-	 * @param   \Closure  $callable      A Closure to wrap the original service Closure.
+	 * @param   callable  $callable      A callable to wrap the original service Closure.
 	 *
 	 * @return  void
 	 *
 	 * @since   1.0
 	 * @throws  \InvalidArgumentException
 	 */
-	public function extend($resourceName, \Closure $callable)
+	public function extend($resourceName, callable $callable)
 	{
 		$key = $this->resolveAlias($resourceName);
 		$resource = $this->getResource($key, true);
 
 		$closure = function ($c) use ($callable, $resource)
 		{
-			return $callable($resource->getInstance(), $c);
+			return call_user_func($callable, $resource->getInstance(), $c);
 		};
 
 		$this->set($key, $closure, $resource->isShared());

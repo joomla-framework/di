@@ -17,9 +17,16 @@ include_once 'Stubs/stubs.php';
 class ResourceDecoration extends TestCase
 {
 	/**
-	 * @testdox An extended resource replaces the original resource
+	 * Value used within resource methods
+	 *
+	 * @var  integer
 	 */
-	public function testExtend()
+	private $value = 42;
+
+	/**
+	 * @testdox An extended resource replaces the original resource with a Closure
+	 */
+	public function testExtendClosure()
 	{
 		$container = new Container();
 		$container->share(
@@ -30,23 +37,46 @@ class ResourceDecoration extends TestCase
 			}
 		);
 
-		$value = 42;
-
 		$container->extend(
 			'foo',
-			function ($shared) use ($value)
+			function ($shared)
 			{
-				$shared->value = $value;
+				$shared->value = $this->value;
 
 				return $shared;
 			}
 		);
 
 		$one = $container->get('foo');
-		$this->assertEquals($value, $one->value);
+		$this->assertEquals($this->value, $one->value);
 
 		$two = $container->get('foo');
-		$this->assertEquals($value, $two->value);
+		$this->assertEquals($this->value, $two->value);
+
+		$this->assertSame($one, $two);
+	}
+
+	/**
+	 * @testdox An extended resource replaces the original resource with a callback function
+	 */
+	public function testExtendCallback()
+	{
+		$container = new Container();
+		$container->share(
+			'foo',
+			[$this, 'baseCallable']
+		);
+
+		$container->extend(
+			'foo',
+			[$this, 'decoratingCallable']
+		);
+
+		$one = $container->get('foo');
+		$this->assertEquals($this->value, $one->value);
+
+		$two = $container->get('foo');
+		$this->assertEquals($this->value, $two->value);
 
 		$this->assertSame($one, $two);
 	}
@@ -98,16 +128,38 @@ class ResourceDecoration extends TestCase
 			}
 		);
 
-		$value = 42;
-
 		$container->extend(
 			'foo',
-			function ($shared) use ($value)
+			function ($shared)
 			{
-				$shared->value = $value;
+				$shared->value = $this->value;
 
 				return $shared;
 			}
 		);
+	}
+
+	/**
+	 * A base method defining a resource in a container
+	 *
+	 * @return  \stdClass
+	 */
+	public function baseCallable()
+	{
+		return new \stdClass;
+	}
+
+	/**
+	 * Method defining the decorating instruction for a container's resource
+	 *
+	 * @param   \stdClass  $shared  The return from the resource that was decorated
+	 *
+	 * @return  \stdClass
+	 */
+	public function decoratingCallable($shared)
+	{
+		$shared->value = $this->value;
+
+		return $shared;
 	}
 }
