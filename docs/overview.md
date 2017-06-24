@@ -510,7 +510,7 @@ argument.
 The closure will receive 2 arguments.
 The first is result of the callable for the given key,
 and the second will be the container itself.
-<!-- [x] An extended resource replaces the original resource -->
+<!-- [x] An extended resource replaces the original resource with a Closure -->
 When extending an item, the new extended version overwrites the existing item in the container.
 
 ```php
