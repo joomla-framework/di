@@ -22,9 +22,9 @@ class ObjectBuildingTest extends TestCase
 	public function testBuildObjectNoDependencies()
 	{
 		$container = new Container();
-		$object    = $container->buildObject('Joomla\\DI\\Tests\\Stub1');
+		$object    = $container->buildObject(Stub1::class);
 
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $object);
+		$this->assertInstanceOf(Stub1::class, $object);
 	}
 
 	/**
@@ -33,10 +33,10 @@ class ObjectBuildingTest extends TestCase
 	public function testBuildObject()
 	{
 		$container = new Container();
-		$object    = $container->buildObject('Joomla\\DI\\Tests\\Stub1');
+		$object    = $container->buildObject(Stub1::class);
 
-		$this->assertNotSame($object, $container->get('Joomla\\DI\\Tests\\Stub1'));
-		$this->assertNotSame($container->get('Joomla\\DI\\Tests\\Stub1'), $container->get('Joomla\\DI\\Tests\\Stub1'));
+		$this->assertNotSame($object, $container->get(Stub1::class));
+		$this->assertNotSame($container->get(Stub1::class), $container->get(Stub1::class));
 	}
 
 	/**
@@ -45,10 +45,10 @@ class ObjectBuildingTest extends TestCase
 	public function testBuildSharedObject()
 	{
 		$container = new Container();
-		$object    = $container->buildSharedObject('Joomla\\DI\\Tests\\Stub1');
+		$object    = $container->buildSharedObject(Stub1::class);
 
-		$this->assertSame($object, $container->get('Joomla\\DI\\Tests\\Stub1'));
-		$this->assertSame($container->get('Joomla\\DI\\Tests\\Stub1'), $container->get('Joomla\\DI\\Tests\\Stub1'));
+		$this->assertSame($object, $container->get(Stub1::class));
+		$this->assertSame($container->get(Stub1::class), $container->get(Stub1::class));
 	}
 
 	/**
@@ -66,14 +66,15 @@ class ObjectBuildingTest extends TestCase
 	public function testBuildObjectGetDependencyFromContainer()
 	{
 		$container = new Container();
-		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
+		$container->set(
+			StubInterface::class, function ()
 		{
 			return new Stub1;
 		});
 
-		$object = $container->buildObject('Joomla\\DI\\Tests\\Stub2');
+		$object = $container->buildObject(Stub2::class);
 
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $object->stub);
+		$this->assertInstanceOf(Stub1::class, $object->stub);
 	}
 
 	/**
@@ -82,9 +83,9 @@ class ObjectBuildingTest extends TestCase
 	public function testGetMethodArgsConcreteClass()
 	{
 		$container = new Container();
-		$object = $container->buildObject('Joomla\\DI\\Tests\\Stub5');
+		$object = $container->buildObject(Stub5::class);
 
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub4', $object->stub);
+		$this->assertInstanceOf(Stub4::class, $object->stub);
 	}
 
 	/**
@@ -93,7 +94,7 @@ class ObjectBuildingTest extends TestCase
 	public function testGetMethodArgsDefaultValues()
 	{
 		$container = new Container();
-		$object    = $container->buildObject('Joomla\\DI\\Tests\\Stub6');
+		$object    = $container->buildObject(Stub6::class);
 
 		$this->assertEquals('foo', $object->stub);
 	}
@@ -105,7 +106,7 @@ class ObjectBuildingTest extends TestCase
 	public function testGetMethodArgsCantResolve()
 	{
 		$container = new Container();
-		$container->buildObject('Joomla\\DI\\Tests\\Stub7');
+		$container->buildObject(Stub7::class);
 	}
 
 	/**
@@ -115,7 +116,7 @@ class ObjectBuildingTest extends TestCase
 	public function testGetMethodArgsResolvedIsNotInstanceOfHintedDependency()
 	{
 		$container = new Container();
-		$container->buildObject('Joomla\\DI\\Tests\\Stub2');
+		$container->buildObject(Stub2::class);
 	}
 
 	/**

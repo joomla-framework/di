@@ -23,13 +23,14 @@ class HierachicalTest extends TestCase
 	public function testCreateChild()
 	{
 		$container = new Container();
-		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
+		$container->set(
+			StubInterface::class, function ()
 		{
 			return new Stub1;
 		});
 
 		$child = $container->createChild();
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $child->get('Joomla\\DI\\Tests\\StubInterface'));
+		$this->assertInstanceOf(Stub1::class, $child->get(StubInterface::class));
 	}
 
 	/**
@@ -38,14 +39,15 @@ class HierachicalTest extends TestCase
 	public function testChildResolveAlias()
 	{
 		$container = new Container();
-		$container->set('Joomla\\DI\\Tests\\StubInterface', function ()
+		$container->set(
+			StubInterface::class, function ()
 		{
 			return new Stub1;
 		});
-		$container->alias('stub', 'Joomla\\DI\\Tests\\StubInterface');
+		$container->alias('stub', StubInterface::class);
 
 		$child = $container->createChild();
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub1', $child->get('stub'));
+		$this->assertInstanceOf(Stub1::class, $child->get('stub'));
 	}
 
 	/**
