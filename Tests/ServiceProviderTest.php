@@ -8,6 +8,7 @@ namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
 use PHPUnit\Framework\TestCase;
+use Joomla\DI\ServiceProviderInterface;
 
 /**
  * Tests for Container class.
@@ -21,7 +22,7 @@ class ServiceProviderTest extends TestCase
 	{
 		$container = new Container();
 
-		$mock = $this->getMockBuilder('Joomla\\DI\\ServiceProviderInterface')
+		$mock = $this->getMockBuilder(ServiceProviderInterface::class)
 			->getMock();
 
 		$mock->expects($this->once())

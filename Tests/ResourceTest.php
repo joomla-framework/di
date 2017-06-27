@@ -93,7 +93,7 @@ class ResourceTest extends TestCase
 			}
 		);
 
-		$this->assertInstanceOf('Joomla\\DI\\Tests\\Stub6', $resource->getInstance());
+		$this->assertInstanceOf(Stub6::class, $resource->getInstance());
 	}
 
 	/**
