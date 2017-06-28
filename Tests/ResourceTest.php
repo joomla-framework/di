@@ -10,7 +10,7 @@ use Joomla\DI\Container;
 use Joomla\DI\Resource;
 use PHPUnit\Framework\TestCase;
 
-include_once 'Stubs/stubs.php';
+include_once __DIR__.'/Stubs/stubs.php';
 
 /**
  * Tests for Resource class.
