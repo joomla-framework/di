@@ -440,6 +440,7 @@ class Container implements ContainerInterface
 		$key = $this->resolveAlias($key);
 
 		$hasKey = $this->has($key);
+
 		if ($hasKey && $this->isProtected($key))
 		{
 			throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
