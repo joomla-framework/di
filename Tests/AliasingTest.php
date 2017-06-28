@@ -24,7 +24,7 @@ class AliasingTest extends TestCase
 		$container = new Container();
 		$container->set('foo', function ()
 		{
-			return new \StdClass;
+			return new \stdClass;
 		}, true, true);
 		$container->alias('bar', 'foo');
 

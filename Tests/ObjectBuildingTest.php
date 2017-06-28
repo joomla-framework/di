@@ -128,7 +128,7 @@ class ObjectBuildingTest extends TestCase
 		$container = new Container();
 
 		$fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';
-		$data = array();
+		$data = [];
 
 		$container->set(
 			$fqcn,
