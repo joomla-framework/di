@@ -10,7 +10,7 @@ use Joomla\DI\Container;
 use Joomla\DI\Resource;
 use PHPUnit\Framework\TestCase;
 
-include_once 'Stubs/stubs.php';
+include_once __DIR__.'/Stubs/stubs.php';
 
 /**
  * Tests for Resource class.
@@ -19,43 +19,43 @@ class ResourceTest extends TestCase
 {
 	public function dataInstantiation()
 	{
-		return array(
-			'shared, protected'         => array(
+		return [
+			'shared, protected'         => [
 				'mode' => Resource::SHARE | Resource::PROTECT,
 				'shared'    => true,
 				'protected' => true
-			),
-			'shared, not protected (explicit)'     => array(
+			],
+			'shared, not protected (explicit)'     => [
 				'mode' => Resource::SHARE | Resource::NO_PROTECT,
 				'shared'    => true,
 				'protected' => false
-			),
-			'not shared, protected (explicit)'     => array(
+			],
+			'not shared, protected (explicit)'     => [
 				'mode' => Resource::NO_SHARE | Resource::PROTECT,
 				'shared'    => false,
 				'protected' => true
-			),
-			'not shared, not protected (explicit)' => array(
+			],
+			'not shared, not protected (explicit)' => [
 				'mode' => Resource::NO_SHARE | Resource::NO_PROTECT,
 				'shared'    => false,
 				'protected' => false
-			),
-			'shared, not protected (implicit)'     => array(
+			],
+			'shared, not protected (implicit)'     => [
 				'mode'      => Resource::SHARE,
 				'shared'    => true,
 				'protected' => false
-			),
-			'not shared, protected (implicit)'     => array(
+			],
+			'not shared, protected (implicit)'     => [
 				'mode'      => Resource::PROTECT,
 				'shared'    => false,
 				'protected' => true
-			),
-			'not shared, not protected (implicit)' => array(
+			],
+			'not shared, not protected (implicit)' => [
 				'mode'      => null,
 				'shared'    => false,
 				'protected' => false
-			),
-		);
+			],
+		];
 	}
 
 	/**

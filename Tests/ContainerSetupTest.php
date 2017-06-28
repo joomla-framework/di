@@ -9,7 +9,7 @@ namespace Joomla\DI\Tests;
 use Joomla\DI\Container;
 use PHPUnit\Framework\TestCase;
 
-include_once 'Stubs/stubs.php';
+include_once __DIR__.'/Stubs/stubs.php';
 
 /**
  * Tests for Container class.
@@ -32,7 +32,7 @@ class ContainerSetupTest extends TestCase
 		$container = new Container();
 		$container->set(
 			'foo',
-			array($this, 'callMe')
+			[$this, 'callMe']
 		);
 
 		$this->assertEquals('called', $container->get('foo'));
@@ -126,7 +126,7 @@ class ContainerSetupTest extends TestCase
 			'foo',
 			function ()
 			{
-				return new \StdClass;
+				return new \stdClass;
 			}
 		);
 
@@ -136,24 +136,24 @@ class ContainerSetupTest extends TestCase
 
 	public function dataForSetFlags()
 	{
-		return array(
-			'shared, protected'         => array(
+		return [
+			'shared, protected'         => [
 				'shared'    => true,
 				'protected' => true
-			),
-			'shared, not protected'     => array(
+			],
+			'shared, not protected'     => [
 				'shared'    => true,
 				'protected' => false
-			),
-			'not shared, protected'     => array(
+			],
+			'not shared, protected'     => [
 				'shared'    => false,
 				'protected' => true
-			),
-			'not shared, not protected' => array(
+			],
+			'not shared, not protected' => [
 				'shared'    => false,
 				'protected' => false
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -167,7 +167,7 @@ class ContainerSetupTest extends TestCase
 			'foo',
 			function ()
 			{
-				return new \StdClass;
+				return new \stdClass;
 			},
 			$shared,
 			$protected
@@ -187,7 +187,7 @@ class ContainerSetupTest extends TestCase
 			'foo',
 			function ()
 			{
-				return new \StdClass;
+				return new \stdClass;
 			}
 		);
 
@@ -205,7 +205,7 @@ class ContainerSetupTest extends TestCase
 			'foo',
 			function ()
 			{
-				return new \StdClass;
+				return new \stdClass;
 			},
 			true
 		);
@@ -224,7 +224,7 @@ class ContainerSetupTest extends TestCase
 			'foo',
 			function ()
 			{
-				return new \StdClass;
+				return new \stdClass;
 			}
 		);
 
@@ -242,7 +242,7 @@ class ContainerSetupTest extends TestCase
 			'foo',
 			function ()
 			{
-				return new \StdClass;
+				return new \stdClass;
 			},
 			true
 		);

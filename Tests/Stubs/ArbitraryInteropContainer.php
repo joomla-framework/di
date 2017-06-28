@@ -1,9 +1,9 @@
 <?php
 class ArbitraryInteropContainer implements \Psr\Container\ContainerInterface
 {
-	private $data = array(
+	private $data = [
 		'aic_foo' => 'aic_foo_content',
-	);
+	];
 
 	/**
 	 * Finds an entry of the container by its identifier and returns it.

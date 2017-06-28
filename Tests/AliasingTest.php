@@ -9,7 +9,7 @@ namespace Joomla\DI\Tests;
 use Joomla\DI\Container;
 use PHPUnit\Framework\TestCase;
 
-include_once 'Stubs/stubs.php';
+include_once __DIR__.'/Stubs/stubs.php';
 
 /**
  * Tests for Container class.
@@ -24,7 +24,7 @@ class AliasingTest extends TestCase
 		$container = new Container();
 		$container->set('foo', function ()
 		{
-			return new \StdClass;
+			return new \stdClass;
 		}, true, true);
 		$container->alias('bar', 'foo');
 

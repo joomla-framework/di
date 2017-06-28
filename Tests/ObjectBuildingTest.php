@@ -9,7 +9,7 @@ namespace Joomla\DI\Tests;
 use Joomla\DI\Container;
 use PHPUnit\Framework\TestCase;
 
-include_once 'Stubs/stubs.php';
+include_once __DIR__.'/Stubs/stubs.php';
 
 /**
  * Tests for Container class.
@@ -128,7 +128,7 @@ class ObjectBuildingTest extends TestCase
 		$container = new Container();
 
 		$fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';
-		$data = array();
+		$data = [];
 
 		$container->set(
 			$fqcn,

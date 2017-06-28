@@ -252,14 +252,14 @@ class Container implements ContainerInterface
 
 		$key = $this->resolveAlias($resourceName);
 
-		if (in_array($key, $buildStack))
+		if (in_array($key, $buildStack, true))
 		{
 			$buildStack = [];
 
 			throw new DependencyResolutionException("Can't resolve circular dependency");
 		}
 
-		array_push($buildStack, $key);
+		$buildStack[] = $key;
 
 		if ($this->has($key))
 		{
@@ -364,7 +364,7 @@ class Container implements ContainerInterface
 
 		$closure = function ($c) use ($callable, $resource)
 		{
-			return call_user_func($callable, $resource->getInstance(), $c);
+			return $callable($resource->getInstance(), $c);
 		};
 
 		$this->set($key, $closure, $resource->isShared());
@@ -442,11 +442,14 @@ class Container implements ContainerInterface
 	{
 		$key = $this->resolveAlias($key);
 
-		if ($this->has($key) && $this->isProtected($key))
+		$hasKey = $this->has($key);
+
+		if ($hasKey && $this->isProtected($key))
 		{
 			throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
 		}
-		elseif ($this->has($key) && $value === null)
+
+		if ($value === null && $hasKey)
 		{
 			unset($this->resources[$key]);
 
@@ -513,11 +516,13 @@ class Container implements ContainerInterface
 		{
 			return $this->resources[$key];
 		}
-		elseif ($this->parent instanceof Container)
+
+		if ($this->parent instanceof Container)
 		{
 			return $this->parent->getResource($key);
 		}
-		elseif ($this->parent instanceof ContainerInterface && $this->parent->has($key))
+
+		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
 		{
 			return new Resource($this, $this->parent->get($key), Resource::SHARE | Resource::PROTECT);
 		}

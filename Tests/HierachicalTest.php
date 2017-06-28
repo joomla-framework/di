@@ -9,8 +9,8 @@ namespace Joomla\DI\Tests;
 use Joomla\DI\Container;
 use PHPUnit\Framework\TestCase;
 
-include_once 'Stubs/stubs.php';
-include_once 'Stubs/ArbitraryInteropContainer.php';
+include_once __DIR__.'/Stubs/stubs.php';
+include_once __DIR__.'/Stubs/ArbitraryInteropContainer.php';
 
 /**
  * Tests for Container class.
