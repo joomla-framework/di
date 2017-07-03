@@ -509,10 +509,7 @@ class Container implements ContainerInterface
 	 */
 	public function getResource($key, $bail = false)
 	{
-		$key = $this->resolveAlias($key);
-		$raw = $this->getRaw($key);
-
-		if ($raw === null)
+		if (isset($this->resources[$key]))
 		{
 			return $this->resources[$key];
 		}
