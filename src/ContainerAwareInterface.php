@@ -18,17 +18,6 @@ use Psr\Container\ContainerExceptionInterface;
 interface ContainerAwareInterface
 {
 	/**
-	 * Get the DI container.
-	 *
-	 * @return  Container
-	 *
-	 * @since   1.0
-	 * @throws  ContainerExceptionInterface May be thrown if the container has not been set.
-	 * @deprecated  2.0  The getter will no longer be part of the interface.
-	 */
-	public function getContainer();
-
-	/**
 	 * Set the DI container.
 	 *
 	 * @param   Container  $container  The DI container.

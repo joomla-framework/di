@@ -22,3 +22,8 @@ The `Joomla\DI\Container::exists()` method has been deprecated in favor of the P
 
 The second (optional) argument on `Joomla\DI\Container::get()` to force recreation on shared resources was removed.
 Use `Joomla\DI\Container::getNewInstance()` instead.
+
+### `ContainerAwareInterface::getContainer()` removed
+
+The `Joomla\DI\ContainerAwareInterface::getContainer()` method has been removed from the interface.  Container aware
+objects are no longer required to implement this method.
