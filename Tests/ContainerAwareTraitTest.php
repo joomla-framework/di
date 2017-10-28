@@ -18,7 +18,7 @@ class ContainerAwareTraitTest extends TestCase
 	protected $object;
 
 	/**
-	 * @testdox Container can be set with setContainer() and retrieved with getContainer()
+	 * @testdox Container can be set with setContainer()
 	 */
 	public function testGetContainer()
 	{
@@ -26,7 +26,12 @@ class ContainerAwareTraitTest extends TestCase
 		$trait     = $this->getObjectForTrait('\\Joomla\\DI\\ContainerAwareTrait');
 		$trait->setContainer($container);
 
-		$this->assertSame($container, $trait->getContainer());
+		$this->assertAttributeSame($container, 'container', $trait);
+
+		$method = new \ReflectionMethod($trait, 'getContainer');
+		$method->setAccessible(true);
+
+		$this->assertSame($container, $method->invokeArgs($trait, []));
 	}
 
 	/**
@@ -36,6 +41,10 @@ class ContainerAwareTraitTest extends TestCase
 	public function testGetContainerException()
 	{
 		$trait = $this->getObjectForTrait('\\Joomla\\DI\\ContainerAwareTrait');
-		$trait->getContainer();
+
+		$method = new \ReflectionMethod($trait, 'getContainer');
+		$method->setAccessible(true);
+
+		$method->invokeArgs($trait, []);
 	}
 }
