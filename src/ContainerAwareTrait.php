@@ -32,16 +32,15 @@ trait ContainerAwareTrait
 	 *
 	 * @since   1.2
 	 * @throws  ContainerNotFoundException May be thrown if the container has not been set.
-	 * @note    As of 2.0 this method will be protected.
 	 */
-	public function getContainer()
+	protected function getContainer()
 	{
 		if ($this->container)
 		{
 			return $this->container;
 		}
 
-		throw new ContainerNotFoundException('Container not set in ' . __CLASS__);
+		throw new ContainerNotFoundException('Container not set in ' . get_class($this));
 	}
 
 	/**

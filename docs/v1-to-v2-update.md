@@ -27,3 +27,10 @@ Use `Joomla\DI\Container::getNewInstance()` instead.
 
 The `Joomla\DI\ContainerAwareInterface::getContainer()` method has been removed from the interface.  Container aware
 objects are no longer required to implement this method.
+
+### `ContainerAwareTrait::getContainer()` visibility changed
+
+The visibility of `Joomla\DI\ContainerAwareTrait::getContainer()` has changed from public to protected.  Container aware
+objects may continue using this trait to satisfy the `ContainerAwareInterface` requirements and continue to internally
+use the `getContainer()` method as a means for accessing the container with checks ensuring the container has been set
+to the class.
