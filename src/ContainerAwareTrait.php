@@ -32,6 +32,7 @@ trait ContainerAwareTrait
 	 *
 	 * @since   1.2
 	 * @throws  ContainerNotFoundException May be thrown if the container has not been set.
+	 * @note    As of 2.0 this method will be protected.
 	 */
 	public function getContainer()
 	{
