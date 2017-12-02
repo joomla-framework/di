@@ -126,6 +126,15 @@ class Container implements ContainerInterface
 	 */
 	public function exists($key)
 	{
+		@trigger_error(
+			sprintf(
+				'%1$s() is deprecated and will be removed in 3.0, use %2$s::has() instead.',
+				__METHOD__,
+				ContainerInterface::class
+			),
+			E_USER_DEPRECATED
+		);
+
 		return $this->has($key);
 	}
 
