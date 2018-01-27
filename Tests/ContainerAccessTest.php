@@ -90,4 +90,21 @@ class ContainerAccessTest extends TestCase
 
 		$this->assertNotSame($container->getNewInstance('foo'), $container->getNewInstance('foo'));
 	}
+
+	/**
+	 * @testdox The unique service keys for the container are returned
+	 */
+	public function testRetrievingTheContainerKeys()
+	{
+		$container = new Container();
+
+		$container->set('foo', 'bar');
+		$container->set('goo', 'car');
+		$container->alias('boo', 'foo');
+
+		$this->assertSame(
+			array('boo', 'foo', 'goo'),
+			$container->getKeys()
+		);
+	}
 }
