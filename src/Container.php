@@ -231,12 +231,12 @@ class Container implements ContainerInterface
 
 		if (isset($this->resources[$key]))
 		{
-			return call_user_func([$this->resources[$key], $method]);
+			return \call_user_func([$this->resources[$key], $method]);
 		}
 
 		if ($this->parent instanceof Container)
 		{
-			return call_user_func([$this->parent, $method], $key);
+			return \call_user_func([$this->parent, $method], $key);
 		}
 
 		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
@@ -323,7 +323,7 @@ class Container implements ContainerInterface
 
 		$key = $this->resolveAlias($resourceName);
 
-		if (in_array($key, $buildStack, true))
+		if (\in_array($key, $buildStack, true))
 		{
 			$buildStack = [];
 
