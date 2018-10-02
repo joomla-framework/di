@@ -478,6 +478,7 @@ class Container implements ContainerInterface
 				if ($depObject instanceof $dependencyClassName)
 				{
 					$methodArgs[] = $depObject;
+
 					continue;
 				}
 			}
@@ -486,6 +487,7 @@ class Container implements ContainerInterface
 			if ($param->isOptional())
 			{
 				$methodArgs[] = $param->getDefaultValue();
+
 				continue;
 			}
 
@@ -599,8 +601,6 @@ class Container implements ContainerInterface
 		{
 			throw new KeyNotFoundException(sprintf('Key %s has not been registered with the container.', $key));
 		}
-
-		return null;
 	}
 
 	/**
