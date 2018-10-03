@@ -8,8 +8,6 @@
 
 namespace Joomla\DI;
 
-use Psr\Container\ContainerExceptionInterface;
-
 /**
  * Defines the interface for a Container Aware class.
  *

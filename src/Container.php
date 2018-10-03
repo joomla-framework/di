@@ -55,7 +55,7 @@ class Container implements ContainerInterface
 	 * @var    array
 	 * @since  1.5.0
 	 */
-	protected $tags = array();
+	protected $tags = [];
 
 	/**
 	 * Constructor for the DI Container
@@ -234,7 +234,7 @@ class Container implements ContainerInterface
 			return \call_user_func([$this->resources[$key], $method]);
 		}
 
-		if ($this->parent instanceof Container)
+		if ($this->parent instanceof self)
 		{
 			return \call_user_func([$this->parent, $method], $key);
 		}
@@ -266,7 +266,7 @@ class Container implements ContainerInterface
 
 			if (!isset($this->tags[$tag]))
 			{
-				$this->tags[$tag] = array();
+				$this->tags[$tag] = [];
 			}
 
 			$this->tags[$tag][] = $resolvedKey;
@@ -289,7 +289,7 @@ class Container implements ContainerInterface
 	 */
 	public function getTagged($tag)
 	{
-		$services = array();
+		$services = [];
 
 		if (isset($this->tags[$tag]))
 		{
@@ -430,7 +430,7 @@ class Container implements ContainerInterface
 	 */
 	public function extend($resourceName, callable $callable)
 	{
-		$key = $this->resolveAlias($resourceName);
+		$key      = $this->resolveAlias($resourceName);
 		$resource = $this->getResource($key, true);
 
 		$closure = function ($c) use ($callable, $resource)
@@ -587,7 +587,7 @@ class Container implements ContainerInterface
 			return $this->resources[$key];
 		}
 
-		if ($this->parent instanceof Container)
+		if ($this->parent instanceof self)
 		{
 			return $this->parent->getResource($key);
 		}

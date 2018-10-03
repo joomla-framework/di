@@ -61,7 +61,7 @@ class Resource
 	 * @var    mixed
 	 * @since  __DEPLOY_VERSION__
 	 */
-	private $instance = null;
+	private $instance;
 
 	/**
 	 * The factory object
@@ -69,7 +69,7 @@ class Resource
 	 * @var    callable
 	 * @since  __DEPLOY_VERSION__
 	 */
-	private $factory = null;
+	private $factory;
 
 	/**
 	 * Flag if the resource is shared
@@ -102,7 +102,7 @@ class Resource
 		$this->shared    = ($mode & self::SHARE) === self::SHARE;
 		$this->protected = ($mode & self::PROTECT) === self::PROTECT;
 
-		if (is_callable($value))
+		if (\is_callable($value))
 		{
 			$this->factory = $value;
 		}
@@ -113,7 +113,7 @@ class Resource
 				$this->instance = $value;
 			}
 
-			if (is_object($value))
+			if (\is_object($value))
 			{
 				$this->factory = function () use ($value)
 				{

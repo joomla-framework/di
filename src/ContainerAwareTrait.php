@@ -40,7 +40,7 @@ trait ContainerAwareTrait
 			return $this->container;
 		}
 
-		throw new ContainerNotFoundException('Container not set in ' . get_class($this));
+		throw new ContainerNotFoundException('Container not set in ' . \get_class($this));
 	}
 
 	/**
