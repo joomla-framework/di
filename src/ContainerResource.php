@@ -12,8 +12,9 @@ namespace Joomla\DI;
  * Defines the representation of a resource.
  *
  * @since  __DEPLOY_VERSION__
+ * @internal
  */
-class ContainerResource
+final class ContainerResource
 {
 	/**
 	 * Defines the resource as non-shared
