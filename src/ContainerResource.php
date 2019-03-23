@@ -13,7 +13,7 @@ namespace Joomla\DI;
  *
  * @since  __DEPLOY_VERSION__
  */
-class Resource
+class ContainerResource
 {
 	/**
 	 * Defines the resource as non-shared

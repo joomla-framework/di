@@ -34,7 +34,7 @@ class Container implements ContainerInterface
 	/**
 	 * Holds the resources.
 	 *
-	 * @var    \Joomla\DI\Resource[]
+	 * @var    ContainerResource[]
 	 * @since  __DEPLOY_VERSION__
 	 */
 	protected $resources = [];
@@ -529,10 +529,10 @@ class Container implements ContainerInterface
 			return $this;
 		}
 
-		$mode = $shared ? Resource::SHARE : Resource::NO_SHARE;
-		$mode |= $protected ? Resource::PROTECT : Resource::NO_PROTECT;
+		$mode = $shared ? ContainerResource::SHARE : ContainerResource::NO_SHARE;
+		$mode |= $protected ? ContainerResource::PROTECT : ContainerResource::NO_PROTECT;
 
-		$this->resources[$key] = new Resource($this, $value, $mode);
+		$this->resources[$key] = new ContainerResource($this, $value, $mode);
 
 		return $this;
 	}
@@ -575,7 +575,7 @@ class Container implements ContainerInterface
 	 * @param   string   $key   The key for which to get the stored item.
 	 * @param   boolean  $bail  Throw an exception, if the key is not found
 	 *
-	 * @return  \Joomla\DI\Resource
+	 * @return  ContainerResource
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 * @throws  KeyNotFoundException
@@ -594,7 +594,7 @@ class Container implements ContainerInterface
 
 		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
 		{
-			return new Resource($this, $this->parent->get($key), Resource::SHARE | Resource::PROTECT);
+			return new ContainerResource($this, $this->parent->get($key), ContainerResource::SHARE | ContainerResource::PROTECT);
 		}
 
 		if ($bail)

@@ -7,46 +7,46 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
-use Joomla\DI\Resource;
+use Joomla\DI\ContainerResource;
 use PHPUnit\Framework\TestCase;
 
-include_once __DIR__.'/Stubs/stubs.php';
+include_once __DIR__ . '/Stubs/stubs.php';
 
 /**
- * Tests for Resource class.
+ * Tests for ContainerResource class.
  */
-class ResourceTest extends TestCase
+class ContainerResourceTest extends TestCase
 {
 	public function dataInstantiation()
 	{
 		return [
 			'shared, protected'         => [
-				'mode' => Resource::SHARE | Resource::PROTECT,
+				'mode' => ContainerResource::SHARE | ContainerResource::PROTECT,
 				'shared'    => true,
 				'protected' => true
 			],
 			'shared, not protected (explicit)'     => [
-				'mode' => Resource::SHARE | Resource::NO_PROTECT,
+				'mode' => ContainerResource::SHARE | ContainerResource::NO_PROTECT,
 				'shared'    => true,
 				'protected' => false
 			],
 			'not shared, protected (explicit)'     => [
-				'mode' => Resource::NO_SHARE | Resource::PROTECT,
+				'mode' => ContainerResource::NO_SHARE | ContainerResource::PROTECT,
 				'shared'    => false,
 				'protected' => true
 			],
 			'not shared, not protected (explicit)' => [
-				'mode' => Resource::NO_SHARE | Resource::NO_PROTECT,
+				'mode' => ContainerResource::NO_SHARE | ContainerResource::NO_PROTECT,
 				'shared'    => false,
 				'protected' => false
 			],
 			'shared, not protected (implicit)'     => [
-				'mode'      => Resource::SHARE,
+				'mode'      => ContainerResource::SHARE,
 				'shared'    => true,
 				'protected' => false
 			],
 			'not shared, protected (implicit)'     => [
-				'mode'      => Resource::PROTECT,
+				'mode'      => ContainerResource::PROTECT,
 				'shared'    => false,
 				'protected' => true
 			],
@@ -68,11 +68,11 @@ class ResourceTest extends TestCase
 
 		if ($mode === null)
 		{
-			$descriptor = new Resource($container, 'dummy');
+			$descriptor = new ContainerResource($container, 'dummy');
 		}
 		else
 		{
-			$descriptor = new Resource($container, 'dummy', $mode);
+			$descriptor = new ContainerResource($container, 'dummy', $mode);
 		}
 
 		$this->assertEquals($shared, $descriptor->isShared());
@@ -85,7 +85,7 @@ class ResourceTest extends TestCase
 	public function testGetInstanceWithFactory()
 	{
 		$container = new Container();
-		$resource = new Resource(
+		$resource = new ContainerResource(
 			$container,
 			function ()
 			{
@@ -102,13 +102,13 @@ class ResourceTest extends TestCase
 	public function testGetInstanceWithFactoryInNonSharedMode()
 	{
 		$container = new Container();
-		$resource  = new Resource(
+		$resource  = new ContainerResource(
 			$container,
 			function ()
 			{
 				return new Stub6();
 			},
-			Resource::NO_SHARE
+			ContainerResource::NO_SHARE
 		);
 
 		$one = $resource->getInstance();
@@ -122,13 +122,13 @@ class ResourceTest extends TestCase
 	public function testGetInstanceWithFactoryInSharedMode()
 	{
 		$container = new Container();
-		$resource  = new Resource(
+		$resource  = new ContainerResource(
 			$container,
 			function ()
 			{
 				return new Stub6();
 			},
-			Resource::SHARE
+			ContainerResource::SHARE
 		);
 
 		$one = $resource->getInstance();
@@ -143,10 +143,10 @@ class ResourceTest extends TestCase
 	{
 		$stub = new Stub6();
 		$container = new Container();
-		$resource  = new Resource(
+		$resource  = new ContainerResource(
 			$container,
 			$stub,
-			Resource::SHARE
+			ContainerResource::SHARE
 		);
 
 		$this->assertSame($stub, $resource->getInstance());
@@ -159,10 +159,10 @@ class ResourceTest extends TestCase
 	{
 		$stub      = new Stub6();
 		$container = new Container();
-		$resource  = new Resource(
+		$resource  = new ContainerResource(
 			$container,
 			$stub,
-			Resource::NO_SHARE
+			ContainerResource::NO_SHARE
 		);
 
 		$this->assertNotSame($stub, $resource->getInstance());
@@ -174,13 +174,13 @@ class ResourceTest extends TestCase
 	public function testResetWithFactory()
 	{
 		$container = new Container();
-		$resource  = new Resource(
+		$resource  = new ContainerResource(
 			$container,
 			function ()
 			{
 				return new Stub6();
 			},
-			Resource::SHARE
+			ContainerResource::SHARE
 		);
 
 		$one = $resource->getInstance();
@@ -196,10 +196,10 @@ class ResourceTest extends TestCase
 	{
 		$stub      = new Stub6();
 		$container = new Container();
-		$resource  = new Resource(
+		$resource  = new ContainerResource(
 			$container,
 			$stub,
-			Resource::SHARE
+			ContainerResource::SHARE
 		);
 
 		$one = $resource->getInstance();
