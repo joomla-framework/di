@@ -177,12 +177,7 @@ class Container implements ContainerInterface
 	 */
 	protected function resolveAlias($resourceName)
 	{
-		if (isset($this->aliases[$resourceName]))
-		{
-			return $this->aliases[$resourceName];
-		}
-
-		return $resourceName;
+		return $this->aliases[$resourceName] ?? $resourceName;
 	}
 
 	/**
@@ -241,7 +236,7 @@ class Container implements ContainerInterface
 
 		if ($this->parent instanceof ContainerInterface && $this->parent->has($key))
 		{
-			// We don't know, if parent supports the 'shared' or 'protected' concept, so we assume the default
+			// We don't know if the parent supports the 'shared' or 'protected' concept, so we assume the default
 			return $default;
 		}
 
@@ -254,7 +249,7 @@ class Container implements ContainerInterface
 	 * @param   string  $tag   The tag name
 	 * @param   array   $keys  The service keys to tag
 	 *
-	 * @return  Container  This object for chaining.
+	 * @return  $this
 	 *
 	 * @since   1.5.0
 	 */
@@ -418,7 +413,7 @@ class Container implements ContainerInterface
 	 * Extend a defined service Closure by wrapping the existing one with a new callable function.
 	 *
 	 * This works very similar to a decorator pattern.  Note that this only works on service Closures
-	 * that have been defined in the current Provider, not parent providers.
+	 * that have been defined in the current container, not parent containers.
 	 *
 	 * @param   string    $resourceName  The unique identifier for the Closure or property.
 	 * @param   callable  $callable      A callable to wrap the original service Closure.
@@ -442,7 +437,7 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Build an array of constructor parameters.
+	 * Build an array of method arguments.
 	 *
 	 * @param   \ReflectionMethod  $method  Method for which to build the argument array.
 	 *
@@ -451,7 +446,7 @@ class Container implements ContainerInterface
 	 * @since   1.0
 	 * @throws  DependencyResolutionException
 	 */
-	private function getMethodArgs(\ReflectionMethod $method)
+	private function getMethodArgs(\ReflectionMethod $method): array
 	{
 		$methodArgs = [];
 
@@ -483,8 +478,8 @@ class Container implements ContainerInterface
 				}
 			}
 
-			// Finally, if there is a default parameter, use it.
-			if ($param->isOptional())
+			// Finally, if there is a default parameter and it can be read, use it.
+			if ($param->isOptional() && $param->isDefaultValueAvailable())
 			{
 				$methodArgs[] = $param->getDefaultValue();
 
@@ -499,7 +494,7 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Set a resource. If the value is null unsets the resource.
+	 * Set a resource to the container. If the value is null the resource is removed.
 	 *
 	 * @param   string   $key        Name of resources key to set.
 	 * @param   mixed    $value      Callable function to run or string to retrive when requesting the specified $key.
@@ -538,7 +533,7 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Convenience method for creating protected keys.
+	 * Shortcut method for creating protected keys.
 	 *
 	 * @param   string   $key     Name of dataStore key to set.
 	 * @param   mixed    $value   Callable function to run or string to retrive when requesting the specified $key.
@@ -554,7 +549,7 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Convenience method for creating shared keys.
+	 * Shortcut method for creating shared keys.
 	 *
 	 * @param   string   $key        Name of dataStore key to set.
 	 * @param   mixed    $value      Callable function to run or string to retrive when requesting the specified $key.
@@ -580,7 +575,7 @@ class Container implements ContainerInterface
 	 * @since   __DEPLOY_VERSION__
 	 * @throws  KeyNotFoundException
 	 */
-	public function getResource(string $key, bool $bail = false)
+	public function getResource(string $key, bool $bail = false): ContainerResource
 	{
 		if (isset($this->resources[$key]))
 		{
@@ -604,12 +599,11 @@ class Container implements ContainerInterface
 	}
 
 	/**
-	 * Method to force the container to return a new instance
-	 * of the results of the callback for requested $key.
+	 * Method to force the container to return a new instance of the results of the callback for requested $key.
 	 *
 	 * @param   string  $key  Name of the resources key to get.
 	 *
-	 * @return  mixed   Results of running the $callback for the specified $key.
+	 * @return  mixed   Results of running the callback for the specified key.
 	 *
 	 * @since   1.0
 	 */
@@ -627,7 +621,7 @@ class Container implements ContainerInterface
 	 *
 	 * @param   ServiceProviderInterface  $provider  The service provider to register.
 	 *
-	 * @return  Container  This object for chaining.
+	 * @return  $this
 	 *
 	 * @since   1.0
 	 */
