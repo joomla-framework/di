@@ -570,12 +570,12 @@ class Container implements ContainerInterface
 	 * @param   string   $key   The key for which to get the stored item.
 	 * @param   boolean  $bail  Throw an exception, if the key is not found
 	 *
-	 * @return  ContainerResource
+	 * @return  ContainerResource|null  The resource if present, or null if instructed to not bail
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 * @throws  KeyNotFoundException
 	 */
-	public function getResource(string $key, bool $bail = false): ContainerResource
+	public function getResource(string $key, bool $bail = false)
 	{
 		if (isset($this->resources[$key]))
 		{
