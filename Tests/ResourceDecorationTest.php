@@ -104,8 +104,8 @@ class ResourceDecoration extends TestCase
 	}
 
 	/**
-	 * @testdox Attempting to extend an undefined resource throws an InvalidArgumentException
-	 * @expectedException  \InvalidArgumentException
+	 * @testdox Attempting to extend an undefined resource throws a KeyNotFoundException
+	 * @expectedException  \Joomla\DI\Exception\KeyNotFoundException
 	 */
 	public function testExtendValidatesKeyIsPresent()
 	{

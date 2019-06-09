@@ -5,17 +5,16 @@
 [![Latest Unstable Version](https://poser.pugx.org/joomla/di/v/unstable)](https://packagist.org/packages/joomla/di)
 [![License](https://poser.pugx.org/joomla/di/license)](https://packagist.org/packages/joomla/di)
 
-The Joomla! **Dependency Injection** package provides a powerful `PSR-11` compatible
-Inversion of Control (IoC) Container for your application.
+The Joomla! **Dependency Injection** package provides a powerful [PSR-11](http://www.php-fig.org/psr/psr-11/) compatible Inversion of Control (IoC) Container for your application.
 
-## Installation via Composer
+## Requirements
 
-Simply run the following from the command line in your project's root directory (where your `composer.json` file is):
+* PHP 7.0 or later
 
+## Installation
+
+To install the package, you can run the following from the command line:
+           
 ```sh
 composer require joomla/di
 ```
-## Contributing
-
-Please review [https://framework.joomla.org/contribute](https://framework.joomla.org/contribute) for information
-on how to contribute to the Framework's development.
