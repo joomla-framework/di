@@ -575,7 +575,7 @@ class Container implements ContainerInterface
 	 * @since   __DEPLOY_VERSION__
 	 * @throws  KeyNotFoundException
 	 */
-	public function getResource(string $key, bool $bail = false)
+	public function getResource(string $key, bool $bail = false): ?ContainerResource
 	{
 		if (isset($this->resources[$key]))
 		{

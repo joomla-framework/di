@@ -22,7 +22,7 @@ final class ContainerResource
 	 * @const  integer
 	 * @since  __DEPLOY_VERSION__
 	 */
-	const NO_SHARE = 0;
+	public const NO_SHARE = 0;
 
 	/**
 	 * Defines the resource as shared
@@ -30,7 +30,7 @@ final class ContainerResource
 	 * @const  integer
 	 * @since  __DEPLOY_VERSION__
 	 */
-	const SHARE = 1;
+	public const SHARE = 1;
 
 	/**
 	 * Defines the resource as non-protected
@@ -38,7 +38,7 @@ final class ContainerResource
 	 * @const  integer
 	 * @since  __DEPLOY_VERSION__
 	 */
-	const NO_PROTECT = 0;
+	public const NO_PROTECT = 0;
 
 	/**
 	 * Defines the resource as protected
@@ -46,7 +46,7 @@ final class ContainerResource
 	 * @const  integer
 	 * @since  __DEPLOY_VERSION__
 	 */
-	const PROTECT = 2;
+	public const PROTECT = 2;
 
 	/**
 	 * The container the resource is assigned to
@@ -189,7 +189,7 @@ final class ContainerResource
 	 *
 	 * @since   __DEPLOY_VERSION__
 	 */
-	public function getFactory()
+	public function getFactory(): callable
 	{
 		return $this->factory;
 	}
