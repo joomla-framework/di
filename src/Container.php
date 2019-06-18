@@ -596,6 +596,8 @@ class Container implements ContainerInterface
 		{
 			throw new KeyNotFoundException(sprintf('Key %s has not been registered with the container.', $key));
 		}
+
+		return null;
 	}
 
 	/**
