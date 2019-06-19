@@ -7,6 +7,7 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\Exception\DependencyResolutionException;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__.'/Stubs/stubs.php';
@@ -101,30 +102,33 @@ class ObjectBuildingTest extends TestCase
 
 	/**
 	 * @testdox A DependencyResolutionException is thrown, if an object can not be built due to unspecified constructor parameter types
-	 * @expectedException  \Joomla\DI\Exception\DependencyResolutionException
 	 */
 	public function testGetMethodArgsCantResolve()
 	{
+		$this->expectException(DependencyResolutionException::class);
+
 		$container = new Container();
 		$container->buildObject(Stub7::class);
 	}
 
 	/**
 	 * @testdox A DependencyResolutionException is thrown, if an object can not be built due to dependency on unknown interfaces
-	 * @expectedException  \Joomla\DI\Exception\DependencyResolutionException
 	 */
 	public function testGetMethodArgsResolvedIsNotInstanceOfHintedDependency()
 	{
+		$this->expectException(DependencyResolutionException::class);
+
 		$container = new Container();
 		$container->buildObject(Stub2::class);
 	}
 
 	/**
 	 * @testdox When a circular dependency is detected, a DependencyResolutionException is thrown (Bug #4)
-	 * @expectedException \Joomla\DI\Exception\DependencyResolutionException
 	 */
 	public function testBug4()
 	{
+		$this->expectException(DependencyResolutionException::class);
+
 		$container = new Container();
 
 		$fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';

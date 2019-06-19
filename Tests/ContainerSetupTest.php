@@ -7,6 +7,7 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\Exception\KeyNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__.'/Stubs/stubs.php';
@@ -68,10 +69,11 @@ class ContainerSetupTest extends TestCase
 
 	/**
 	 * @testdox Setting an existing protected resource throws an OutOfBoundsException
-	 * @expectedException  \OutOfBoundsException
 	 */
 	public function testSetAlreadySetProtected()
 	{
+		$this->expectException(\OutOfBoundsException::class);
+
 		$container = new Container();
 		$container->set(
 			'foo',
@@ -270,10 +272,11 @@ class ContainerSetupTest extends TestCase
 
 	/**
 	 * @testdox The setting an object and then setting it again as null should remove the object
-	 * @expectedException  \Joomla\DI\Exception\KeyNotFoundException
 	 */
 	public function testSettingNullUnsetsAResource()
 	{
+		$this->expectException(KeyNotFoundException::class);
+
 		$container = new Container();
 		$container->set(
 			'foo',

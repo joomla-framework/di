@@ -54,10 +54,11 @@ class ContainerAccessTest extends TestCase
 
 	/**
 	 * @testdox Accessing an undefined resource throws an InvalidArgumentException
-	 * @expectedException  \InvalidArgumentException
 	 */
 	public function testGetNotExists()
 	{
+		$this->expectException(\InvalidArgumentException::class);
+
 		$container = new Container();
 		$container->get('foo');
 	}

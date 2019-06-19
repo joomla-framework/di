@@ -7,6 +7,8 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\Exception\KeyNotFoundException;
+use Joomla\DI\Exception\ProtectedKeyException;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__.'/Stubs/stubs.php';
@@ -105,20 +107,22 @@ class ResourceDecoration extends TestCase
 
 	/**
 	 * @testdox Attempting to extend an undefined resource throws a KeyNotFoundException
-	 * @expectedException  \Joomla\DI\Exception\KeyNotFoundException
 	 */
 	public function testExtendValidatesKeyIsPresent()
 	{
+		$this->expectException(KeyNotFoundException::class);
+
 		$container = new Container();
 		$container->extend('foo', function () {});
 	}
 
 	/**
 	 * @testdox A protected resource can not be extended
-	 * @expectedException \Joomla\DI\Exception\ProtectedKeyException
 	 */
 	public function testExtendProtected()
 	{
+		$this->expectException(ProtectedKeyException::class);
+
 		$container = new Container();
 		$container->protect(
 			'foo',
