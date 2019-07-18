@@ -44,7 +44,7 @@ class Container implements ContainerInterface
 	 *
 	 * In fact, this can be any PSR-11 compatible container, which gets decorated by this
 	 *
-	 * @var    Container|ContainerInterface
+	 * @var    Container|ContainerInterface|null
 	 * @since  1.0
 	 */
 	protected $parent;
@@ -60,11 +60,11 @@ class Container implements ContainerInterface
 	/**
 	 * Constructor for the DI Container
 	 *
-	 * @param   ContainerInterface  $parent  Parent for hierarchical containers.
+	 * @param   ContainerInterface|null  $parent  Parent for hierarchical containers.
 	 *
 	 * @since   1.0
 	 */
-	public function __construct(ContainerInterface $parent = null)
+	public function __construct(?ContainerInterface $parent = null)
 	{
 		$this->parent = $parent;
 	}
