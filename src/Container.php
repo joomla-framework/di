@@ -452,12 +452,12 @@ class Container implements ContainerInterface
 
 		foreach ($method->getParameters() as $param)
 		{
-			$dependency        = $param->getClass();
 			$dependencyVarName = $param->getName();
 
 			// If we have a dependency, that means it has been type-hinted.
-			if ($dependency !== null)
+			if ($param->hasType())
 			{
+				$dependency          = $param->getClass();
 				$dependencyClassName = $dependency->getName();
 
 				// If the dependency class name is registered with this container or a parent, use it.
