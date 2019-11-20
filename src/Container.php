@@ -322,7 +322,7 @@ class Container implements ContainerInterface
 		{
 			$buildStack = [];
 
-			throw new DependencyResolutionException("Can't resolve circular dependency");
+			throw new DependencyResolutionException(sprintf('Cannot resolve circular dependency for "%s"', $key));
 		}
 
 		$buildStack[] = $key;
@@ -350,7 +350,21 @@ class Container implements ContainerInterface
 		{
 			$buildStack = [];
 
-			throw new DependencyResolutionException("$key can not be instantiated.");
+			if ($reflection->isInterface())
+			{
+				throw new DependencyResolutionException(
+					sprintf('There is no service for "%s" defined, cannot autowire a class service for an interface.', $key)
+				);
+			}
+
+			if ($reflection->isAbstract())
+			{
+				throw new DependencyResolutionException(
+					sprintf('There is no service for "%s" defined, cannot autowire an abstract class.', $key)
+				);
+			}
+
+			throw new DependencyResolutionException(sprintf('"%s" cannot be instantiated.', $key));
 		}
 
 		$constructor = $reflection->getConstructor();
@@ -452,38 +466,94 @@ class Container implements ContainerInterface
 
 		foreach ($method->getParameters() as $param)
 		{
-			$dependencyVarName = $param->getName();
-
-			// If we have a dependency, that means it has been type-hinted.
+			// Check for a typehinted dependency
 			if ($param->hasType())
 			{
-				$dependency          = $param->getClass();
-				$dependencyClassName = $dependency->getName();
+				$dependency = $param->getClass();
 
-				// If the dependency class name is registered with this container or a parent, use it.
-				if ($this->getResource($dependencyClassName) !== null)
+				// Check for a class, if it doesn't have one then it is a scalar type, which we cannot handle if a mandatory argument
+				if ($dependency === null)
 				{
-					$depObject = $this->get($dependencyClassName);
+					if (!$param->isOptional())
+					{
+						$message = 'Could not resolve the parameter "$%s" of "%s::%s()":';
+						$message .= ' Scalar parameters cannot be autowired and the parameter does not have a default value.';
+
+						throw new DependencyResolutionException(
+							sprintf(
+								$message,
+								$param->getName(),
+								$method->class,
+								$method->name
+							)
+						);
+					}
 				}
 				else
 				{
-					$depObject = $this->buildObject($dependencyClassName);
-				}
+					$dependencyClassName = $dependency->getName();
 
-				if ($depObject instanceof $dependencyClassName)
-				{
-					$methodArgs[] = $depObject;
+					// If the dependency class name is registered with this container or a parent, use it.
+					if ($this->getResource($dependencyClassName) !== null)
+					{
+						$depObject = $this->get($dependencyClassName);
+					}
+					else
+					{
+						try
+						{
+							$depObject = $this->buildObject($dependencyClassName);
+						}
+						catch (DependencyResolutionException $exception)
+						{
+							$message = 'Could not resolve the parameter "$%s" of "%s::%s()":';
+							$message .= ' No service for "%s" exists and the dependency could not be autowired.';
 
-					continue;
+							throw new DependencyResolutionException(
+								sprintf(
+									$message,
+									$param->getName(),
+									$method->class,
+									$method->name,
+									$dependencyClassName
+								),
+								0,
+								$exception
+							);
+						}
+					}
+
+					if ($depObject instanceof $dependencyClassName)
+					{
+						$methodArgs[] = $depObject;
+
+						continue;
+					}
 				}
 			}
 
 			// If there is a default parameter and it can be read, use it.
 			if ($param->isOptional() && $param->isDefaultValueAvailable())
 			{
-				$methodArgs[] = $param->getDefaultValue();
+				try
+				{
+					$methodArgs[] = $param->getDefaultValue();
 
-				continue;
+					continue;
+				}
+				catch (\ReflectionException $exception)
+				{
+					throw new DependencyResolutionException(
+						sprintf(
+							'Could not resolve the parameter "$%s" of "%s::%s()": Unable to read the default parameter value.',
+							$param->getName(),
+							$method->class,
+							$method->name
+						),
+						0,
+						$exception
+					);
+				}
 			}
 
 			// If an untyped variadic argument, skip it
@@ -492,8 +562,15 @@ class Container implements ContainerInterface
 				continue;
 			}
 
-			// Couldn't resolve dependency, and no default was provided.
-			throw new DependencyResolutionException(sprintf('Could not resolve dependency: %s', $dependencyVarName));
+			// At this point the argument cannot be resolved, most likely cause is an untyped required argument
+			throw new DependencyResolutionException(
+				sprintf(
+					'Could not resolve the parameter "$%s" of "%s::%s()": The argument is untyped and has no default value.',
+					$param->getName(),
+					$method->class,
+					$method->name
+				)
+			);
 		}
 
 		return $methodArgs;

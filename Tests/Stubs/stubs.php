@@ -107,6 +107,28 @@ class StubTypedVariadic
 	}
 }
 
+class StubOptionalScalar
+{
+	public $enabled;
+
+	public function __construct(bool $enabled = true)
+	{
+		$this->enabled = $enabled;
+	}
+}
+
+class StubRequiredScalar
+{
+	public $enabled;
+
+	public function __construct(bool $enabled)
+	{
+		$this->enabled = $enabled;
+	}
+}
+
+abstract class AbstractStub {}
+
 class StubPsrContainer implements ContainerInterface
 {
 	private $services = array(

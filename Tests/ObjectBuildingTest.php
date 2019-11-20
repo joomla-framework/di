@@ -9,6 +9,7 @@ namespace Joomla\DI\Tests;
 use Joomla\DI\Container;
 use Joomla\DI\Exception\DependencyResolutionException;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 include_once __DIR__.'/Stubs/stubs.php';
 
@@ -82,6 +83,40 @@ class ObjectBuildingTest extends TestCase
 	}
 
 	/**
+	 * @testdox Building a non-shared object whose constructor contains an optional scalar argument returns a new object whenever requested
+	 */
+	public function testBuildObjectWithOptionalScalar()
+	{
+		$container = new Container();
+		$object    = $container->buildObject(StubOptionalScalar::class);
+
+		$this->assertNotSame($object, $container->get(StubOptionalScalar::class));
+		$this->assertNotSame($container->get(StubOptionalScalar::class), $container->get(StubOptionalScalar::class));
+
+		$this->assertTrue($object->enabled);
+	}
+
+	/**
+	 * @testdox A DependencyResolutionException is thrown, if an object can not be built due to a required scalar constructor parameter
+	 */
+	public function testBuildObjectWithRequiredScalarThrowsAnException()
+	{
+		$this->expectException(DependencyResolutionException::class);
+		$this->expectExceptionMessage(
+			sprintf(
+				'Could not resolve the parameter "$enabled" of "%s::__construct()": Scalar parameters cannot be autowired and the parameter does not have a default value.',
+				StubRequiredScalar::class
+			)
+		);
+
+		$container = new Container();
+		$object    = $container->buildObject(StubRequiredScalar::class);
+
+		$this->assertNotSame($object, $container->get(StubRequiredScalar::class));
+		$this->assertNotSame($container->get(StubRequiredScalar::class), $container->get(StubRequiredScalar::class));
+	}
+
+	/**
 	 * @testdox Attempting to build a non-class returns false
 	 */
 	public function testBuildObjectNonClass()
@@ -135,6 +170,12 @@ class ObjectBuildingTest extends TestCase
 	public function testGetMethodArgsCantResolve()
 	{
 		$this->expectException(DependencyResolutionException::class);
+		$this->expectExceptionMessage(
+			sprintf(
+				'Could not resolve the parameter "$stub" of "%s::__construct()": The argument is untyped and has no default value.',
+				Stub7::class
+			)
+		);
 
 		$container = new Container();
 		$container->buildObject(Stub7::class);
@@ -146,9 +187,50 @@ class ObjectBuildingTest extends TestCase
 	public function testGetMethodArgsResolvedIsNotInstanceOfHintedDependency()
 	{
 		$this->expectException(DependencyResolutionException::class);
+		$this->expectExceptionMessage(
+			sprintf(
+				'Could not resolve the parameter "$stub" of "%s::__construct()": No service for "%s" exists and the dependency could not be autowired.',
+				Stub2::class,
+				StubInterface::class
+			)
+		);
 
 		$container = new Container();
 		$container->buildObject(Stub2::class);
+	}
+
+	/**
+	 * @testdox A DependencyResolutionException is thrown, if an object can not be built due to autowiring an unregistered interface
+	 */
+	public function testGetMethodArgsResolvedIsNotAutowiredForAnUnregisteredInterface()
+	{
+		$this->expectException(DependencyResolutionException::class);
+		$this->expectExceptionMessage(
+			sprintf(
+				'There is no service for "%s" defined, cannot autowire a class service for an interface.',
+				ContainerInterface::class
+			)
+		);
+
+		$container = new Container();
+		$container->buildObject(ContainerInterface::class);
+	}
+
+	/**
+	 * @testdox A DependencyResolutionException is thrown, if an object can not be built due to autowiring an unregistered abstract class
+	 */
+	public function testGetMethodArgsResolvedIsNotAutowiredForAnUnregisteredAbstractClass()
+	{
+		$this->expectException(DependencyResolutionException::class);
+		$this->expectExceptionMessage(
+			sprintf(
+				'There is no service for "%s" defined, cannot autowire an abstract class.',
+				AbstractStub::class
+			)
+		);
+
+		$container = new Container();
+		$container->buildObject(AbstractStub::class);
 	}
 
 	/**
@@ -156,11 +238,18 @@ class ObjectBuildingTest extends TestCase
 	 */
 	public function testBug4()
 	{
+		$fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';
+
 		$this->expectException(DependencyResolutionException::class);
+		$this->expectExceptionMessage(
+			sprintf(
+				'Cannot resolve circular dependency for "%s"',
+				$fqcn
+			)
+		);
 
 		$container = new Container();
 
-		$fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';
 		$data = [];
 
 		$container->set(
