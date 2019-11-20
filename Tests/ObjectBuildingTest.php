@@ -54,6 +54,34 @@ class ObjectBuildingTest extends TestCase
 	}
 
 	/**
+	 * @testdox Building a non-shared object whose constructor contains a nullable argument with an unknown class returns a new object whenever requested
+	 */
+	public function testBuildObjectWithNullableArgumentForUnknownClass()
+	{
+		$container = new Container();
+		$object    = $container->buildObject(StubNullableArgumentDoesntExist::class);
+
+		$this->assertNotSame($object, $container->get(StubNullableArgumentDoesntExist::class));
+		$this->assertNotSame($container->get(StubNullableArgumentDoesntExist::class), $container->get(StubNullableArgumentDoesntExist::class));
+
+		$this->assertNull($object->stub);
+	}
+
+	/**
+	 * @testdox Building a non-shared object whose constructor contains a nullable argument with a known class returns a new object whenever requested
+	 */
+	public function testBuildObjectWithNullableArgumentForKnownClass()
+	{
+		$container = new Container();
+		$object    = $container->buildObject(StubNullableArgument::class);
+
+		$this->assertNotSame($object, $container->get(StubNullableArgument::class));
+		$this->assertNotSame($container->get(StubNullableArgument::class), $container->get(StubNullableArgument::class));
+
+		$this->assertNull($object->stub);
+	}
+
+	/**
 	 * @testdox Building a non-shared object whose constructor contains an untyped variadic argument returns a new object whenever requested
 	 */
 	public function testBuildObjectWithUntypedVariadic()
@@ -231,6 +259,24 @@ class ObjectBuildingTest extends TestCase
 
 		$container = new Container();
 		$container->buildObject(AbstractStub::class);
+	}
+
+	/**
+	 * @testdox A DependencyResolutionException is thrown, if an object can not be built due to autowiring a non-existing class
+	 */
+	public function testGetMethodArgsResolvedIsNotAutowiredForANonExistingClass()
+	{
+		$this->expectException(DependencyResolutionException::class);
+		$this->expectExceptionMessage(
+			sprintf(
+				'Could not resolve the parameter "$stub" of "%s::__construct()": The "%s" class does not exist.',
+				Stub8::class,
+				DoesntExist::class
+			)
+		);
+
+		$container = new Container();
+		$container->buildObject(Stub8::class);
 	}
 
 	/**

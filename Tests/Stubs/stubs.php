@@ -83,6 +83,26 @@ class Stub9
 {
 }
 
+class StubNullableArgumentDoesntExist
+{
+	public $stub;
+
+	public function __construct(?DoesntExist $stub)
+	{
+		$this->stub = $stub;
+	}
+}
+
+class StubNullableArgument
+{
+	public $stub;
+
+	public function __construct(?StubInterface $stub)
+	{
+		$this->stub = $stub;
+	}
+}
+
 class StubUntypedVariadic
 {
 	public $stub;

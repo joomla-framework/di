@@ -469,11 +469,37 @@ class Container implements ContainerInterface
 			// Check for a typehinted dependency
 			if ($param->hasType())
 			{
-				$dependency = $param->getClass();
+				try
+				{
+					$dependency = $param->getClass();
+				}
+				catch (\ReflectionException $exception)
+				{
+					// If this is a nullable parameter, then don't error out
+					if ($param->allowsNull())
+					{
+						$methodArgs[] = null;
+
+						continue;
+					}
+
+					throw new DependencyResolutionException(
+						sprintf(
+							'Could not resolve the parameter "$%s" of "%s::%s()": The "%s" class does not exist.',
+							$param->getName(),
+							$method->class,
+							$method->name,
+							$param->getType()->getName()
+						),
+						0,
+						$exception
+					);
+				}
 
 				// Check for a class, if it doesn't have one then it is a scalar type, which we cannot handle if a mandatory argument
 				if ($dependency === null)
 				{
+					// If the param is optional, then fall through to the optional param handling later in this method
 					if (!$param->isOptional())
 					{
 						$message = 'Could not resolve the parameter "$%s" of "%s::%s()":';
@@ -506,6 +532,14 @@ class Container implements ContainerInterface
 						}
 						catch (DependencyResolutionException $exception)
 						{
+							// If this is a nullable parameter, then don't error out
+							if ($param->allowsNull())
+							{
+								$methodArgs[] = null;
+
+								continue;
+							}
+
 							$message = 'Could not resolve the parameter "$%s" of "%s::%s()":';
 							$message .= ' No service for "%s" exists and the dependency could not be autowired.';
 
