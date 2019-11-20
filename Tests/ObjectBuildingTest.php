@@ -53,6 +53,35 @@ class ObjectBuildingTest extends TestCase
 	}
 
 	/**
+	 * @testdox Building a non-shared object whose constructor contains an untyped variadic argument returns a new object whenever requested
+	 */
+	public function testBuildObjectWithUntypedVariadic()
+	{
+		$container = new Container();
+		$object    = $container->buildObject(StubUntypedVariadic::class);
+
+		$this->assertNotSame($object, $container->get(StubUntypedVariadic::class));
+		$this->assertNotSame($container->get(StubUntypedVariadic::class), $container->get(StubUntypedVariadic::class));
+
+		$this->assertEmpty($object->stubs);
+	}
+
+	/**
+	 * @testdox Building a non-shared object whose constructor contains a typed variadic argument returns a new object whenever requested
+	 */
+	public function testBuildObjectWithTypedVariadic()
+	{
+		$container = new Container();
+		$object    = $container->buildObject(StubTypedVariadic::class);
+
+		$this->assertNotSame($object, $container->get(StubTypedVariadic::class));
+		$this->assertNotSame($container->get(StubTypedVariadic::class), $container->get(StubTypedVariadic::class));
+
+		$this->assertNotEmpty($object->stubs);
+		$this->assertContainsOnlyInstancesOf(Stub9::class, $object->stubs);
+	}
+
+	/**
 	 * @testdox Attempting to build a non-class returns false
 	 */
 	public function testBuildObjectNonClass()

@@ -478,11 +478,17 @@ class Container implements ContainerInterface
 				}
 			}
 
-			// Finally, if there is a default parameter and it can be read, use it.
+			// If there is a default parameter and it can be read, use it.
 			if ($param->isOptional() && $param->isDefaultValueAvailable())
 			{
 				$methodArgs[] = $param->getDefaultValue();
 
+				continue;
+			}
+
+			// If an untyped variadic argument, skip it
+			if (!$param->hasType() && $param->isVariadic())
+			{
 				continue;
 			}
 

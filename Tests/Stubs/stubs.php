@@ -83,6 +83,30 @@ class Stub9
 {
 }
 
+class StubUntypedVariadic
+{
+	public $stub;
+	public $stubs;
+
+	public function __construct(Stub1 $stub, ...$stubs)
+	{
+		$this->stub = $stub;
+		$this->stubs = $stubs;
+	}
+}
+
+class StubTypedVariadic
+{
+	public $stub;
+	public $stubs;
+
+	public function __construct(Stub1 $stub, Stub9 ...$stubs)
+	{
+		$this->stub = $stub;
+		$this->stubs = $stubs;
+	}
+}
+
 class StubPsrContainer implements ContainerInterface
 {
 	private $services = array(
