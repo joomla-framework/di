@@ -486,7 +486,7 @@ class Container implements ContainerInterface
 					throw new DependencyResolutionException(
 						sprintf(
 							'Could not resolve the parameter "$%s" of "%s::%s()": The "%s" class does not exist.',
-							$param->getName(),
+							$param->name,
 							$method->class,
 							$method->name,
 							$param->getType()->getName()
@@ -508,7 +508,7 @@ class Container implements ContainerInterface
 						throw new DependencyResolutionException(
 							sprintf(
 								$message,
-								$param->getName(),
+								$param->name,
 								$method->class,
 								$method->name
 							)
@@ -546,7 +546,7 @@ class Container implements ContainerInterface
 							throw new DependencyResolutionException(
 								sprintf(
 									$message,
-									$param->getName(),
+									$param->name,
 									$method->class,
 									$method->name,
 									$dependencyClassName
@@ -580,7 +580,7 @@ class Container implements ContainerInterface
 					throw new DependencyResolutionException(
 						sprintf(
 							'Could not resolve the parameter "$%s" of "%s::%s()": Unable to read the default parameter value.',
-							$param->getName(),
+							$param->name,
 							$method->class,
 							$method->name
 						),
@@ -600,7 +600,7 @@ class Container implements ContainerInterface
 			throw new DependencyResolutionException(
 				sprintf(
 					'Could not resolve the parameter "$%s" of "%s::%s()": The argument is untyped and has no default value.',
-					$param->getName(),
+					$param->name,
 					$method->class,
 					$method->name
 				)
