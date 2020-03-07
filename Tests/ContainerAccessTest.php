@@ -17,14 +17,17 @@ include_once __DIR__.'/Stubs/stubs.php';
 class ContainerAccessTest extends TestCase
 {
 	/**
-	 * @testdox The same resource instance is returned for shared resources
+	 * @testdox  The same resource instance is returned for shared resources
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testGetShared()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			},
@@ -35,14 +38,17 @@ class ContainerAccessTest extends TestCase
 	}
 
 	/**
-	 * @testdox A new resource instance is returned for non-shared resources
+	 * @testdox  A new resource instance is returned for non-shared resources
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testGetNotShared()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			},
@@ -53,22 +59,27 @@ class ContainerAccessTest extends TestCase
 	}
 
 	/**
-	 * @testdox Accessing an undefined resource throws an InvalidArgumentException
+	 * @testdox  Accessing an undefined resource throws an InvalidArgumentException
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testGetNotExists()
 	{
 		$this->expectException(\InvalidArgumentException::class);
 
-		$container = new Container();
-		$container->get('foo');
+		(new Container)->get('foo');
 	}
 
 	/**
-	 * @testdox The existence of a resource can be checked
+	 * @testdox  The existence of a resource can be checked
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testExists()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set('foo', 'bar');
 
 		$this->assertTrue($container->has('foo'), "'foo' should be present");
@@ -76,14 +87,17 @@ class ContainerAccessTest extends TestCase
 	}
 
 	/**
-	 * @testdox getNewInstance() will always return a new instance, even if the resource was set to be shared
+	 * @testdox  getNewInstance() will always return a new instance, even if the resource was set to be shared
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testGetNewInstance()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->share(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			}
@@ -93,18 +107,21 @@ class ContainerAccessTest extends TestCase
 	}
 
 	/**
-	 * @testdox The unique service keys for the container are returned
+	 * @testdox  The unique service keys for the container are returned
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testRetrievingTheContainerKeys()
 	{
-		$container = new Container();
+		$container = new Container;
 
 		$container->set('foo', 'bar');
 		$container->set('goo', 'car');
 		$container->alias('boo', 'foo');
 
 		$this->assertSame(
-			array('boo', 'foo', 'goo'),
+			['boo', 'foo', 'goo'],
 			$container->getKeys()
 		);
 	}

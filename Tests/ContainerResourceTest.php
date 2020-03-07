@@ -17,54 +17,62 @@ include_once __DIR__ . '/Stubs/stubs.php';
  */
 class ContainerResourceTest extends TestCase
 {
-	public function dataInstantiation()
+	public function dataInstantiation(): \Generator
 	{
-		return [
-			'shared, protected'         => [
-				'mode' => ContainerResource::SHARE | ContainerResource::PROTECT,
-				'shared'    => true,
-				'protected' => true
-			],
-			'shared, not protected (explicit)'     => [
-				'mode' => ContainerResource::SHARE | ContainerResource::NO_PROTECT,
-				'shared'    => true,
-				'protected' => false
-			],
-			'not shared, protected (explicit)'     => [
-				'mode' => ContainerResource::NO_SHARE | ContainerResource::PROTECT,
-				'shared'    => false,
-				'protected' => true
-			],
-			'not shared, not protected (explicit)' => [
-				'mode' => ContainerResource::NO_SHARE | ContainerResource::NO_PROTECT,
-				'shared'    => false,
-				'protected' => false
-			],
-			'shared, not protected (implicit)'     => [
-				'mode'      => ContainerResource::SHARE,
-				'shared'    => true,
-				'protected' => false
-			],
-			'not shared, protected (implicit)'     => [
-				'mode'      => ContainerResource::PROTECT,
-				'shared'    => false,
-				'protected' => true
-			],
-			'not shared, not protected (implicit)' => [
-				'mode'      => null,
-				'shared'    => false,
-				'protected' => false
-			],
+		yield 'shared, protected' => [
+			'mode'      => ContainerResource::SHARE | ContainerResource::PROTECT,
+			'shared'    => true,
+			'protected' => true,
+		];
+
+		yield 'shared, not protected (explicit)' => [
+			'mode'      => ContainerResource::SHARE | ContainerResource::NO_PROTECT,
+			'shared'    => true,
+			'protected' => false,
+		];
+
+		yield 'not shared, protected (explicit)' => [
+			'mode'      => ContainerResource::NO_SHARE | ContainerResource::PROTECT,
+			'shared'    => false,
+			'protected' => true,
+		];
+
+		yield 'not shared, not protected (explicit)' => [
+			'mode'      => ContainerResource::NO_SHARE | ContainerResource::NO_PROTECT,
+			'shared'    => false,
+			'protected' => false,
+		];
+
+		yield 'shared, not protected (implicit)' => [
+			'mode'      => ContainerResource::SHARE,
+			'shared'    => true,
+			'protected' => false,
+		];
+
+		yield 'not shared, protected (implicit)' => [
+			'mode'      => ContainerResource::PROTECT,
+			'shared'    => false,
+			'protected' => true,
+		];
+
+		yield 'not shared, not protected (implicit)' => [
+			'mode'      => null,
+			'shared'    => false,
+			'protected' => false,
 		];
 	}
 
 	/**
-	 * @testdox The resource supports 'shared' and 'protected' modes, defaulting to 'not shared' and 'not protected'
+	 * @testdox  The resource supports 'shared' and 'protected' modes, defaulting to 'not shared' and 'not protected'
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
+	 *
 	 * @dataProvider dataInstantiation
 	 */
-	public function testInstantiation($mode, $shared, $protected)
+	public function testInstantiation(?int $mode, bool $shared, bool $protected)
 	{
-		$container = new Container();
+		$container = new Container;
 
 		if ($mode === null)
 		{
@@ -75,21 +83,25 @@ class ContainerResourceTest extends TestCase
 			$descriptor = new ContainerResource($container, 'dummy', $mode);
 		}
 
-		$this->assertEquals($shared, $descriptor->isShared());
-		$this->assertEquals($protected, $descriptor->isProtected());
+		$this->assertSame($shared, $descriptor->isShared());
+		$this->assertSame($protected, $descriptor->isProtected());
 	}
 
 	/**
-	 * @testdox If a factory is provided, the instance is created on retrieval
+	 * @testdox  If a factory is provided, the instance is created on retrieval
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testGetInstanceWithFactory()
 	{
-		$container = new Container();
+		$container = new Container;
+
 		$resource = new ContainerResource(
 			$container,
-			function ()
+			static function ()
 			{
-				return new Stub6();
+				return new Stub6;
 			}
 		);
 
@@ -97,52 +109,57 @@ class ContainerResourceTest extends TestCase
 	}
 
 	/**
-	 * @testdox If a factory is provided in non-shared mode, the instance is not cached
+	 * @testdox  If a factory is provided in non-shared mode, the instance is not cached
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testGetInstanceWithFactoryInNonSharedMode()
 	{
-		$container = new Container();
+		$container = new Container;
 		$resource  = new ContainerResource(
 			$container,
-			function ()
+			static function ()
 			{
-				return new Stub6();
+				return new Stub6;
 			},
 			ContainerResource::NO_SHARE
 		);
 
-		$one = $resource->getInstance();
-		$two = $resource->getInstance();
-		$this->assertNotSame($one, $two);
+		$this->assertNotSame($resource->getInstance(), $resource->getInstance());
 	}
 
 	/**
-	 * @testdox If a factory is provided in shared mode, the instance is cached
+	 * @testdox  If a factory is provided in shared mode, the instance is cached
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testGetInstanceWithFactoryInSharedMode()
 	{
-		$container = new Container();
+		$container = new Container;
 		$resource  = new ContainerResource(
 			$container,
-			function ()
+			static function ()
 			{
-				return new Stub6();
+				return new Stub6;
 			},
 			ContainerResource::SHARE
 		);
 
-		$one = $resource->getInstance();
-		$two = $resource->getInstance();
-		$this->assertSame($one, $two);
+		$this->assertSame($resource->getInstance(), $resource->getInstance());
 	}
 
 	/**
-	 * @testdox If an instance is provided directly in shared mode, that instance is returned
+	 * @testdox  If an instance is provided directly in shared mode, that instance is returned
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testGetInstanceWithInstanceInSharedMode()
 	{
-		$stub = new Stub6();
-		$container = new Container();
+		$stub = new Stub6;
+		$container = new Container;
 		$resource  = new ContainerResource(
 			$container,
 			$stub,
@@ -153,12 +170,15 @@ class ContainerResourceTest extends TestCase
 	}
 
 	/**
-	 * @testdox If an instance is provided directly in non-shared mode, a copy (clone) of that instance is returned
+	 * @testdox  If an instance is provided directly in non-shared mode, a copy (clone) of that instance is returned
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testGetInstanceWithInstanceInNonSharedMode()
 	{
-		$stub      = new Stub6();
-		$container = new Container();
+		$stub      = new Stub6;
+		$container = new Container;
 		$resource  = new ContainerResource(
 			$container,
 			$stub,
@@ -169,33 +189,42 @@ class ContainerResourceTest extends TestCase
 	}
 
 	/**
-	 * @testdox After a reset, a new instance is returned even for shared resources
+	 * @testdox  After a reset, a new instance is returned even for shared resources with factories
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testResetWithFactory()
 	{
-		$container = new Container();
+		$container = new Container;
 		$resource  = new ContainerResource(
 			$container,
-			function ()
+			static function ()
 			{
-				return new Stub6();
+				return new Stub6;
 			},
 			ContainerResource::SHARE
 		);
 
 		$one = $resource->getInstance();
+
 		$resource->reset();
+
 		$two = $resource->getInstance();
+
 		$this->assertNotSame($one, $two);
 	}
 
 	/**
-	 * @testdox After a reset, a new instance is returned even for shared resources
+	 * @testdox  After a reset, a new instance is returned even for shared resources with instances
+	 *
+	 * @covers   Joomla\DI\ContainerResource
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testResetWithInstance()
 	{
-		$stub      = new Stub6();
-		$container = new Container();
+		$stub      = new Stub6;
+		$container = new Container;
 		$resource  = new ContainerResource(
 			$container,
 			$stub,
@@ -203,8 +232,11 @@ class ContainerResourceTest extends TestCase
 		);
 
 		$one = $resource->getInstance();
+
 		$resource->reset();
+
 		$two = $resource->getInstance();
+
 		$this->assertNotSame($one, $two);
 	}
 }

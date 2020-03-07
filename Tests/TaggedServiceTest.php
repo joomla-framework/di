@@ -17,7 +17,10 @@ include_once __DIR__ . '/Stubs/stubs.php';
 class TaggedServiceTest extends TestCase
 {
 	/**
-	 * @testdox A registered resource can be tagged
+	 * @testdox  A registered resource can be tagged
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testARegisteredResourceCanBeTagged()
 	{
@@ -31,7 +34,7 @@ class TaggedServiceTest extends TestCase
 
 		$container->set(
 			Stub6::class,
-			function ()
+			static function ()
 			{
 				return new Stub6;
 			}
@@ -43,7 +46,10 @@ class TaggedServiceTest extends TestCase
 	}
 
 	/**
-	 * @testdox All tagged services can be retrieved
+	 * @testdox  All tagged services can be retrieved
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testAllTaggedServicesCanBeRetrieved()
 	{
@@ -51,7 +57,7 @@ class TaggedServiceTest extends TestCase
 
 		$container->set(
 			Stub1::class,
-			function ()
+			static function ()
 			{
 				return new Stub1;
 			}
@@ -59,7 +65,7 @@ class TaggedServiceTest extends TestCase
 
 		$container->set(
 			Stub2::class,
-			function (Container $container)
+			static function (Container $container)
 			{
 				return new Stub2($container->get(Stub1::class));
 			}
@@ -67,9 +73,9 @@ class TaggedServiceTest extends TestCase
 
 		$container->set(
 			Stub4::class,
-			function (Container $container)
+			static function (Container $container)
 			{
-				return new Stub4($container->get(Stub2::class));
+				return new Stub4;
 			}
 		);
 

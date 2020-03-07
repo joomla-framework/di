@@ -26,14 +26,17 @@ class ResourceDecoration extends TestCase
 	private $value = 42;
 
 	/**
-	 * @testdox An extended resource replaces the original resource with a Closure
+	 * @testdox  An extended resource replaces the original resource with a Closure
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testExtendClosure()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->share(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			}
@@ -59,11 +62,14 @@ class ResourceDecoration extends TestCase
 	}
 
 	/**
-	 * @testdox An extended resource replaces the original resource with a callback function
+	 * @testdox  An extended resource replaces the original resource with a callback function
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testExtendCallback()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->share(
 			'foo',
 			[$this, 'baseCallable']
@@ -84,11 +90,14 @@ class ResourceDecoration extends TestCase
 	}
 
 	/**
-	 * @testdox Scalar resources can be extended
+	 * @testdox  Scalar resources can be extended
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testExtendScalar()
 	{
-		$container = new Container();
+		$container = new Container;
 
 		$container->set('foo', 'bar');
 
@@ -96,7 +105,7 @@ class ResourceDecoration extends TestCase
 
 		$container->extend(
 			'foo',
-			function ($originalResult, Container $c)
+			static function ($originalResult, Container $c)
 			{
 				return $originalResult . 'baz';
 			}
@@ -106,27 +115,32 @@ class ResourceDecoration extends TestCase
 	}
 
 	/**
-	 * @testdox Attempting to extend an undefined resource throws a KeyNotFoundException
+	 * @testdox  Attempting to extend an undefined resource throws a KeyNotFoundException
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testExtendValidatesKeyIsPresent()
 	{
 		$this->expectException(KeyNotFoundException::class);
 
-		$container = new Container();
-		$container->extend('foo', function () {});
+		(new Container)->extend('foo', static function () {});
 	}
 
 	/**
-	 * @testdox A protected resource can not be extended
+	 * @testdox  A protected resource can not be extended
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testExtendProtected()
 	{
 		$this->expectException(ProtectedKeyException::class);
 
-		$container = new Container();
+		$container = new Container;
 		$container->protect(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			}
@@ -134,7 +148,7 @@ class ResourceDecoration extends TestCase
 
 		$container->extend(
 			'foo',
-			function ($shared)
+			static function ($shared)
 			{
 				$shared->value = $this->value;
 

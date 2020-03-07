@@ -26,58 +26,70 @@ class ContainerSetupTest extends TestCase
 	}
 
 	/**
-	 * @testdox Resources can be set up with Callables
+	 * @testdox  Resources can be set up with Callables
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testSetCallable()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
 			[$this, 'callMe']
 		);
 
-		$this->assertEquals('called', $container->get('foo'));
+		$this->assertSame('called', $container->get('foo'));
 	}
 
 	/**
-	 * @testdox Resources can be set up with Closures
+	 * @testdox  Resources can be set up with Closures
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testSetClosure()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return 'called';
 			}
 		);
 
-		$this->assertEquals('called', $container->get('foo'));
+		$this->assertSame('called', $container->get('foo'));
 	}
 
 	/**
-	 * @testdox Resources can be scalar values
+	 * @testdox  Resources can be scalar values
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testSetNotCallable()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set('foo', 'bar');
 
-		$this->assertEquals('bar', $container->get('foo'));
+		$this->assertSame('bar', $container->get('foo'));
 	}
 
 	/**
-	 * @testdox Setting an existing protected resource throws an OutOfBoundsException
+	 * @testdox  Setting an existing protected resource throws an OutOfBoundsException
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testSetAlreadySetProtected()
 	{
 		$this->expectException(\OutOfBoundsException::class);
 
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 			},
 			false,
@@ -85,7 +97,7 @@ class ContainerSetupTest extends TestCase
 		);
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 			},
 			false,
@@ -94,39 +106,44 @@ class ContainerSetupTest extends TestCase
 	}
 
 	/**
-	 * @testdox Setting an existing non-protected resource replaces the resource
+	 * @testdox  Setting an existing non-protected resource replaces the resource
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testSetAlreadySetNotProtected()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return 'original';
 			}
 		);
-		$this->assertEquals('original', $container->get('foo'));
 
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return 'changed';
 			}
 		);
-		$this->assertEquals('changed', $container->get('foo'));
+		$this->assertSame('changed', $container->get('foo'));
 	}
 
 	/**
-	 * @testdox Default mode is 'not shared' and 'not protected'
+	 * @testdox  Default mode is 'not shared' and 'not protected'
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testSetDefault()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			}
@@ -136,38 +153,40 @@ class ContainerSetupTest extends TestCase
 		$this->assertFalse($container->isProtected('foo'));
 	}
 
-	public function dataForSetFlags()
+	public function dataForSetFlags(): \Generator
 	{
-		return [
-			'shared, protected'         => [
-				'shared'    => true,
-				'protected' => true
-			],
-			'shared, not protected'     => [
-				'shared'    => true,
-				'protected' => false
-			],
-			'not shared, protected'     => [
-				'shared'    => false,
-				'protected' => true
-			],
-			'not shared, not protected' => [
-				'shared'    => false,
-				'protected' => false
-			],
+		yield 'shared, protected' => [
+			'shared'    => true,
+			'protected' => true,
+		];
+		yield 'shared, not protected' => [
+			'shared'    => true,
+			'protected' => false,
+		];
+		yield 'not shared, protected' => [
+			'shared'    => false,
+			'protected' => true,
+		];
+		yield 'not shared, not protected' => [
+			'shared'    => false,
+			'protected' => false,
 		];
 	}
 
 	/**
+	 * @testdox  'shared' and 'protected' mode can be set independently
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
+	 *
 	 * @dataProvider dataForSetFlags
-	 * @testdox      'shared' and 'protected' mode can be set independently
 	 */
-	public function testSetSharedProtected($shared, $protected)
+	public function testSetSharedProtected(bool $shared, bool $protected)
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			},
@@ -175,19 +194,22 @@ class ContainerSetupTest extends TestCase
 			$protected
 		);
 
-		$this->assertEquals($shared, $container->isShared('foo'));
-		$this->assertEquals($protected, $container->isProtected('foo'));
+		$this->assertSame($shared, $container->isShared('foo'));
+		$this->assertSame($protected, $container->isProtected('foo'));
 	}
 
 	/**
-	 * @testdox The convenience method protect() sets resources as protected, but not as shared by default
+	 * @testdox  The convenience method protect() sets resources as protected, but not as shared by default
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testProtect()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->protect(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			}
@@ -198,14 +220,17 @@ class ContainerSetupTest extends TestCase
 	}
 
 	/**
-	 * @testdox The convenience method protect() sets resources as shared when passed true as third arg
+	 * @testdox  The convenience method protect() sets resources as shared when passed true as third arg
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testProtectShared()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->protect(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			},
@@ -217,14 +242,17 @@ class ContainerSetupTest extends TestCase
 	}
 
 	/**
-	 * @testdox The convenience method share() sets resources as shared, but not as protected by default
+	 * @testdox  The convenience method share() sets resources as shared, but not as protected by default
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testShare()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->share(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			}
@@ -235,14 +263,17 @@ class ContainerSetupTest extends TestCase
 	}
 
 	/**
-	 * @testdox The convenience method share() sets resources as protected when passed true as third arg
+	 * @testdox  The convenience method share() sets resources as protected when passed true as third arg
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testShareProtected()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->share(
 			'foo',
-			function ()
+			static function ()
 			{
 				return new \stdClass;
 			},
@@ -254,14 +285,17 @@ class ContainerSetupTest extends TestCase
 	}
 
 	/**
-	 * @testdox The callback gets the container instance as a parameter
+	 * @testdox  The callback gets the container instance as a parameter
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testGetPassesContainerInstanceShared()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ($c)
+			static function (Container $c)
 			{
 				return $c;
 			}
@@ -271,21 +305,23 @@ class ContainerSetupTest extends TestCase
 	}
 
 	/**
-	 * @testdox The setting an object and then setting it again as null should remove the object
+	 * @testdox  The setting an object and then setting it again as null should remove the object
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testSettingNullUnsetsAResource()
 	{
 		$this->expectException(KeyNotFoundException::class);
 
-		$container = new Container();
+		$container = new Container;
 		$container->set(
 			'foo',
-			function ()
+			static function ()
 			{
 				return 'original';
 			}
 		);
-		$this->assertEquals('original', $container->get('foo'));
 
 		$container->set(
 			'foo',

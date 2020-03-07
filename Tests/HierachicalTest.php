@@ -18,32 +18,42 @@ include_once __DIR__.'/Stubs/ArbitraryInteropContainer.php';
 class HierachicalTest extends TestCase
 {
 	/**
-	 * @testdox Child container has access to parent's resources
+	 * @testdox  Child container has access to parent's resources
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testCreateChild()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
-			StubInterface::class, function ()
-		{
-			return new Stub1;
-		});
+			StubInterface::class,
+			static function ()
+			{
+				return new Stub1;
+			}
+		);
 
 		$child = $container->createChild();
 		$this->assertInstanceOf(Stub1::class, $child->get(StubInterface::class));
 	}
 
 	/**
-	 * @testdox Child container resolves parent's alias to parent's resource
+	 * @testdox  Child container resolves parent's alias to parent's resource
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testChildResolveAlias()
 	{
-		$container = new Container();
+		$container = new Container;
 		$container->set(
-			StubInterface::class, function ()
-		{
-			return new Stub1;
-		});
+			StubInterface::class,
+			static function ()
+			{
+				return new Stub1;
+			}
+		);
 		$container->alias('stub', StubInterface::class);
 
 		$child = $container->createChild();
@@ -51,7 +61,10 @@ class HierachicalTest extends TestCase
 	}
 
 	/**
-	 * @testdox Container can decorate an arbitrary PSR-11 compatible container
+	 * @testdox  Container can decorate an arbitrary PSR-11 compatible container
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testDecorateArbitraryPsr11Container()
 	{
@@ -62,7 +75,10 @@ class HierachicalTest extends TestCase
 	}
 
 	/**
-	 * @testdox Container can manage an alias for a resource from an arbitrary PSR-11 compatible container
+	 * @testdox  Container can manage an alias for a resource from an arbitrary PSR-11 compatible container
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testDecorateArbitraryPsr11ContainerAlias()
 	{
@@ -74,7 +90,10 @@ class HierachicalTest extends TestCase
 	}
 
 	/**
-	 * @testdox Resources from an arbitrary PSR-11 compatible container are 'shared' and 'protected'
+	 * @testdox  Resources from an arbitrary PSR-11 compatible container are 'shared' and 'protected'
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
 	 */
 	public function testDecorateArbitraryPsr11ContainerModes()
 	{

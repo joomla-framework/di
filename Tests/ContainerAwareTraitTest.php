@@ -9,6 +9,7 @@ namespace Joomla\DI\Tests;
 use Joomla\DI\Container;
 use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\Exception\ContainerNotFoundException;
+use Joomla\Test\TestHelper;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,22 +23,25 @@ class ContainerAwareTraitTest extends TestCase
 	protected $object;
 
 	/**
-	 * @testdox Container can be set with setContainer()
+	 * @testdox  Container can be set with setContainer()
+	 *
+	 * @covers   Joomla\DI\ContainerAwareTrait
+	 * @uses     Joomla\DI\Container
 	 */
 	public function testGetContainer()
 	{
 		$container = new Container();
+
 		$trait     = $this->getObjectForTrait(ContainerAwareTrait::class);
 		$trait->setContainer($container);
 
-		$method = new \ReflectionMethod($trait, 'getContainer');
-		$method->setAccessible(true);
-
-		$this->assertSame($container, $method->invoke($trait));
+		$this->assertSame($container, TestHelper::getValue($trait, 'container'));
 	}
 
 	/**
-	 * @testdox getContainer() throws an ContainerNotFoundException, if no container is set
+	 * @testdox  getContainer() throws an ContainerNotFoundException, if no container is set
+	 *
+	 * @covers   Joomla\DI\ContainerAwareTrait
 	 */
 	public function testGetContainerException()
 	{
@@ -45,9 +49,6 @@ class ContainerAwareTraitTest extends TestCase
 
 		$trait = $this->getObjectForTrait(ContainerAwareTrait::class);
 
-		$method = new \ReflectionMethod($trait, 'getContainer');
-		$method->setAccessible(true);
-
-		$method->invoke($trait);
+		TestHelper::invoke($trait, 'getContainer');
 	}
 }
