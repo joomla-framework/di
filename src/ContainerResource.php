@@ -11,7 +11,7 @@ namespace Joomla\DI;
 /**
  * Defines the representation of a resource.
  *
- * @since  __DEPLOY_VERSION__
+ * @since  2.0.0-beta
  * @internal
  */
 final class ContainerResource
@@ -20,7 +20,7 @@ final class ContainerResource
 	 * Defines the resource as non-shared
 	 *
 	 * @const  integer
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	public const NO_SHARE = 0;
 
@@ -28,7 +28,7 @@ final class ContainerResource
 	 * Defines the resource as shared
 	 *
 	 * @const  integer
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	public const SHARE = 1;
 
@@ -36,7 +36,7 @@ final class ContainerResource
 	 * Defines the resource as non-protected
 	 *
 	 * @const  integer
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	public const NO_PROTECT = 0;
 
@@ -44,7 +44,7 @@ final class ContainerResource
 	 * Defines the resource as protected
 	 *
 	 * @const  integer
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	public const PROTECT = 2;
 
@@ -52,7 +52,7 @@ final class ContainerResource
 	 * The container the resource is assigned to
 	 *
 	 * @var    Container
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	private $container;
 
@@ -60,7 +60,7 @@ final class ContainerResource
 	 * The object instance for a shared object
 	 *
 	 * @var    mixed
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	private $instance;
 
@@ -68,7 +68,7 @@ final class ContainerResource
 	 * The factory object
 	 *
 	 * @var    callable
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	private $factory;
 
@@ -76,7 +76,7 @@ final class ContainerResource
 	 * Flag if the resource is shared
 	 *
 	 * @var    boolean
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	private $shared = false;
 
@@ -84,7 +84,7 @@ final class ContainerResource
 	 * Flag if the resource is protected
 	 *
 	 * @var    boolean
-	 * @since  __DEPLOY_VERSION__
+	 * @since  2.0.0-beta
 	 */
 	private $protected = false;
 
@@ -95,7 +95,7 @@ final class ContainerResource
 	 * @param   mixed      $value      The resource or its factory closure
 	 * @param   integer    $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   2.0.0-beta
 	 */
 	public function __construct(Container $container, $value, int $mode = 0)
 	{
@@ -136,7 +136,7 @@ final class ContainerResource
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   2.0.0-beta
 	 */
 	public function isShared(): bool
 	{
@@ -148,7 +148,7 @@ final class ContainerResource
 	 *
 	 * @return  boolean
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   2.0.0-beta
 	 */
 	public function isProtected(): bool
 	{
@@ -163,7 +163,7 @@ final class ContainerResource
 	 *
 	 * @return  mixed
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   2.0.0-beta
 	 */
 	public function getInstance()
 	{
@@ -187,7 +187,7 @@ final class ContainerResource
 	 *
 	 * @return  callable
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   2.0.0-beta
 	 */
 	public function getFactory(): callable
 	{
@@ -202,7 +202,7 @@ final class ContainerResource
 	 *
 	 * @return  boolean  True if the resource was reset, false otherwise
 	 *
-	 * @since   __DEPLOY_VERSION__
+	 * @since   2.0.0-beta
 	 */
 	public function reset(): bool
 	{
