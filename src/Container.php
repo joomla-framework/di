@@ -134,13 +134,12 @@ class Container implements ContainerInterface
 	 */
 	public function exists($key)
 	{
-		@trigger_error(
-			sprintf(
-				'%1$s() is deprecated and will be removed in 3.0, use %2$s::has() instead.',
-				__METHOD__,
-				ContainerInterface::class
-			),
-			E_USER_DEPRECATED
+		trigger_deprecation(
+			'joomla/di',
+			'1.5.0',
+			'%s() is deprecated and will be removed in 3.0, use %s::has() instead.',
+			__METHOD__,
+			ContainerInterface::class
 		);
 
 		return $this->has($key);
