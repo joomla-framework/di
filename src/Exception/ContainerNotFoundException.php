@@ -13,7 +13,7 @@ use Psr\Container\ContainerExceptionInterface;
 /**
  * No container is available.
  *
- * @since  2.0.0-beta
+ * @since  2.0.0
  */
 class ContainerNotFoundException extends \RuntimeException implements ContainerExceptionInterface
 {

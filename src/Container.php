@@ -35,7 +35,7 @@ class Container implements ContainerInterface
 	 * Holds the resources.
 	 *
 	 * @var    ContainerResource[]
-	 * @since  2.0.0-beta
+	 * @since  2.0.0
 	 */
 	protected $resources = [];
 
@@ -187,7 +187,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  boolean
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function isShared(string $resourceName): bool
 	{
@@ -201,7 +201,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  boolean
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 */
 	public function isProtected(string $resourceName): bool
 	{
@@ -217,7 +217,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  boolean
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 * @throws  KeyNotFoundException
 	 */
 	private function hasFlag(string $resourceName, string $method, bool $default = true): bool
@@ -689,7 +689,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return  ContainerResource|null  The resource if present, or null if instructed to not bail
 	 *
-	 * @since   2.0.0-beta
+	 * @since   2.0.0
 	 * @throws  KeyNotFoundException
 	 */
 	public function getResource(string $key, bool $bail = false): ?ContainerResource
