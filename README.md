@@ -1,4 +1,4 @@
-# The DI Package [![Build Status](https://travis-ci.org/joomla-framework/di.png?branch=master)](https://travis-ci.org/joomla-framework/di) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/joomla-framework/di/badges/quality-score.png?b=2.0-dev)](https://scrutinizer-ci.com/g/joomla-framework/di/?branch=2.0-dev) [![Code Coverage](https://scrutinizer-ci.com/g/joomla-framework/di/badges/coverage.png?b=2.0-dev)](https://scrutinizer-ci.com/g/joomla-framework/di/?branch=2.0-dev)
+# The DI Package [![Build Status](https://ci.joomla.org/api/badges/joomla-framework/di/status.svg?ref=refs/heads/2.0-dev)](https://ci.joomla.org/joomla-framework/di)
 
 [![Latest Stable Version](https://poser.pugx.org/joomla/di/v/stable)](https://packagist.org/packages/joomla/di)
 [![Total Downloads](https://poser.pugx.org/joomla/di/downloads)](https://packagist.org/packages/joomla/di)
@@ -9,7 +9,7 @@ The Joomla! **Dependency Injection** package provides a powerful [PSR-11](http:/
 
 ## Requirements
 
-* PHP 7.0 or later
+* PHP 7.2.5 or later
 
 ## Installation
 
