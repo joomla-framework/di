@@ -11,10 +11,20 @@ The Joomla! **Dependency Injection** package provides a powerful [PSR-11](http:/
 
 * PHP 7.2.5 or later
 
-## Installation
+## Installation via Composer
 
-To install the package, you can run the following from the command line:
-           
+Add `"joomla/di": "2.0.*@dev"` to the require block in your composer.json and then run `composer install`.
+
+```json
+{
+	"require": {
+		"joomla/di": "2.0.*@dev"
+	}
+}
+```
+
+Alternatively, you can simply run the following from the command line:
+
 ```sh
-composer require joomla/di
+composer require joomla/di "2.0.*@dev"
 ```
