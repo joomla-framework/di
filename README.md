@@ -13,12 +13,12 @@ The Joomla! **Dependency Injection** package provides a powerful [PSR-11](http:/
 
 ## Installation via Composer
 
-Add `"joomla/di": "2.0.*@dev"` to the require block in your composer.json and then run `composer install`.
+Add `"joomla/di": "~2.0"` to the require block in your composer.json and then run `composer install`.
 
 ```json
 {
 	"require": {
-		"joomla/di": "2.0.*@dev"
+		"joomla/di": "~2.0"
 	}
 }
 ```
@@ -26,11 +26,11 @@ Add `"joomla/di": "2.0.*@dev"` to the require block in your composer.json and th
 Alternatively, you can simply run the following from the command line:
 
 ```sh
-composer require joomla/di "2.0.*@dev"
+composer require joomla/di "~2.0"
 ```
 
 If you want to include the test sources and docs, use
 
 ```sh
-composer require --prefer-source joomla/di "~1.3"
+composer require --prefer-source joomla/di "~2.0"
 ```
