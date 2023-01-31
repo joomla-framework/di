@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @copyright  Copyright (C) 2013 - 2015 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
@@ -11,7 +12,7 @@ use Joomla\DI\Exception\DependencyResolutionException;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-include_once __DIR__.'/Stubs/stubs.php';
+include_once __DIR__ . '/Stubs/stubs.php';
 
 /**
  * Tests for Container class.
