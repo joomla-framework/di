@@ -16,113 +16,110 @@ include_once __DIR__.'/Stubs/stubs.php';
  */
 class ContainerAccessTest extends TestCase
 {
-	/**
-	 * @testdox  The same resource instance is returned for shared resources
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testGetShared()
-	{
-		$container = new Container;
-		$container->set(
-			'foo',
-			static function ()
-			{
-				return new \stdClass;
-			},
-			true
-		);
+    /**
+     * @testdox  The same resource instance is returned for shared resources
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testGetShared()
+    {
+        $container = new Container();
+        $container->set(
+            'foo',
+            static function () {
+                return new \stdClass();
+            },
+            true
+        );
 
-		$this->assertSame($container->get('foo'), $container->get('foo'));
-	}
+        $this->assertSame($container->get('foo'), $container->get('foo'));
+    }
 
-	/**
-	 * @testdox  A new resource instance is returned for non-shared resources
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testGetNotShared()
-	{
-		$container = new Container;
-		$container->set(
-			'foo',
-			static function ()
-			{
-				return new \stdClass;
-			},
-			false
-		);
+    /**
+     * @testdox  A new resource instance is returned for non-shared resources
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testGetNotShared()
+    {
+        $container = new Container();
+        $container->set(
+            'foo',
+            static function () {
+                return new \stdClass();
+            },
+            false
+        );
 
-		$this->assertNotSame($container->get('foo'), $container->get('foo'));
-	}
+        $this->assertNotSame($container->get('foo'), $container->get('foo'));
+    }
 
-	/**
-	 * @testdox  Accessing an undefined resource throws an InvalidArgumentException
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testGetNotExists()
-	{
-		$this->expectException(\InvalidArgumentException::class);
+    /**
+     * @testdox  Accessing an undefined resource throws an InvalidArgumentException
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testGetNotExists()
+    {
+        $this->expectException(\InvalidArgumentException::class);
 
-		(new Container)->get('foo');
-	}
+        (new Container())->get('foo');
+    }
 
-	/**
-	 * @testdox  The existence of a resource can be checked
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testExists()
-	{
-		$container = new Container;
-		$container->set('foo', 'bar');
+    /**
+     * @testdox  The existence of a resource can be checked
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testExists()
+    {
+        $container = new Container();
+        $container->set('foo', 'bar');
 
-		$this->assertTrue($container->has('foo'), "'foo' should be present");
-		$this->assertFalse($container->has('baz'), "'baz' should not be present");
-	}
+        $this->assertTrue($container->has('foo'), "'foo' should be present");
+        $this->assertFalse($container->has('baz'), "'baz' should not be present");
+    }
 
-	/**
-	 * @testdox  getNewInstance() will always return a new instance, even if the resource was set to be shared
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testGetNewInstance()
-	{
-		$container = new Container;
-		$container->share(
-			'foo',
-			static function ()
-			{
-				return new \stdClass;
-			}
-		);
+    /**
+     * @testdox  getNewInstance() will always return a new instance, even if the resource was set to be shared
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testGetNewInstance()
+    {
+        $container = new Container();
+        $container->share(
+            'foo',
+            static function () {
+                return new \stdClass();
+            }
+        );
 
-		$this->assertNotSame($container->getNewInstance('foo'), $container->getNewInstance('foo'));
-	}
+        $this->assertNotSame($container->getNewInstance('foo'), $container->getNewInstance('foo'));
+    }
 
-	/**
-	 * @testdox  The unique service keys for the container are returned
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testRetrievingTheContainerKeys()
-	{
-		$container = new Container;
+    /**
+     * @testdox  The unique service keys for the container are returned
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testRetrievingTheContainerKeys()
+    {
+        $container = new Container();
 
-		$container->set('foo', 'bar');
-		$container->set('goo', 'car');
-		$container->alias('boo', 'foo');
+        $container->set('foo', 'bar');
+        $container->set('goo', 'car');
+        $container->alias('boo', 'foo');
 
-		$this->assertSame(
-			['boo', 'foo', 'goo'],
-			$container->getKeys()
-		);
-	}
+        $this->assertSame(
+            ['boo', 'foo', 'goo'],
+            $container->getKeys()
+        );
+    }
 }

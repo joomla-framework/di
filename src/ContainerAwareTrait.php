@@ -17,45 +17,44 @@ use Joomla\DI\Exception\ContainerNotFoundException;
  */
 trait ContainerAwareTrait
 {
-	/**
-	 * DI Container
-	 *
-	 * @var    Container
-	 * @since  1.2
-	 */
-	private $container;
+    /**
+     * DI Container
+     *
+     * @var    Container
+     * @since  1.2
+     */
+    private $container;
 
-	/**
-	 * Get the DI container.
-	 *
-	 * @return  Container
-	 *
-	 * @since   1.2
-	 * @throws  ContainerNotFoundException May be thrown if the container has not been set.
-	 */
-	protected function getContainer()
-	{
-		if ($this->container)
-		{
-			return $this->container;
-		}
+    /**
+     * Get the DI container.
+     *
+     * @return  Container
+     *
+     * @since   1.2
+     * @throws  ContainerNotFoundException May be thrown if the container has not been set.
+     */
+    protected function getContainer()
+    {
+        if ($this->container) {
+            return $this->container;
+        }
 
-		throw new ContainerNotFoundException('Container not set in ' . \get_class($this));
-	}
+        throw new ContainerNotFoundException('Container not set in ' . \get_class($this));
+    }
 
-	/**
-	 * Set the DI container.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  $this
-	 *
-	 * @since   1.2
-	 */
-	public function setContainer(Container $container)
-	{
-		$this->container = $container;
+    /**
+     * Set the DI container.
+     *
+     * @param   Container  $container  The DI container.
+     *
+     * @return  $this
+     *
+     * @since   1.2
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
 
-		return $this;
-	}
+        return $this;
+    }
 }

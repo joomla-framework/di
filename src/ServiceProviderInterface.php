@@ -15,14 +15,14 @@ namespace Joomla\DI;
  */
 interface ServiceProviderInterface
 {
-	/**
-	 * Registers the service provider with a DI container.
-	 *
-	 * @param   Container  $container  The DI container.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.0
-	 */
-	public function register(Container $container);
+    /**
+     * Registers the service provider with a DI container.
+     *
+     * @param   Container  $container  The DI container.
+     *
+     * @return  void
+     *
+     * @since   1.0
+     */
+    public function register(Container $container);
 }

@@ -16,54 +16,52 @@ include_once __DIR__ . '/Stubs/stubs.php';
  */
 class AliasingTest extends TestCase
 {
-	/**
-	 * @testdox  Both the original key and the alias return the same resource
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testResolveAliasSameAsKey()
-	{
-		$container = new Container;
-		$container->set(
-			'foo',
-			static function ()
-			{
-				return new \stdClass;
-			},
-			true,
-			true
-		);
-		$container->alias('bar', 'foo');
+    /**
+     * @testdox  Both the original key and the alias return the same resource
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testResolveAliasSameAsKey()
+    {
+        $container = new Container();
+        $container->set(
+            'foo',
+            static function () {
+                return new \stdClass();
+            },
+            true,
+            true
+        );
+        $container->alias('bar', 'foo');
 
-		$this->assertSame(
-			$container->get('foo'),
-			$container->get('bar'),
-			'When retrieving an alias of a class, both the original and the alias should return the same object instance.'
-		);
-	}
+        $this->assertSame(
+            $container->get('foo'),
+            $container->get('bar'),
+            'When retrieving an alias of a class, both the original and the alias should return the same object instance.'
+        );
+    }
 
-	/**
-	 * @testdox  has() also resolves the alias if set.
-	 *
-	 * @covers   Joomla\DI\Container
-	 * @uses     Joomla\DI\ContainerResource
-	 */
-	public function testExistsResolvesAlias()
-	{
-		$container = new Container;
-		$container->set(
-			'foo',
-			static function ()
-			{
-				return new \stdClass;
-			},
-			true,
-			true
-		);
-		$container->alias('bar', 'foo');
+    /**
+     * @testdox  has() also resolves the alias if set.
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testExistsResolvesAlias()
+    {
+        $container = new Container();
+        $container->set(
+            'foo',
+            static function () {
+                return new \stdClass();
+            },
+            true,
+            true
+        );
+        $container->alias('bar', 'foo');
 
-		$this->assertTrue($container->has('foo'), "Original 'foo' was not resolved");
-		$this->assertTrue($container->has('bar'), "Alias 'bar' was not resolved");
-	}
+        $this->assertTrue($container->has('foo'), "Original 'foo' was not resolved");
+        $this->assertTrue($container->has('bar'), "Alias 'bar' was not resolved");
+    }
 }
