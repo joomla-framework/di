@@ -102,4 +102,32 @@ class HierachicalTest extends TestCase
 		$this->assertTrue($container->isShared('aic_foo'), "'aic_foo' is expected to be shared");
 		$this->assertTrue($container->isProtected('aic_foo'), "'aic_foo' is expected to be protected");
 	}
+
+	/**
+	 * @testdox  Test possibility to override 'protected' item in Child container
+	 *
+	 * @covers   Joomla\DI\Container
+	 * @uses     Joomla\DI\ContainerResource
+	 */
+	public function testOverrideProtectedItemLocaly()
+	{
+		$container = new Container;
+		$container->protect(
+			StubInterface::class,
+			static function ()
+			{
+				return new Stub1;
+			}
+		);
+		$child = $container->createChild();
+		$child->set(
+			StubInterface::class,
+			static function ()
+			{
+				return new Stub4;
+			}
+		);
+
+		$this->assertInstanceOf(Stub4::class, $child->get(StubInterface::class));
+	}
 }
