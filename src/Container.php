@@ -205,6 +205,22 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Check whether a resource is stored locally
+     *
+     * @param   string  $resourceName  Name of the resource to check.
+     *
+     * @return  boolean
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function isLocal(string $resourceName): bool
+    {
+        $key = $this->resolveAlias($resourceName);
+
+        return !empty($this->resources[$key]);
+    }
+
+    /**
      * Check whether a flag (i.e., one of 'shared' or 'protected') is set
      *
      * @param   string   $resourceName  Name of the resource to check.
@@ -599,7 +615,7 @@ class Container implements ContainerInterface
 
         $hasKey = $this->has($key);
 
-        if ($hasKey && $this->isProtected($key)) {
+        if ($hasKey && $this->isLocal($key) && $this->isProtected($key)) {
             throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
         }
 
