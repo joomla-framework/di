@@ -213,7 +213,7 @@ class Container implements ContainerInterface
      *
      * @since   __DEPLOY_VERSION__
      */
-    public function isLocal(string $resourceName): bool
+    private function isLocal(string $resourceName): bool
     {
         $key = $this->resolveAlias($resourceName);
 

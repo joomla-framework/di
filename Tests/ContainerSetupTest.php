@@ -318,36 +318,4 @@ class ContainerSetupTest extends TestCase
 
         $container->get('foo');
     }
-
-    /**
-     * @testdox  The method isLocal() works or not
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
-    public function testIsLocal()
-    {
-        $container = new Container;
-        $container->protect(
-            Stub1::class,
-            static function ()
-            {
-                return new Stub1;
-            }
-        );
-        $child = $container->createChild();
-        $child->set(
-            Stub4::class,
-            static function ()
-            {
-                return new Stub4;
-            }
-        );
-
-        $this->assertTrue($container->isLocal(Stub1::class), 'Root element inside Root container is local.');
-        $this->assertFalse($child->isLocal(Stub1::class), 'Root element inside Child container is not local.');
-
-        $this->assertTrue($child->isLocal(Stub4::class), 'Child element inside it`s container is local.');
-        $this->assertFalse($container->isLocal(Stub4::class), 'Child element inside Root container is not local.');
-    }
 }
