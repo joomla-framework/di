@@ -600,7 +600,7 @@ class Container implements ContainerInterface
      * Set a resource to the container. If the value is null the resource is removed.
      *
      * @param   string   $key        Name of resources key to set.
-     * @param   mixed    $value      Callable function to run or string to retrive when requesting the specified $key.
+     * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $shared     True to create and store a shared instance.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
      *
@@ -637,7 +637,7 @@ class Container implements ContainerInterface
      * Shortcut method for creating protected keys.
      *
      * @param   string   $key     Name of dataStore key to set.
-     * @param   mixed    $value   Callable function to run or string to retrive when requesting the specified $key.
+     * @param   mixed    $value   Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $shared  True to create and store a shared instance.
      *
      * @return  $this
@@ -653,7 +653,7 @@ class Container implements ContainerInterface
      * Shortcut method for creating shared keys.
      *
      * @param   string   $key        Name of dataStore key to set.
-     * @param   mixed    $value      Callable function to run or string to retrive when requesting the specified $key.
+     * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
      *
      * @return  $this
