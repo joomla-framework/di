@@ -33,7 +33,7 @@ In this document,
   - **resource** is a key/value pair, with the key being the id, and the value being a factory or an instance.
 
 ### Container Interoperability
-    
+
 The Joomla! Dependency Injection package implements the [PSR-11 ContainerInterface](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md) for Dependency Injection Containers to achieve interoperability.
 
 ### Creating a Container object
@@ -52,7 +52,7 @@ $app = $container->get(MyApp\Application::class);
 $app->execute();
 ```
 
-### Hierachical Containers
+### Hierarchical Containers
 
 #### Decorating other Containers
 
@@ -424,7 +424,7 @@ $container->set(
     }
 );
 
-// Create the `UserProfile` object. 
+// Create the `UserProfile` object.
 $userProfile = $container->buildObject('UserProfile');
 
 var_dump($userProfile->user instanceof User); // prints bool(true)
@@ -453,10 +453,10 @@ Scalar arguments are provided with their default value.
 The container can only resolve dependencies that have been properly typehinted or given a default value. If the resource can not be built, a `DependencyResolutionException` is thrown.
 
 <!-- [x] Attempting to build a non-class returns false -->
-When you try to build a non-class, `buildObject` and `buildSharedObject` both return `false`. 
+When you try to build a non-class, `buildObject` and `buildSharedObject` both return `false`.
 
 <!-- [x] When a circular dependency is detected, a DependencyResolutionException is thrown (Bug #4) -->
-Sometimes circular dependencies are encountered. 
+Sometimes circular dependencies are encountered.
 
 ```php
 <?php
@@ -493,7 +493,7 @@ You can also specify to build a shared object by using the function `buildShared
 
 ### Extending an Item
 
-The Container also allows you to extend items. Extending an item can be thought of as a way to implement the decorator pattern, although it's not really in the strictist sense. When you `extend` an item, you must pass the key for the item you want to extend, and then a closure as the second argument.
+The Container also allows you to extend items. Extending an item can be thought of as a way to implement the decorator pattern, although it's not really in the strictest sense. When you `extend` an item, you must pass the key for the item you want to extend, and then a closure as the second argument.
 
 The closure will receive 2 arguments. The first is result of the callable for the given key, and the second will be the container itself.
 
@@ -678,7 +678,7 @@ When using the MVC pattern as recommended by Joomla, this can be at the applicat
 To help with making objects container aware, the `Joomla\DI\ContainerAwareTrait` is available to fulfill the `ContainerAwareInterface` requirements.
 
 <!-- [x] getContainer() throws an ContainerNotFoundException, if no container is set -->
-If you try to retrieve a container that was not set before, a `ContainerNotFoundException` is thrown. 
+If you try to retrieve a container that was not set before, a `ContainerNotFoundException` is thrown.
 
 Usage:
 
@@ -688,10 +688,10 @@ use Joomla\Controller\AbstractController;
 use Joomla\DI\ContainerAwareInterface;
 use Joomla\DI\ContainerAwareTrait;
 
-class MyConroller extends AbstractController implements ContainerAwareInterface
+class MyController extends AbstractController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-    
+
     public function execute()
     {
         $container = $this->getContainer();

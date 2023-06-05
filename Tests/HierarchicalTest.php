@@ -16,7 +16,7 @@ include_once __DIR__ . '/Stubs/ArbitraryInteropContainer.php';
 /**
  * Tests for Container class.
  */
-class HierachicalTest extends TestCase
+class HierarchicalTest extends TestCase
 {
     /**
      * @testdox  Child container has access to parent's resources
@@ -108,7 +108,7 @@ class HierachicalTest extends TestCase
      * @covers   Joomla\DI\Container
      * @uses     Joomla\DI\ContainerResource
      */
-    public function testOverrideProtectedItemLocaly()
+    public function testOverrideProtectedItemLocally()
     {
         $container = new Container;
         $container->protect(
