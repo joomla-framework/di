@@ -104,7 +104,7 @@ class Container implements ContainerInterface
      *
      * @since   1.5.0
      */
-    public function has($resourceName)
+    public function has(string $resourceName): bool
     {
         $key = $this->resolveAlias($resourceName);
 
