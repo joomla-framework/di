@@ -113,16 +113,14 @@ class HierarchicalTest extends TestCase
         $container = new Container();
         $container->protect(
             StubInterface::class,
-            static function ()
-            {
+            static function () {
                 return new Stub1();
             }
         );
         $child = $container->createChild();
         $child->set(
             StubInterface::class,
-            static function ()
-            {
+            static function () {
                 return new Stub4();
             }
         );
