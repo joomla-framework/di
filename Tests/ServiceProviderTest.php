@@ -8,9 +8,9 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ServiceProviderInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Joomla\DI\ServiceProviderInterface;
 
 /**
  * Tests for Container class.
