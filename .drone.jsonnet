@@ -77,7 +77,7 @@ local pipeline(name, phpversion, params) = {
                 depends: [ "composer" ],
                 failure: "ignore",
                 commands: [
-                    "vendor/bin/phpstan analyse src",
+                    "./vendor/bin/phpstan",
                 ]
             },
             {
@@ -104,4 +104,5 @@ local pipeline(name, phpversion, params) = {
     pipeline("8.1", "8.1", "--prefer-stable"),
     pipeline("8.2", "8.2", "--prefer-stable"),
     pipeline("8.3", "8.3", "--prefer-stable"),
+    pipeline("8.4", "8.4", "--prefer-stable"),
 ]
