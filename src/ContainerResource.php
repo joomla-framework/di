@@ -210,7 +210,7 @@ final class ContainerResource
      */
     public function getInstance(bool $noLazy = false)
     {
-        $callable = $noLazy ? $this->factory: $this->lazyFactory ?? $this->factory;
+        $callable = $noLazy ? $this->factory : $this->lazyFactory ?? $this->factory;
 
         if ($this->isShared()) {
             if ($this->instance === null) {
