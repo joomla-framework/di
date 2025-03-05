@@ -194,9 +194,12 @@ class ContainerResourceTest extends TestCase
         $container = new Container();
         $container->set('stub1', fn() => new Stub1(), true, true);
 
+        $factoryCalled = false;
+
         $resource = new ContainerResource(
             $container,
-            static function($container) {
+            static function($container) use (&$factoryCalled) {
+                $factoryCalled = true;
                 return new Stub2($container->get('stub1'));
             },
             ContainerResource::LAZY,
@@ -209,8 +212,20 @@ class ContainerResourceTest extends TestCase
         var_dump($stub2);
         $type = ob_get_clean();
 
-        $this->assertStringStartsWith('lazy proxy object', $type);
-        $this->assertSame($container->get('stub1'), $stub2->stub);
+        $this->assertFalse(
+            $factoryCalled,
+            'Factory should not be called before object state is observed or modified'
+        );
+        $this->assertStringStartsWith(
+            'lazy proxy object',
+            $type,
+            'Lazy proxy object should be returned'
+        );
+        $this->assertSame(
+            $container->get('stub1'),
+            $stub2->stub,
+            'Factory should be called when object state is observed or modified'
+        );
     }
 
     /**
