@@ -90,6 +90,14 @@ final class ContainerResource
     private $factory;
 
     /**
+     * The lazy factory object
+     *
+     * @var    callable
+     * @since  __DEPLOY_VERSION__
+     */
+    private $lazyFactory;
+
+    /**
      * Flag if the resource is shared
      *
      * @var    boolean
@@ -131,7 +139,10 @@ final class ContainerResource
         $this->lazy      = ($mode & self::LAZY) === self::LAZY;
 
         if (\is_callable($value)) {
-            $this->factory = $this->lazy ? $this->lazyFactory($key, $value) : $value;
+            $this->factory = $value;
+            if ($this->lazy) {
+                $this->lazyFactory = $this->makeLazyFactory($key, $value);
+            }
         } else {
             if ($this->shared) {
                 $this->instance = $value;
@@ -191,13 +202,15 @@ final class ContainerResource
      * If a factory was provided, the resource is created and - if it is a shared resource - cached internally.
      * If the resource was provided directly, that resource is returned.
      *
+     * @param   boolean  $noLazy  Not to use the lazy proxy
+     *
      * @return  mixed
      *
      * @since   2.0.0
      */
-    public function getInstance()
+    public function getInstance(bool $noLazy = false)
     {
-        $callable = $this->factory;
+        $callable = $noLazy ? $this->factory: $this->lazyFactory ?? $this->factory;
 
         if ($this->isShared()) {
             if ($this->instance === null) {
@@ -253,7 +266,7 @@ final class ContainerResource
      *
      * @since   __DEPLOY_VERSION__
      */
-    private function lazyFactory(string $class, callable $factory): callable
+    private function makeLazyFactory(string $class, callable $factory): callable
     {
         if (PHP_VERSION_ID < 80400) {
             return $factory;

@@ -449,10 +449,10 @@ class Container implements ContainerInterface
         $resource = $this->getResource($key, true);
 
         $closure = function ($c) use ($callable, $resource) {
-            return $callable($resource->getInstance(), $c);
+            return $callable($resource->getInstance(true), $c);
         };
 
-        $this->set($key, $closure, $resource->isShared());
+        $this->set($key, $closure, $resource->isShared(), false, $resource->isLazy());
     }
 
     /**

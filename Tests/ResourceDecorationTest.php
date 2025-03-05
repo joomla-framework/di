@@ -155,6 +155,64 @@ class ResourceDecoration extends TestCase
     }
 
     /**
+     * @testdox  A lazy resource can be extended
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testExtendLazy()
+    {
+        $factoryCalled = false;
+        $extendCalled = false;
+
+        $container = new Container();
+        $container->lazy(
+            Stub2::class,
+            static function () use (&$factoryCalled) {
+                $factoryCalled = true;
+
+                return new Stub2(new Stub1());
+            }
+        );
+
+        $container->extend(
+            Stub2::class,
+            static function ($lazy) use (&$extendCalled) {
+                $extendCalled = true;
+
+                $lazy->stub = 'stub1';
+
+                return $lazy;
+            }
+        );
+
+        $stub2 = $container->get(Stub2::class);
+
+        ob_start();
+        var_dump($stub2);
+        $type = ob_get_clean();
+
+        $this->assertFalse(
+            $factoryCalled,
+            'Factory should not be called before object state is observed or modified'
+        );
+        $this->assertFalse(
+            $extendCalled,
+            'Extend callable should not be called before object state is observed or modified'
+        );
+        $this->assertStringStartsWith(
+            'lazy proxy object',
+            $type,
+            'Lazy proxy object should be returned'
+        );
+        $this->assertSame(
+            'stub1',
+            $stub2->stub,
+            'Extend callable should be called after the factory'
+        );
+    }
+
+    /**
      * A base method defining a resource in a container
      *
      * @return  \stdClass
