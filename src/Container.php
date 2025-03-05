@@ -742,4 +742,25 @@ class Container implements ContainerInterface
     {
         return array_unique(array_merge(array_keys($this->aliases), array_keys($this->resources)));
     }
+
+    /**
+     * Create lazy proxy factory.
+     *
+     * @param   string    $class    Fully qualified class name.
+     * @param   callable  $factory  Factory to create lazy proxies for.
+     *
+     * @return  callable
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function lazy(string $class, callable $factory): callable
+    {
+        if (PHP_VERSION_ID < 80400) {
+            return $factory;
+        }
+
+        return function () use ($class, $factory) {
+            return (new \ReflectionClass($class))->newLazyProxy(fn() => $factory($this));
+        };
+    }
 }
