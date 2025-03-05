@@ -50,6 +50,22 @@ final class ContainerResource
     public const PROTECT = 2;
 
     /**
+     * Defines the resource as non-lazy
+     *
+     * @const  integer
+     * @since  __DEPLOY_VERSION__
+     */
+    public const NO_LAZY = 0;
+
+    /**
+     * Defines the resource as lazy
+     *
+     * @const  integer
+     * @since  __DEPLOY_VERSION__
+     */
+    public const LAZY = 4;
+
+    /**
      * The container the resource is assigned to
      *
      * @var    Container
@@ -90,22 +106,32 @@ final class ContainerResource
     private $protected = false;
 
     /**
+     * Flag if the resource is lazy
+     *
+     * @var    boolean
+     * @since  __DEPLOY_VERSION__
+     */
+    private $lazy = false;
+
+    /**
      * Create a resource representation
      *
      * @param   Container  $container  The container
      * @param   mixed      $value      The resource or its factory closure
      * @param   integer    $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
+     * @param   string     $key        Service key
      *
      * @since   2.0.0
      */
-    public function __construct(Container $container, $value, int $mode = 0)
+    public function __construct(Container $container, $value, int $mode = 0, string $key = '')
     {
         $this->container = $container;
         $this->shared    = ($mode & self::SHARE) === self::SHARE;
         $this->protected = ($mode & self::PROTECT) === self::PROTECT;
+        $this->lazy      = ($mode & self::LAZY) === self::LAZY;
 
         if (\is_callable($value)) {
-            $this->factory = $value;
+            $this->factory = $this->lazy ? $this->lazyFactory($key, $value) : $value;
         } else {
             if ($this->shared) {
                 $this->instance = $value;
@@ -145,6 +171,18 @@ final class ContainerResource
     public function isProtected(): bool
     {
         return $this->protected;
+    }
+
+    /**
+     * Check whether the resource is lazy
+     *
+     * @return  boolean
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function isLazy(): bool
+    {
+        return $this->lazy;
     }
 
     /**
@@ -203,5 +241,26 @@ final class ContainerResource
         }
 
         return false;
+    }
+
+    /**
+     * Create lazy proxy factory.
+     *
+     * @param   string    $class    Fully qualified class name.
+     * @param   callable  $factory  Factory to create lazy proxies for.
+     *
+     * @return  callable
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private function lazyFactory(string $class, callable $factory): callable
+    {
+        if (PHP_VERSION_ID < 80400) {
+            return $factory;
+        }
+
+        return function () use ($class, $factory) {
+            return (new \ReflectionClass($class))->newLazyProxy(fn() => $factory($this->container));
+        };
     }
 }

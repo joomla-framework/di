@@ -184,6 +184,36 @@ class ContainerResourceTest extends TestCase
     }
 
     /**
+     * @testdox  If resource is lazy, a lazy proxy object is returned
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testGetInstanceInLazyMode()
+    {
+        $container = new Container();
+        $container->set('stub1', fn() => new Stub1(), true, true);
+
+        $resource = new ContainerResource(
+            $container,
+            static function($container) {
+                return new Stub2($container->get('stub1'));
+            },
+            ContainerResource::LAZY,
+            Stub2::class
+        );
+
+        $stub2 = $resource->getInstance();
+
+        ob_start();
+        var_dump($stub2);
+        $type = ob_get_clean();
+
+        $this->assertStringStartsWith('lazy proxy object', $type);
+        $this->assertSame($container->get('stub1'), $stub2->stub);
+    }
+
+    /**
      * @testdox  After a reset, a new instance is returned even for shared resources with factories
      *
      * @covers   Joomla\DI\ContainerResource

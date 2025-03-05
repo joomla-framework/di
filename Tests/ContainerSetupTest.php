@@ -275,6 +275,27 @@ class ContainerSetupTest extends TestCase
     }
 
     /**
+     * @testdox  The convenience method lazy() sets resources as lazy, but not protected and shared by default
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testLazy()
+    {
+        $container = new Container();
+        $container->lazy(
+            \stdClass::class,
+            static function () {
+                return new \stdClass();
+            },
+        );
+
+        $this->assertTrue($container->isLazy(\stdClass::class));
+        $this->assertFalse($container->isShared(\stdClass::class));
+        $this->assertFalse($container->isProtected(\stdClass::class));
+    }
+
+    /**
      * @testdox  The callback gets the container instance as a parameter
      *
      * @covers   Joomla\DI\Container
