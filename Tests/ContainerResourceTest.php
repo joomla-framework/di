@@ -191,6 +191,10 @@ class ContainerResourceTest extends TestCase
      */
     public function testGetInstanceInLazyMode()
     {
+        if (PHP_VERSION_ID < 80400) {
+            $this->markTestSkipped('Lazy objects are only supported in PHP 8.4 or newer.');
+        }
+
         $container = new Container();
         $container->set('stub1', fn() => new Stub1(), true, true);
 
@@ -225,6 +229,43 @@ class ContainerResourceTest extends TestCase
             $container->get('stub1'),
             $stub2->stub,
             'Factory should be called when object state is observed or modified'
+        );
+    }
+
+    /**
+     * @testdox  If resource is lazy, but lazy objects are not supported, a normal object is returned
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testGetInstanceInLazyModeNotSupported()
+    {
+        if (PHP_VERSION_ID >= 80400) {
+            $this->markTestSkipped();
+        }
+
+        $container = new Container();
+        $container->set('stub1', fn() => new Stub1(), true, true);
+
+        $resource = new ContainerResource(
+            $container,
+            static function($container) {
+                return new Stub2($container->get('stub1'));
+            },
+            ContainerResource::LAZY,
+            Stub2::class
+        );
+
+        $stub2 = $resource->getInstance();
+
+        ob_start();
+        var_dump($stub2);
+        $type = ob_get_clean();
+
+        $this->assertStringStartsWith(
+            'object(' . Stub2::class,
+            $type,
+            'Normal object should be returned'
         );
     }
 

@@ -162,6 +162,10 @@ class ResourceDecoration extends TestCase
      */
     public function testExtendLazy()
     {
+        if (PHP_VERSION_ID < 80400) {
+            $this->markTestSkipped('Lazy objects are only supported in PHP 8.4 or newer.');
+        }
+
         $factoryCalled = false;
         $extendCalled = false;
 
