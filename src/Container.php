@@ -568,6 +568,21 @@ class Container implements ContainerInterface
     }
 
     /**
+     * Define a resource (service).
+     *
+     * @param   string   $key  Name of resources key to set.
+     *
+     * @return  ContainerResourceDefinition
+     *
+     * @since   __DEPLOY_VERSION__
+     * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
+     */
+    public function def(string $key): ContainerResourceDefinition
+    {
+        return new ContainerResourceDefinition($key, $this);
+    }
+
+    /**
      * Set a resource to the container. If the value is null the resource is removed.
      *
      * @param   string   $key        Name of resources key to set.
