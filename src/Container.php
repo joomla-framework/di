@@ -624,7 +624,7 @@ class Container implements ContainerInterface
      * @since   1.0
      * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
      */
-    public function set($key, $value, $shared = false, $protected = false, $lazy = false)
+    public function set($key, $value, $shared = false, $protected = false/*, $lazy = false */)
     {
         $key = $this->resolveAlias($key);
 
@@ -639,6 +639,9 @@ class Container implements ContainerInterface
 
             return $this;
         }
+
+        // Avoid BC break
+        $lazy = func_num_args() > 4 ? (bool) func_get_arg(4) : false;
 
         $mode = $shared ? ContainerResource::SHARE : ContainerResource::NO_SHARE;
         $mode |= $protected ? ContainerResource::PROTECT : ContainerResource::NO_PROTECT;
@@ -661,8 +664,11 @@ class Container implements ContainerInterface
      *
      * @since   1.0
      */
-    public function protect($key, $value, $shared = false, $lazy = false)
+    public function protect($key, $value, $shared = false/*, $lazy = false */)
     {
+        // Avoid BC break
+        $lazy = func_num_args() > 3 ? (bool) func_get_arg(3) : false;
+
         return $this->set($key, $value, $shared, true, $lazy);
     }
 
@@ -678,9 +684,12 @@ class Container implements ContainerInterface
      *
      * @since   1.0
      */
-    public function share($key, $value, $protected = false, $lazy = false)
+    public function share($key, $value, $protected = false/*, $lazy = false */)
     {
-        return $this->set($key, $value, true, $protected);
+        // Avoid BC break
+        $lazy = func_num_args() > 3 ? (bool) func_get_arg(3) : false;
+
+        return $this->set($key, $value, true, $protected, $lazy);
     }
 
     /**
