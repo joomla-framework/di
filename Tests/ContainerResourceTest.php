@@ -21,43 +21,43 @@ class ContainerResourceTest extends TestCase
     public function dataInstantiation(): \Generator
     {
         yield 'shared, protected' => [
-            'mode'      => ContainerResource::SHARE | ContainerResource::PROTECT,
+            'mode'      => [ 'shared' => true, 'protected' => true ],
             'shared'    => true,
             'protected' => true,
         ];
 
         yield 'shared, not protected (explicit)' => [
-            'mode'      => ContainerResource::SHARE | ContainerResource::NO_PROTECT,
+            'mode'      => ['shared' => true, 'protected' => false],
             'shared'    => true,
             'protected' => false,
         ];
 
         yield 'not shared, protected (explicit)' => [
-            'mode'      => ContainerResource::NO_SHARE | ContainerResource::PROTECT,
+            'mode'      => ['shared' => false, 'protected' => true],
             'shared'    => false,
             'protected' => true,
         ];
 
         yield 'not shared, not protected (explicit)' => [
-            'mode'      => ContainerResource::NO_SHARE | ContainerResource::NO_PROTECT,
+            'mode'      => ['shared' => false, 'protected' => false],
             'shared'    => false,
             'protected' => false,
         ];
 
         yield 'shared, not protected (implicit)' => [
-            'mode'      => ContainerResource::SHARE,
+            'mode'      => [ 'shared' => true ],
             'shared'    => true,
             'protected' => false,
         ];
 
         yield 'not shared, protected (implicit)' => [
-            'mode'      => ContainerResource::PROTECT,
+            'mode'      => [ 'protected' => true ],
             'shared'    => false,
             'protected' => true,
         ];
 
         yield 'not shared, not protected (implicit)' => [
-            'mode'      => null,
+            'mode'      => [],
             'shared'    => false,
             'protected' => false,
         ];
@@ -71,7 +71,7 @@ class ContainerResourceTest extends TestCase
      *
      * @dataProvider dataInstantiation
      */
-    public function testInstantiation(?int $mode, bool $shared, bool $protected)
+    public function testInstantiation(?array $mode, bool $shared, bool $protected)
     {
         $container = new Container();
 
@@ -119,7 +119,7 @@ class ContainerResourceTest extends TestCase
             static function () {
                 return new Stub6();
             },
-            ContainerResource::NO_SHARE
+            [ 'shared' => false ]
         );
 
         $this->assertNotSame($resource->getInstance(), $resource->getInstance());
@@ -139,7 +139,7 @@ class ContainerResourceTest extends TestCase
             static function () {
                 return new Stub6();
             },
-            ContainerResource::SHARE
+            [ 'shared' => true ]
         );
 
         $this->assertSame($resource->getInstance(), $resource->getInstance());
@@ -158,7 +158,7 @@ class ContainerResourceTest extends TestCase
         $resource  = new ContainerResource(
             $container,
             $stub,
-            ContainerResource::SHARE
+            [ 'shared' => true ]
         );
 
         $this->assertSame($stub, $resource->getInstance());
@@ -177,7 +177,7 @@ class ContainerResourceTest extends TestCase
         $resource  = new ContainerResource(
             $container,
             $stub,
-            ContainerResource::NO_SHARE
+            [ 'shared' => false ]
         );
 
         $this->assertNotSame($stub, $resource->getInstance());
@@ -197,7 +197,7 @@ class ContainerResourceTest extends TestCase
             static function () {
                 return new Stub6();
             },
-            ContainerResource::SHARE
+            [ 'shared' => true ]
         );
 
         $one = $resource->getInstance();
@@ -222,7 +222,7 @@ class ContainerResourceTest extends TestCase
         $resource  = new ContainerResource(
             $container,
             $stub,
-            ContainerResource::SHARE
+            [ 'shared' => true ]
         );
 
         $one = $resource->getInstance();

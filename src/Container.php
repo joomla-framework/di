@@ -308,8 +308,8 @@ class Container implements ContainerInterface
      * Creates an instance of the class specified by $resourceName with all dependencies injected.
      * If the dependencies cannot be completely resolved, a DependencyResolutionException is thrown.
      *
-     * @param   string   $resourceName  The class name to build.
-     * @param   boolean  $shared        True to create a shared resource.
+     * @param   string  $resourceName  The class name to build.
+     * @param   array   $options       Resource options.
      *
      * @return  object|false  Instance of class specified by $resourceName with all dependencies injected.
      *                        Returns an object if the class exists and false otherwise
@@ -317,7 +317,7 @@ class Container implements ContainerInterface
      * @since   1.0
      * @throws  DependencyResolutionException if the object could not be built (due to missing information)
      */
-    public function buildObject($resourceName, $shared = false)
+    public function buildObject($resourceName, array $options = [])
     {
         static $buildStack = [];
 
@@ -380,7 +380,7 @@ class Container implements ContainerInterface
             };
         }
 
-        $this->set($key, $callback, $shared);
+        $this->set($key, $callback, $options);
 
         $resource = $this->get($key);
         array_pop($buildStack);
@@ -400,7 +400,7 @@ class Container implements ContainerInterface
      */
     public function buildSharedObject($resourceName)
     {
-        return $this->buildObject($resourceName, true);
+        return $this->buildObject($resourceName, [ 'shared' => true ]);
     }
 
     /**
@@ -438,7 +438,7 @@ class Container implements ContainerInterface
             return $callable($resource->getInstance(), $c);
         };
 
-        $this->set($key, $closure, $resource->isShared());
+        $this->set($key, $closure, [ 'shared' => $resource->isShared() ]);
     }
 
     /**
@@ -599,17 +599,16 @@ class Container implements ContainerInterface
     /**
      * Set a resource to the container. If the value is null the resource is removed.
      *
-     * @param   string   $key        Name of resources key to set.
-     * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
-     * @param   boolean  $shared     True to create and store a shared instance.
-     * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
+     * @param   string  $key      Name of resources key to set.
+     * @param   mixed   $value    Callable function to run or string to retrieve when requesting the specified $key.
+     * @param   array   $options  Resource options.
      *
      * @return  $this
      *
      * @since   1.0
      * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
      */
-    public function set($key, $value, $shared = false, $protected = false)
+    public function set($key, $value, array $options = [])
     {
         $key = $this->resolveAlias($key);
 
@@ -625,10 +624,7 @@ class Container implements ContainerInterface
             return $this;
         }
 
-        $mode = $shared ? ContainerResource::SHARE : ContainerResource::NO_SHARE;
-        $mode |= $protected ? ContainerResource::PROTECT : ContainerResource::NO_PROTECT;
-
-        $this->resources[$key] = new ContainerResource($this, $value, $mode);
+        $this->resources[$key] = new ContainerResource($this, $value, $options);
 
         return $this;
     }
@@ -636,33 +632,37 @@ class Container implements ContainerInterface
     /**
      * Shortcut method for creating protected keys.
      *
-     * @param   string   $key     Name of dataStore key to set.
-     * @param   mixed    $value   Callable function to run or string to retrieve when requesting the specified $key.
-     * @param   boolean  $shared  True to create and store a shared instance.
+     * @param   string  $key      Name of dataStore key to set.
+     * @param   mixed   $value    Callable function to run or string to retrieve when requesting the specified $key.
+     * @param   array   $options  Resource options.
      *
      * @return  $this
      *
      * @since   1.0
      */
-    public function protect($key, $value, $shared = false)
+    public function protect($key, $value, array $options = [])
     {
-        return $this->set($key, $value, $shared, true);
+        $options['protected'] = true;
+
+        return $this->set($key, $value, $options);
     }
 
     /**
      * Shortcut method for creating shared keys.
      *
-     * @param   string   $key        Name of dataStore key to set.
-     * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
-     * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
+     * @param   string  $key      Name of dataStore key to set.
+     * @param   mixed   $value    Callable function to run or string to retrieve when requesting the specified $key.
+     * @param   array   $options  Resource options.
      *
      * @return  $this
      *
      * @since   1.0
      */
-    public function share($key, $value, $protected = false)
+    public function share($key, $value, array $options = [])
     {
-        return $this->set($key, $value, true, $protected);
+        $options['shared'] = true;
+
+        return $this->set($key, $value, $options);
     }
 
     /**
@@ -687,7 +687,7 @@ class Container implements ContainerInterface
         }
 
         if ($this->parent instanceof ContainerInterface && $this->parent->has($key)) {
-            return new ContainerResource($this, $this->parent->get($key), ContainerResource::SHARE | ContainerResource::PROTECT);
+            return new ContainerResource($this, $this->parent->get($key), [ 'shared' => true, 'protected' => true ]);
         }
 
         if ($bail) {

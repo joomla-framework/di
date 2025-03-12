@@ -31,7 +31,7 @@ class ContainerAccessTest extends TestCase
             static function () {
                 return new \stdClass();
             },
-            true
+            [ 'shared' => true ],
         );
 
         $this->assertSame($container->get('foo'), $container->get('foo'));
@@ -51,7 +51,7 @@ class ContainerAccessTest extends TestCase
             static function () {
                 return new \stdClass();
             },
-            false
+            [ 'shared' => false ],
         );
 
         $this->assertNotSame($container->get('foo'), $container->get('foo'));

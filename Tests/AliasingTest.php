@@ -31,8 +31,7 @@ class AliasingTest extends TestCase
             static function () {
                 return new \stdClass();
             },
-            true,
-            true
+            [ 'shared' => true, 'protected' => true ]
         );
         $container->alias('bar', 'foo');
 
@@ -57,8 +56,7 @@ class AliasingTest extends TestCase
             static function () {
                 return new \stdClass();
             },
-            true,
-            true
+            [ 'shared' => true, 'protected' => true ]
         );
         $container->alias('bar', 'foo');
 

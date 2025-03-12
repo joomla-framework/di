@@ -91,15 +91,13 @@ class ContainerSetupTest extends TestCase
             'foo',
             static function () {
             },
-            false,
-            true
+            [ 'shared' => false, 'protected' => true ],
         );
         $container->set(
             'foo',
             static function () {
             },
-            false,
-            true
+            [ 'shared' => false, 'protected' => true ],
         );
     }
 
@@ -184,8 +182,7 @@ class ContainerSetupTest extends TestCase
             static function () {
                 return new \stdClass();
             },
-            $shared,
-            $protected
+            [ 'shared' => $shared, 'protected' => $protected ]
         );
 
         $this->assertSame($shared, $container->isShared('foo'));
@@ -226,7 +223,7 @@ class ContainerSetupTest extends TestCase
             static function () {
                 return new \stdClass();
             },
-            true
+            [ 'shared' => true ]
         );
 
         $this->assertTrue($container->isShared('foo'));
@@ -267,7 +264,7 @@ class ContainerSetupTest extends TestCase
             static function () {
                 return new \stdClass();
             },
-            true
+            [ 'protected' => true ]
         );
 
         $this->assertTrue($container->isShared('foo'));

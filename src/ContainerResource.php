@@ -18,38 +18,6 @@ namespace Joomla\DI;
 final class ContainerResource
 {
     /**
-     * Defines the resource as non-shared
-     *
-     * @const  integer
-     * @since  2.0.0
-     */
-    public const NO_SHARE = 0;
-
-    /**
-     * Defines the resource as shared
-     *
-     * @const  integer
-     * @since  2.0.0
-     */
-    public const SHARE = 1;
-
-    /**
-     * Defines the resource as non-protected
-     *
-     * @const  integer
-     * @since  2.0.0
-     */
-    public const NO_PROTECT = 0;
-
-    /**
-     * Defines the resource as protected
-     *
-     * @const  integer
-     * @since  2.0.0
-     */
-    public const PROTECT = 2;
-
-    /**
      * The container the resource is assigned to
      *
      * @var    Container
@@ -94,15 +62,15 @@ final class ContainerResource
      *
      * @param   Container  $container  The container
      * @param   mixed      $value      The resource or its factory closure
-     * @param   integer    $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
+     * @param   integer    $options    Resource options, defaults to [ 'protected' => false, 'shared' => false ]
      *
      * @since   2.0.0
      */
-    public function __construct(Container $container, $value, int $mode = 0)
+    public function __construct(Container $container, $value, array $options = [])
     {
         $this->container = $container;
-        $this->shared    = ($mode & self::SHARE) === self::SHARE;
-        $this->protected = ($mode & self::PROTECT) === self::PROTECT;
+        $this->shared    = $options['shared'] ?? false;
+        $this->protected = $options['protected'] ?? false;
 
         if (\is_callable($value)) {
             $this->factory = $value;
