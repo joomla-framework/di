@@ -17,7 +17,7 @@ include_once __DIR__ . '/Stubs/stubs.php';
 /**
  * Tests for Container class.
  */
-class ResourceDecoration extends TestCase
+class ResourceDecorationTest extends TestCase
 {
     /**
      * Value used within resource methods
