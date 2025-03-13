@@ -317,9 +317,14 @@ class Container implements ContainerInterface
      * @since   1.0
      * @throws  DependencyResolutionException if the object could not be built (due to missing information)
      */
-    public function buildObject($resourceName, array $options = [])
+    public function buildObject($resourceName, $options = [])
     {
         static $buildStack = [];
+
+        // BC for removed $shared param
+        if (!is_array($options)) {
+            $options = [ 'shared' => $options ];
+        }
 
         $key = $this->resolveAlias($resourceName);
 
@@ -608,8 +613,13 @@ class Container implements ContainerInterface
      * @since   1.0
      * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
      */
-    public function set($key, $value, array $options = [])
+    public function set($key, $value, $options = [])
     {
+        // BC for removed $shared and $protected params
+        if (!is_array($options)) {
+            $options = [ 'shared' => $options, 'protected' => func_get_arg(3) ];
+        }
+
         $key = $this->resolveAlias($key);
 
         $hasKey = $this->has($key);
@@ -640,8 +650,13 @@ class Container implements ContainerInterface
      *
      * @since   1.0
      */
-    public function protect($key, $value, array $options = [])
+    public function protect($key, $value, $options = [])
     {
+        // BC for removed $shared param
+        if (!is_array($options)) {
+            $options = [ 'shared' => $options ];
+        }
+
         $options['protected'] = true;
 
         return $this->set($key, $value, $options);
@@ -658,8 +673,13 @@ class Container implements ContainerInterface
      *
      * @since   1.0
      */
-    public function share($key, $value, array $options = [])
+    public function share($key, $value, $options = [])
     {
+        // BC for removed $protected param
+        if (!is_array($options)) {
+            $options = [ 'protected' => $options ];
+        }
+
         $options['shared'] = true;
 
         return $this->set($key, $value, $options);

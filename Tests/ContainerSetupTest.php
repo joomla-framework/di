@@ -315,4 +315,44 @@ class ContainerSetupTest extends TestCase
 
         $container->get('foo');
     }
+
+    /**
+     * @testdox  Allows to use $shared and $protected params for BC
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testOptionsBC()
+    {
+        $container = new Container();
+        $container->set(
+            'foo',
+            static function () {
+                return new \stdClass();
+            },
+            true,
+            true
+        );
+        $container->share(
+            'bar',
+            static function () {
+                return new \stdClass();
+            },
+            true
+        );
+        $container->protect(
+            'baz',
+            static function () {
+                return new \stdClass();
+            },
+            true
+        );
+
+        $this->assertTrue($container->isShared('foo'));
+        $this->assertTrue($container->isProtected('foo'));
+
+        $this->assertTrue($container->isShared('bar'));
+
+        $this->assertTrue($container->isProtected('baz'));
+    }
 }
