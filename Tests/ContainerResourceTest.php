@@ -18,6 +18,26 @@ include_once __DIR__ . '/Stubs/stubs.php';
  */
 class ContainerResourceTest extends TestCase
 {
+    /**
+     * @testdox  Throws an exception if unknown option provided
+     *
+     * @covers   Joomla\DI\ContainerResource
+     * @uses     Joomla\DI\Container
+     */
+    public function testUnknownOption()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unknown option "unknown" given. Allowed options: shared, protected');
+
+        $stub      = new Stub6();
+        $container = new Container();
+        $resource  = new ContainerResource(
+            $container,
+            $stub,
+            [ 'shared' => true, 'unknown' => true ]
+        );
+    }
+
     public function dataInstantiation(): \Generator
     {
         yield 'shared, protected' => [

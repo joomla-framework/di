@@ -69,6 +69,18 @@ final class ContainerResource
     public function __construct(Container $container, $value, array $options = [])
     {
         $this->container = $container;
+
+        $allowedOptions = ['shared', 'protected'];
+        foreach (array_keys($options) as $option) {
+            if (!in_array($option, $allowedOptions)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Unknown option "%s" given. Allowed options: %s',
+                    $option,
+                    implode(', ', $allowedOptions)
+                ));
+            }
+        }
+
         $this->shared    = $options['shared'] ?? false;
         $this->protected = $options['protected'] ?? false;
 
