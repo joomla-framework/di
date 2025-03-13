@@ -92,7 +92,7 @@ class Container implements ContainerInterface
             throw new KeyNotFoundException(sprintf("Resource '%s' has not been registered with the container.", $resourceName));
         }
 
-        return $this->resources[$key]->getInstance();
+        return $this->resources[$key]->getInstance(false);
     }
 
     /**

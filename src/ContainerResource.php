@@ -208,7 +208,7 @@ final class ContainerResource
      *
      * @since   2.0.0
      */
-    public function getInstance(bool $noLazy = false)
+    public function getInstance(bool $noLazy = true)
     {
         $callable = $noLazy ? $this->factory : $this->lazyFactory ?? $this->factory;
 

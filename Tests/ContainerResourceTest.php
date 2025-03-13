@@ -210,7 +210,7 @@ class ContainerResourceTest extends TestCase
             Stub2::class
         );
 
-        $stub2 = $resource->getInstance();
+        $stub2 = $resource->getInstance(false);
 
         ob_start();
         var_dump($stub2);
@@ -256,7 +256,7 @@ class ContainerResourceTest extends TestCase
             Stub2::class
         );
 
-        $stub2 = $resource->getInstance();
+        $stub2 = $resource->getInstance(false);
 
         ob_start();
         var_dump($stub2);
