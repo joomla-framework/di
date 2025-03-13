@@ -205,20 +205,6 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Check whether a resource is lazy
-     *
-     * @param   string  $resourceName  Name of the resource to check.
-     *
-     * @return  boolean
-     *
-     * @since   __DEPLOY_VERSION__
-     */
-    public function isLazy(string $resourceName): bool
-    {
-        return $this->hasFlag($resourceName, 'isLazy', true);
-    }
-
-    /**
      * Check whether a resource is stored locally
      *
      * @param   string  $resourceName  Name of the resource to check.
@@ -452,7 +438,11 @@ class Container implements ContainerInterface
             return $callable($resource->getInstance(true), $c);
         };
 
-        $this->set($key, $closure, $resource->isShared(), false, $resource->isLazy());
+        if ($resource->isLazy()) {
+            $this->lazy($key, $closure, $resource->isShared(), false);
+        } else {
+            $this->set($key, $closure, $resource->isShared(), false);
+        }
     }
 
     /**
@@ -617,14 +607,13 @@ class Container implements ContainerInterface
      * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $shared     True to create and store a shared instance.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
-     * @param   boolean  $lazy       True to lazy service.
      *
      * @return  $this
      *
      * @since   1.0
      * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
      */
-    public function set($key, $value, $shared = false, $protected = false/*, $lazy = false */)
+    public function set($key, $value, $shared = false, $protected = false)
     {
         $key = $this->resolveAlias($key);
 
@@ -640,14 +629,10 @@ class Container implements ContainerInterface
             return $this;
         }
 
-        // Avoid BC break
-        $lazy = func_num_args() > 4 ? (bool) func_get_arg(4) : false;
-
         $mode = $shared ? ContainerResource::SHARE : ContainerResource::NO_SHARE;
         $mode |= $protected ? ContainerResource::PROTECT : ContainerResource::NO_PROTECT;
-        $mode |= $lazy ? ContainerResource::LAZY : ContainerResource::NO_LAZY;
 
-        $this->resources[$key] = new ContainerResource($this, $value, $mode, $key);
+        $this->resources[$key] = new ContainerResource($this, $value, $mode);
 
         return $this;
     }
@@ -658,18 +643,14 @@ class Container implements ContainerInterface
      * @param   string   $key     Name of dataStore key to set.
      * @param   mixed    $value   Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $shared  True to create and store a shared instance.
-     * @param   boolean  $lazy    True to lazy service.
      *
      * @return  $this
      *
      * @since   1.0
      */
-    public function protect($key, $value, $shared = false/*, $lazy = false */)
+    public function protect($key, $value, $shared = false)
     {
-        // Avoid BC break
-        $lazy = func_num_args() > 3 ? (bool) func_get_arg(3) : false;
-
-        return $this->set($key, $value, $shared, true, $lazy);
+        return $this->set($key, $value, $shared, true);
     }
 
     /**
@@ -678,18 +659,14 @@ class Container implements ContainerInterface
      * @param   string   $key        Name of dataStore key to set.
      * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
-     * @param   boolean  $lazy       True to lazy service.
      *
      * @return  $this
      *
      * @since   1.0
      */
-    public function share($key, $value, $protected = false/*, $lazy = false */)
+    public function share($key, $value, $protected = false)
     {
-        // Avoid BC break
-        $lazy = func_num_args() > 3 ? (bool) func_get_arg(3) : false;
-
-        return $this->set($key, $value, true, $protected, $lazy);
+        return $this->set($key, $value, true, $protected);
     }
 
     /**
@@ -706,7 +683,21 @@ class Container implements ContainerInterface
      */
     public function lazy($key, $value, $shared = false, $protected = false): self
     {
-        return $this->set($key, $value, $shared, $protected, true);
+        if ($this->has($key) && $this->isLocal($key) && $this->isProtected($key)) {
+            throw new ProtectedKeyException(sprintf("Key %s is protected and can't be overwritten.", $key));
+        }
+
+        if (!class_exists($key)) {
+            throw new \InvalidArgumentException(sprintf('Lazy key must be a valid class name: "%s".', $key));
+        }
+
+        $mode = ContainerResource::LAZY;
+        $mode |= $shared ? ContainerResource::SHARE : ContainerResource::NO_SHARE;
+        $mode |= $protected ? ContainerResource::PROTECT : ContainerResource::NO_PROTECT;
+
+        $this->resources[$key] = new ContainerResource($this, $value, $mode, $key);
+
+        return $this;
     }
 
     /**

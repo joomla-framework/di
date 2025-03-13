@@ -290,9 +290,28 @@ class ContainerSetupTest extends TestCase
             },
         );
 
-        $this->assertTrue($container->isLazy(\stdClass::class));
         $this->assertFalse($container->isShared(\stdClass::class));
         $this->assertFalse($container->isProtected(\stdClass::class));
+    }
+
+    /**
+     * @testdox  The convenience method lazy() throws an exception when lazy class does not exist
+     *
+     * @covers   Joomla\DI\Container
+     * @uses     Joomla\DI\ContainerResource
+     */
+    public function testLazyClassNotExists()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Lazy key must be a valid class name: "ThisClassDoesNotExist"');
+
+        $container = new Container();
+        $container->lazy(
+            'ThisClassDoesNotExist',
+            static function () {
+                return new \stdClass();
+            },
+        );
     }
 
     /**
