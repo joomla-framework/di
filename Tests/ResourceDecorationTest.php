@@ -192,10 +192,10 @@ class ResourceDecoration extends TestCase
 
         $stub2 = $container->get(Stub2::class);
 
-        ob_start();
-        var_dump($stub2);
-        $type = ob_get_clean();
-
+        $this->assertTrue(
+            (new \ReflectionClass(Stub2::class))->isUninitializedLazyObject($stub2),
+            'Lazy proxy object should be returned'
+        );
         $this->assertFalse(
             $factoryCalled,
             'Factory should not be called before object state is observed or modified'
@@ -203,11 +203,6 @@ class ResourceDecoration extends TestCase
         $this->assertFalse(
             $extendCalled,
             'Extend callable should not be called before object state is observed or modified'
-        );
-        $this->assertStringStartsWith(
-            'lazy proxy object',
-            $type,
-            'Lazy proxy object should be returned'
         );
         $this->assertSame(
             'stub1',

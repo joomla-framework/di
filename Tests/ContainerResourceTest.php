@@ -212,18 +212,13 @@ class ContainerResourceTest extends TestCase
 
         $stub2 = $resource->getInstance(false);
 
-        ob_start();
-        var_dump($stub2);
-        $type = ob_get_clean();
-
+        $this->assertTrue(
+            (new \ReflectionClass(Stub2::class))->isUninitializedLazyObject($stub2),
+            'Lazy proxy object should be returned'
+        );
         $this->assertFalse(
             $factoryCalled,
             'Factory should not be called before object state is observed or modified'
-        );
-        $this->assertStringStartsWith(
-            'lazy proxy object',
-            $type,
-            'Lazy proxy object should be returned'
         );
         $this->assertSame(
             $container->get('stub1'),
