@@ -9,6 +9,8 @@
 
 namespace Joomla\DI;
 
+use Joomla\DI\Exception\ProtectedKeyException;
+
 /**
  * Defines the representation of a resource.
  *
@@ -182,6 +184,29 @@ final class ContainerResource
     public function getFactory(): callable
     {
         return $this->factory;
+    }
+
+    /**
+     * Extend the resource with a decorator
+     *
+     * @param   callable  $callable  A closure to wrap the existing factory.
+     *                               Receives the original instance and container as arguments.
+     *
+     * @return  void
+     *
+     * @throws  ProtectedKeyException  If the resource is protected
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function extend(callable $callable): void
+    {
+        if ($this->protected) {
+            throw new ProtectedKeyException("Cannot extend a protected resource.");
+        }
+
+        $factory = $this->factory;
+
+        $this->factory = fn(Container $container) => $callable($factory($container), $container);
     }
 
     /**
