@@ -676,54 +676,60 @@ class Container implements ContainerInterface
      */
     final public function lazy(string $class, ?callable $factory = null, ?array $arguments = null): static
     {
-        $lazyGhost = !$factory;
+        $featureSupported = PHP_VERSION_ID >= 80400;
+        $lazyGhost        = !$factory;
 
         if ($lazyGhost) {
             // Create a Lazy Ghost factory
-            $lazyFactory = function () use ($class, $arguments) {
-                $reflection = new \ReflectionClass($class);
-
-                return $reflection->newLazyGhost(function ($instance) use ($reflection, $arguments) {
-                    $argList     = [];
+            $lazyFactory = function () use ($class, $arguments, $featureSupported) {
+                $reflection   = new \ReflectionClass($class);
+                $instantiator = function ($instance = null) use ($reflection, $arguments) {
+                    $argsList     = [];
                     $constructor = $reflection->getConstructor();
 
                     // Do nothing for class without constructor
                     if ($constructor === null) {
-                        return;
+                        return $instance ? null : $reflection->newInstance();
                     }
 
                     if ($arguments) {
                         foreach ($arguments as $argument) {
                             if (\is_string($argument) && $this->has($argument)) {
-                                $argList[] = $this->get($argument);
+                                $argsList[] = $this->get($argument);
                             } else {
-                                $argList[] = $argument;
+                                $argsList[] = $argument;
                             }
                         }
                     } else {
-                        $argList = $this->getMethodArgs($constructor);
+                        $argsList = $this->getMethodArgs($constructor);
                     }
 
-                    if ($argList) {
-                        $instance->__construct(...$argList);
+                    if (!$instance) {
+                        return $reflection->newInstanceArgs($argsList);
+                    }
+
+                    if ($argsList) {
+                        $instance->__construct(...$argsList);
                     } else {
                         $instance->__construct();
                     }
-                });
+
+                    return null;
+                };
+
+                return $featureSupported ? $reflection->newLazyGhost($instantiator) : $instantiator();
             };
         } else {
             // Create a Lazy Proxy factory
-            $lazyFactory = function () use ($class, $factory) {
+            $lazyFactory = $featureSupported ? function () use ($class, $factory) {
                 return (new \ReflectionClass($class))->newLazyProxy(function () use ($factory) {
                     return $factory($this);
                 });
-            };
+            } : $factory;
         }
 
-        $this->set($class, $lazyFactory)
+        return $this->set($class, $lazyFactory)
             ->tag($class, [$lazyGhost ? ContainerResource::LAZY_GHOST : ContainerResource::LAZY_PROXY]);
-
-        return  $this;
     }
 
     /**
