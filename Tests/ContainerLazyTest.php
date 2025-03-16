@@ -80,4 +80,20 @@ class ContainerLazyTest extends TestCase
         $this->assertTrue($resource instanceof Stub2);
         $this->assertTrue($resource->stub instanceof Stub1);
     }
+
+    /**
+     * @testdox  Create Lazy Ghost without constructor
+     *
+     * @covers   Joomla\DI\Container
+     */
+    public function testCreateGhostProxyWithoutConstructor()
+    {
+        $container = new Container();
+
+        $container->lazy(Stub4::class);
+
+        $resource = $container->get(Stub4::class);
+
+        $this->assertTrue($resource instanceof Stub4);
+    }
 }
