@@ -682,7 +682,7 @@ class Container implements ContainerInterface
      *
      * @since   __DEPLOY_VERSION__
      */
-    final public function lazy(string $class, ?callable $factory = null, ?array $arguments = null, $shared = false, $protected = false): static
+    final public function lazy(string $class, ?callable $factory = null, ?array $arguments = null, bool $shared = false, bool $protected = false): static
     {
         $featureSupported = PHP_VERSION_ID >= 80400;
         $lazyGhost        = !$factory;
