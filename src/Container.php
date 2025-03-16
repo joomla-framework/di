@@ -737,8 +737,7 @@ class Container implements ContainerInterface
             } : $factory;
         }
 
-        return $this->set($class, $lazyFactory, $shared, $protected)
-            ->tag($class, [$lazyGhost ? ContainerResource::LAZY_GHOST : ContainerResource::LAZY_PROXY]);
+        return $this->set($class, $lazyFactory, $shared, $protected);
     }
 
     /**

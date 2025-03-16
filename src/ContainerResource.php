@@ -50,22 +50,6 @@ final class ContainerResource
     public const PROTECT = 2;
 
     /**
-     * The flag for a Lazy Ghost
-     *
-     * @const  integer
-     * @since  __DEPLOY_VERSION__
-     */
-    public const LAZY_GHOST = 3;
-
-    /**
-     * The flag for a Lazy Proxy
-     *
-     * @const  integer
-     * @since  __DEPLOY_VERSION__
-     */
-    public const LAZY_PROXY = 4;
-
-    /**
      * The container the resource is assigned to
      *
      * @var    Container
