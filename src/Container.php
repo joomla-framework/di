@@ -666,6 +666,67 @@ class Container implements ContainerInterface
     }
 
     /**
+     * @param   string         $class
+     * @param   callable|null  $factory
+     * @param   array|null     $arguments
+     *
+     * @return  $this
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    final public function lazy(string $class, ?callable $factory = null, ?array $arguments = null): static
+    {
+        $lazyGhost = !$factory;
+
+        if ($lazyGhost) {
+            // Create a Lazy Ghost factory
+            $lazyFactory = function () use ($class, $arguments) {
+                $reflection = new \ReflectionClass($class);
+
+                return $reflection->newLazyGhost(function ($instance) use ($reflection, $arguments) {
+                    $argList     = [];
+                    $constructor = $reflection->getConstructor();
+
+                    // Do nothing for class without constructor
+                    if ($constructor === null) {
+                        return;
+                    }
+
+                    if ($arguments) {
+                        foreach ($arguments as $argument) {
+                            if (\is_string($argument) && $this->has($argument)) {
+                                $argList[] = $this->get($argument);
+                            } else {
+                                $argList[] = $argument;
+                            }
+                        }
+                    } else {
+                        $argList = $this->getMethodArgs($constructor);
+                    }
+
+                    if ($argList) {
+                        $instance->__construct(...$argList);
+                    } else {
+                        $instance->__construct();
+                    }
+                });
+            };
+        } else {
+            // Create a Lazy Proxy factory
+            $lazyFactory = function () use ($class, $factory) {
+                return (new \ReflectionClass($class))->newLazyProxy(function () use ($factory) {
+                    return $factory($this);
+                });
+            };
+        }
+
+        $this->set($class, $lazyFactory)
+            ->tag($class, [$lazyGhost ? ContainerResource::LAZY_GHOST : ContainerResource::LAZY_PROXY]);
+
+        return  $this;
+    }
+
+    /**
      * Get the raw data assigned to a key.
      *
      * @param   string   $key   The key for which to get the stored item.
