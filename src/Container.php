@@ -666,15 +666,23 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @param   string         $class
-     * @param   callable|null  $factory
-     * @param   array|null     $arguments
+     * Create a lazy resource for given class, and register it in the Container.
+     * By providing $factory argument the method will create Lazy Proxy object, otherwise Lazy Ghost will be created.
+     *
+     * @param   string         $class      Full class name of the resource.
+     * @param   callable|null  $factory    Optional callback to create the class instance. The callback must return instance of the given class.
+     *                                     When provided then Lazy Proxy object will be created, otherwise Lazy Ghost will be created.
+     * @param   array|null     $arguments  Optional list of arguments for class constructor for Lazy Ghost.
+     *                                     When provided then the method will try to lookup given elements from Container if needed.
+     *                                     When absent then the method will try to retrieve them from Reflection.
+     * @param   boolean        $shared     True to create and store a shared instance.
+     * @param   boolean        $protected  True to protect this item from being overwritten. Useful for services.
      *
      * @return  $this
      *
      * @since   __DEPLOY_VERSION__
      */
-    final public function lazy(string $class, ?callable $factory = null, ?array $arguments = null): static
+    final public function lazy(string $class, ?callable $factory = null, ?array $arguments = null, $shared = false, $protected = false): static
     {
         $featureSupported = PHP_VERSION_ID >= 80400;
         $lazyGhost        = !$factory;
@@ -692,7 +700,8 @@ class Container implements ContainerInterface
                         return $instance ? null : $reflection->newInstance();
                     }
 
-                    if ($arguments) {
+                    // Check provided arguments, or, when it is null, get them from ReflectionMethod
+                    if (\is_array($arguments) && $arguments) {
                         foreach ($arguments as $argument) {
                             if (\is_string($argument) && $this->has($argument)) {
                                 $argsList[] = $this->get($argument);
@@ -700,7 +709,7 @@ class Container implements ContainerInterface
                                 $argsList[] = $argument;
                             }
                         }
-                    } else {
+                    } elseif ($arguments === null) {
                         $argsList = $this->getMethodArgs($constructor);
                     }
 
@@ -728,7 +737,7 @@ class Container implements ContainerInterface
             } : $factory;
         }
 
-        return $this->set($class, $lazyFactory)
+        return $this->set($class, $lazyFactory, $shared, $protected)
             ->tag($class, [$lazyGhost ? ContainerResource::LAZY_GHOST : ContainerResource::LAZY_PROXY]);
     }
 
