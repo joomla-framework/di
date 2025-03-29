@@ -211,7 +211,7 @@ class Container implements ContainerInterface
      *
      * @return  boolean
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   3.0.0
      */
     private function isLocal(string $resourceName): bool
     {
