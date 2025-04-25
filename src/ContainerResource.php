@@ -108,7 +108,7 @@ final class ContainerResource
         if (\is_callable($value)) {
             $this->factory = $value;
             if ($proxyClass && class_exists($proxyClass, false) && PHP_VERSION_ID >= 80400) {
-				$this->factory = fn () => (new \ReflectionClass($proxyClass))->newLazyProxy(fn () => $value($this->container));
+                $this->factory = fn () => (new \ReflectionClass($proxyClass))->newLazyProxy(fn () => $value($this->container));
             }
         } else {
             if ($this->shared) {
