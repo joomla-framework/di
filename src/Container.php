@@ -603,13 +603,14 @@ class Container implements ContainerInterface
      * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $shared     True to create and store a shared instance.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
+     * @param   string   $proxyClass The class to create the proxy for.
      *
      * @return  $this
      *
      * @since   1.0
      * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
      */
-    public function set($key, $value, $shared = false, $protected = false)
+    public function set($key, $value, $shared = false, $protected = false, ?string $proxyClass = '')
     {
         $key = $this->resolveAlias($key);
 
@@ -628,7 +629,7 @@ class Container implements ContainerInterface
         $mode = $shared ? ContainerResource::SHARE : ContainerResource::NO_SHARE;
         $mode |= $protected ? ContainerResource::PROTECT : ContainerResource::NO_PROTECT;
 
-        $this->resources[$key] = new ContainerResource($this, $value, $mode);
+        $this->resources[$key] = new ContainerResource($this, $value, $mode, $proxyClass);
 
         return $this;
     }
@@ -639,14 +640,15 @@ class Container implements ContainerInterface
      * @param   string   $key     Name of dataStore key to set.
      * @param   mixed    $value   Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $shared  True to create and store a shared instance.
+     * @param   string   $proxyClass The class to create the proxy for.
      *
      * @return  $this
      *
      * @since   1.0
      */
-    public function protect($key, $value, $shared = false)
+    public function protect($key, $value, $shared = false, ?string $proxyClass = '')
     {
-        return $this->set($key, $value, $shared, true);
+        return $this->set($key, $value, $shared, true, $proxyClass);
     }
 
     /**
@@ -655,28 +657,30 @@ class Container implements ContainerInterface
      * @param   string   $key        Name of dataStore key to set.
      * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
+     * @param   string   $proxyClass The class to create the proxy for.
      *
      * @return  $this
      *
      * @since   1.0
      */
-    public function share($key, $value, $protected = false)
+    public function share($key, $value, $protected = false, ?string $proxyClass = '')
     {
-        return $this->set($key, $value, true, $protected);
+        return $this->set($key, $value, true, $protected, $proxyClass);
     }
 
     /**
      * Get the raw data assigned to a key.
      *
-     * @param   string   $key   The key for which to get the stored item.
-     * @param   boolean  $bail  Throw an exception, if the key is not found
+     * @param   string   $key        The key for which to get the stored item.
+     * @param   boolean  $bail       Throw an exception, if the key is not found
+     * @param   string   $proxyClass The class to create the proxy for.
      *
      * @return  ContainerResource|null  The resource if present, or null if instructed to not bail
      *
      * @since   2.0.0
      * @throws  KeyNotFoundException
      */
-    public function getResource(string $key, bool $bail = false): ?ContainerResource
+    public function getResource(string $key, bool $bail = false, ?string $proxyClass = ''): ?ContainerResource
     {
         if (isset($this->resources[$key])) {
             return $this->resources[$key];
@@ -687,7 +691,7 @@ class Container implements ContainerInterface
         }
 
         if ($this->parent instanceof ContainerInterface && $this->parent->has($key)) {
-            return new ContainerResource($this, $this->parent->get($key), ContainerResource::SHARE | ContainerResource::PROTECT);
+            return new ContainerResource($this, $this->parent->get($key), ContainerResource::SHARE | ContainerResource::PROTECT, $proxyClass);
         }
 
         if ($bail) {

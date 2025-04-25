@@ -233,4 +233,68 @@ class ContainerResourceTest extends TestCase
 
         $this->assertNotSame($one, $two);
     }
+
+	/**
+     * @testdox  If the resource is created with a proxy class, the instance is created on first use
+     *
+     * @covers   Joomla\DI\ContainerResource
+     * @uses     Joomla\DI\Container
+     */
+    public function testGetInstanceAsProxy()
+    {
+        if (PHP_VERSION_ID < 80400) {
+            $this->markTestSkipped('Lazy objects are only supported in PHP 8.4 or newer.');
+        }
+
+        $container = new Container();
+
+        $factoryCalled = false;
+
+        $resource = new ContainerResource(
+            $container,
+            static function() use (&$factoryCalled) {
+                $factoryCalled = true;
+                return new Stub6('test');
+            },
+            0,
+            Stub6::class
+        );
+
+        $stub = $resource->getInstance();
+
+        $this->assertTrue((new \ReflectionClass(Stub6::class))->isUninitializedLazyObject($stub) );
+        $this->assertFalse($factoryCalled);
+    }
+
+	/**
+     * @testdox  If the resource is created with an invalid proxy class, the instance is created on first use
+     *
+     * @covers   Joomla\DI\ContainerResource
+     * @uses     Joomla\DI\Container
+     */
+    public function testGetInstanceWithInvalidProxyClass()
+    {
+        if (PHP_VERSION_ID < 80400) {
+            $this->markTestSkipped('Lazy objects are only supported in PHP 8.4 or newer.');
+        }
+
+        $container = new Container();
+
+        $factoryCalled = false;
+
+        $resource = new ContainerResource(
+            $container,
+            static function() use (&$factoryCalled) {
+                $factoryCalled = true;
+                return new Stub6('test');
+            },
+            0,
+            'invalid'
+        );
+
+        $stub = $resource->getInstance();
+
+        $this->assertTrue($stub instanceof Stub6);
+        $this->assertTrue($factoryCalled);
+    }
 }

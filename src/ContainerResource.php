@@ -95,10 +95,11 @@ final class ContainerResource
      * @param   Container  $container  The container
      * @param   mixed      $value      The resource or its factory closure
      * @param   integer    $mode       Resource mode, defaults to Resource::NO_SHARE | Resource::NO_PROTECT
+     * @param   string     $proxyClass The class to create the proxy for, is only used when $value is a callable
      *
      * @since   2.0.0
      */
-    public function __construct(Container $container, $value, int $mode = 0)
+    public function __construct(Container $container, $value, int $mode = 0, ?string $proxyClass = '')
     {
         $this->container = $container;
         $this->shared    = ($mode & self::SHARE) === self::SHARE;
@@ -106,6 +107,9 @@ final class ContainerResource
 
         if (\is_callable($value)) {
             $this->factory = $value;
+            if ($proxyClass && class_exists($proxyClass, false) && PHP_VERSION_ID >= 80400) {
+				$this->factory = fn () => (new \ReflectionClass($proxyClass))->newLazyProxy(fn () => $value($this->container));
+            }
         } else {
             if ($this->shared) {
                 $this->instance = $value;
