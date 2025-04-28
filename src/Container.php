@@ -681,7 +681,7 @@ class Container implements ContainerInterface
     final public function lazy1(string $class, callable $factory, bool $shared = false, bool $protected = false): static
     {
         if (PHP_VERSION_ID < 80400) {
-            return $this->set($class, $Factory, $shared, $protected);
+            return $this->set($class, $factory, $shared, $protected);
         }
 
         // Create a Lazy Proxy factory
@@ -707,14 +707,16 @@ class Container implements ContainerInterface
      */
     final public function lazy2(string $class, callable $factory)
     {
-        $featureSupported = PHP_VERSION_ID >= 80400;
+        if (PHP_VERSION_ID < 80400) {
+            return $factory;
+        }
 
         // Create a Lazy Proxy factory
-        return $featureSupported ? function () use ($class, $factory) {
+        return function () use ($class, $factory) {
             return (new \ReflectionClass($class))->newLazyProxy(function () use ($factory) {
                 return $factory($this);
             });
-        } : $factory;
+        };
     }
 
     /**
