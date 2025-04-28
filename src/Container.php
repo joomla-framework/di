@@ -666,8 +666,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Create a lazy resource for given class, and register it in the Container.
-     * By providing $factory argument the method will create Lazy Proxy object, otherwise Lazy Ghost will be created.
+     * Create a lazy proxy resource for given class, and register it in the Container.
      *
      * @param   string         $class      Full class name of the resource.
      * @param   callable       $factory    Optional callback to create the class instance. The callback must return instance of the given class.
@@ -694,8 +693,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Create a lazy resource for given class, and register it in the Container.
-     * By providing $factory argument the method will create Lazy Proxy object, otherwise Lazy Ghost will be created.
+     * Create a lazy proxy resource for given class.
      *
      * @param   string         $class      Full class name of the resource.
      * @param   callable       $factory    Optional callback to create the class instance. The callback must return instance of the given class.
@@ -717,6 +715,81 @@ class Container implements ContainerInterface
                 return $factory($this);
             });
         } : $factory;
+    }
+
+    /**
+     * Create a lazy resource for given class.
+     * By providing $factory argument the method will create Lazy Proxy object, otherwise Lazy Ghost will be created.
+     *
+     * @param   string         $class      Full class name of the resource.
+     * @param   callable|null  $factory    Optional callback to create the class instance. The callback must return instance of the given class.
+     *                                     When provided then Lazy Proxy object will be created, otherwise Lazy Ghost will be created.
+     * @param   array|null     $arguments  Optional list of arguments for class constructor for Lazy Ghost.
+     *                                     When provided then the method will try to lookup given elements from Container if needed.
+     *                                     When absent then the method will try to retrieve them from Reflection.
+     * @param   boolean        $shared     True to create and store a shared instance.
+     * @param   boolean        $protected  True to protect this item from being overwritten. Useful for services.
+     *
+     * @return  callable
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    final public function lazy3(string $class, ?callable $factory = null, ?array $arguments = null, bool $shared = false, bool $protected = false)
+    {
+        $featureSupported = PHP_VERSION_ID >= 80400;
+        $lazyGhost        = !$factory;
+
+        if ($lazyGhost) {
+            // Create a Lazy Ghost factory
+            $lazyFactory = function () use ($class, $arguments, $featureSupported) {
+                $reflection   = new \ReflectionClass($class);
+                $instantiator = function ($instance = null) use ($reflection, $arguments) {
+                    $argsList     = [];
+                    $constructor = $reflection->getConstructor();
+
+                    // Do nothing for class without constructor
+                    if ($constructor === null) {
+                        return $instance ? null : $reflection->newInstance();
+                    }
+
+                    // Check provided arguments, or, when it is null, get them from ReflectionMethod
+                    if (\is_array($arguments) && $arguments) {
+                        foreach ($arguments as $argument) {
+                            if (\is_string($argument) && $this->has($argument)) {
+                                $argsList[] = $this->get($argument);
+                            } else {
+                                $argsList[] = $argument;
+                            }
+                        }
+                    } elseif ($arguments === null) {
+                        $argsList = $this->getMethodArgs($constructor);
+                    }
+
+                    if (!$instance) {
+                        return $reflection->newInstanceArgs($argsList);
+                    }
+
+                    if ($argsList) {
+                        $instance->__construct(...$argsList);
+                    } else {
+                        $instance->__construct();
+                    }
+
+                    return null;
+                };
+
+                return $featureSupported ? $reflection->newLazyGhost($instantiator) : $instantiator();
+            };
+        } else {
+            // Create a Lazy Proxy factory
+            $lazyFactory = $featureSupported ? function () use ($class, $factory) {
+                return (new \ReflectionClass($class))->newLazyProxy(function () use ($factory) {
+                    return $factory($this);
+                });
+            } : $factory;
+        }
+
+        return $lazyFactory;
     }
 
     /**
