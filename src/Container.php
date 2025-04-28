@@ -679,7 +679,7 @@ class Container implements ContainerInterface
      *
      * @since   __DEPLOY_VERSION__
      */
-    final public function lazy(string $class, callable $factory, bool $shared = false, bool $protected = false): static
+    final public function lazy1(string $class, callable $factory, bool $shared = false, bool $protected = false): static
     {
         $featureSupported = PHP_VERSION_ID >= 80400;
 
@@ -691,6 +691,32 @@ class Container implements ContainerInterface
         } : $factory;
 
         return $this->set($class, $lazyFactory, $shared, $protected);
+    }
+
+    /**
+     * Create a lazy resource for given class, and register it in the Container.
+     * By providing $factory argument the method will create Lazy Proxy object, otherwise Lazy Ghost will be created.
+     *
+     * @param   string         $class      Full class name of the resource.
+     * @param   callable       $factory    Optional callback to create the class instance. The callback must return instance of the given class.
+     *                                     When provided then Lazy Proxy object will be created, otherwise Lazy Ghost will be created.
+     * @param   boolean        $shared     True to create and store a shared instance.
+     * @param   boolean        $protected  True to protect this item from being overwritten. Useful for services.
+     *
+     * @return  callable
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    final public function lazy2(string $class, callable $factory, bool $shared = false, bool $protected = false)
+    {
+        $featureSupported = PHP_VERSION_ID >= 80400;
+
+        // Create a Lazy Proxy factory
+        return $featureSupported ? function () use ($class, $factory) {
+            return (new \ReflectionClass($class))->newLazyProxy(function () use ($factory) {
+                return $factory($this);
+            });
+        } : $factory;
     }
 
     /**
