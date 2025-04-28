@@ -698,14 +698,12 @@ class Container implements ContainerInterface
      * @param   string         $class      Full class name of the resource.
      * @param   callable       $factory    Optional callback to create the class instance. The callback must return instance of the given class.
      *                                     When provided then Lazy Proxy object will be created, otherwise Lazy Ghost will be created.
-     * @param   boolean        $shared     True to create and store a shared instance.
-     * @param   boolean        $protected  True to protect this item from being overwritten. Useful for services.
      *
      * @return  callable
      *
      * @since   __DEPLOY_VERSION__
      */
-    final public function lazy2(string $class, callable $factory, bool $shared = false, bool $protected = false)
+    final public function lazy2(string $class, callable $factory)
     {
         $featureSupported = PHP_VERSION_ID >= 80400;
 
@@ -727,14 +725,12 @@ class Container implements ContainerInterface
      * @param   array|null     $arguments  Optional list of arguments for class constructor for Lazy Ghost.
      *                                     When provided then the method will try to lookup given elements from Container if needed.
      *                                     When absent then the method will try to retrieve them from Reflection.
-     * @param   boolean        $shared     True to create and store a shared instance.
-     * @param   boolean        $protected  True to protect this item from being overwritten. Useful for services.
      *
      * @return  callable
      *
      * @since   __DEPLOY_VERSION__
      */
-    final public function lazy3(string $class, ?callable $factory = null, ?array $arguments = null, bool $shared = false, bool $protected = false)
+    final public function lazy3(string $class, ?callable $factory = null, ?array $arguments = null)
     {
         $featureSupported = PHP_VERSION_ID >= 80400;
         $lazyGhost        = !$factory;
