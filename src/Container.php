@@ -669,8 +669,7 @@ class Container implements ContainerInterface
      * Create a lazy proxy resource for given class, and register it in the Container.
      *
      * @param   string         $class      Full class name of the resource.
-     * @param   callable       $factory    Optional callback to create the class instance. The callback must return instance of the given class.
-     *                                     When provided then Lazy Proxy object will be created, otherwise Lazy Ghost will be created.
+     * @param   callable       $factory    Callback to create the class instance. The callback must return instance of the given class.
      * @param   boolean        $shared     True to create and store a shared instance.
      * @param   boolean        $protected  True to protect this item from being overwritten. Useful for services.
      *
