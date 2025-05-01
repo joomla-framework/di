@@ -335,4 +335,29 @@ class ContainerSetupTest extends TestCase
 
         $this->assertTrue($resource instanceof Stub6);
     }
+
+    /**
+     * @testdox  If the resource is created with a proxy class
+     *
+     * @uses     Joomla\DI\Container
+     */
+    public function testGetLazyProxyInstance()
+    {
+        if (PHP_VERSION_ID < 80400) {
+            $this->markTestSkipped('Lazy objects are only supported in PHP 8.4 or newer.');
+        }
+
+        $factoryCalled = false;
+
+        $container = new Container();
+        $container->lazy(Stub6::class, function () use (&$factoryCalled) {
+            $factoryCalled = true;
+            return new Stub6();
+        });
+
+        $resource = $container->get(Stub6::class);
+
+        $this->assertTrue((new \ReflectionClass(Stub6::class))->isUninitializedLazyObject($resource));
+        $this->assertFalse($factoryCalled);
+    }
 }
