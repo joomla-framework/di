@@ -318,4 +318,21 @@ class ContainerSetupTest extends TestCase
 
         $container->get('foo');
     }
+
+    /**
+     * @testdox  Create Lazy Proxy
+     *
+     * @covers   Joomla\DI\Container
+     */
+    public function testCreateLazyProxy()
+    {
+        $container = new Container();
+        $container->lazy(Stub6::class, function () {
+            return new Stub6();
+        });
+
+        $resource = $container->get(Stub6::class);
+
+        $this->assertTrue($resource instanceof Stub6);
+    }
 }
