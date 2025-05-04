@@ -668,6 +668,7 @@ class Container implements ContainerInterface
     /**
      * Create a lazy proxy resource for given class, and register it in the Container.
      *
+     * @param   string         $key        The unique identifier for the resource.
      * @param   string         $class      Full class name of the resource.
      * @param   callable       $factory    Callback to create the class instance. The callback must return instance of the given class.
      * @param   boolean        $shared     True to create and store a shared instance.
@@ -677,10 +678,10 @@ class Container implements ContainerInterface
      *
      * @since   __DEPLOY_VERSION__
      */
-    final public function lazy(string $class, callable $factory, bool $shared = false, bool $protected = false): static
+    final public function lazy(string $key, string $class, callable $factory, bool $shared = false, bool $protected = false): static
     {
         if (PHP_VERSION_ID < 80400) {
-            return $this->set($class, $factory, $shared, $protected);
+            return $this->set($key, $factory, $shared, $protected);
         }
 
         // Create a Lazy Proxy factory
@@ -690,7 +691,7 @@ class Container implements ContainerInterface
             });
         };
 
-        return $this->set($class, $lazyFactory, $shared, $protected);
+        return $this->set($key, $lazyFactory, $shared, $protected);
     }
 
     /**
