@@ -666,7 +666,7 @@ class Container implements ContainerInterface
     }
 
     /**
-     * Create a lazy proxy resource for given class, and return result.
+     * Create a lazy proxy factory for given class.
      *
      * @param   string         $class      Full class name of the resource.
      * @param   callable       $factory    Callback to create the class instance. The callback must return instance of the given class.
@@ -675,7 +675,7 @@ class Container implements ContainerInterface
      *
      * @since   __DEPLOY_VERSION__
      */
-    final public function lazy(string $class, callable $factory)
+    final public function lazy(string $class, callable $factory): callable
     {
         if (PHP_VERSION_ID < 80400) {
             return $factory;
