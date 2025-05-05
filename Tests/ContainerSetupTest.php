@@ -327,9 +327,9 @@ class ContainerSetupTest extends TestCase
     public function testCreateLazyProxy()
     {
         $container = new Container();
-        $container->lazy(Stub6::class, function () {
+        $container->set(Stub6::class, $container->lazy(Stub6::class, function () {
             return new Stub6();
-        });
+        }));
 
         $resource = $container->get(Stub6::class);
 
@@ -350,10 +350,10 @@ class ContainerSetupTest extends TestCase
         $factoryCalled = false;
 
         $container = new Container();
-        $container->lazy(Stub6::class, function () use (&$factoryCalled) {
+        $container->set(Stub6::class, $container->lazy(Stub6::class, function () use (&$factoryCalled) {
             $factoryCalled = true;
             return new Stub6();
-        });
+        }));
 
         $resource = $container->get(Stub6::class);
 
