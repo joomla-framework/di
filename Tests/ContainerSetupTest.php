@@ -54,9 +54,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return 'called';
-            }
+            static fn() => 'called'
         );
 
         $this->assertSame('called', $container->get('foo'));
@@ -114,16 +112,12 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return 'original';
-            }
+            static fn() => 'original'
         );
 
         $container->set(
             'foo',
-            static function () {
-                return 'changed';
-            }
+            static fn() => 'changed'
         );
         $this->assertSame('changed', $container->get('foo'));
     }
@@ -139,9 +133,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return new \stdClass();
-            }
+            static fn() => new \stdClass()
         );
 
         $this->assertFalse($container->isShared('foo'));
@@ -181,9 +173,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return new \stdClass();
-            },
+            static fn() => new \stdClass(),
             $shared,
             $protected
         );
@@ -203,9 +193,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->protect(
             'foo',
-            static function () {
-                return new \stdClass();
-            }
+            static fn() => new \stdClass()
         );
 
         $this->assertFalse($container->isShared('foo'));
@@ -223,9 +211,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->protect(
             'foo',
-            static function () {
-                return new \stdClass();
-            },
+            static fn() => new \stdClass(),
             true
         );
 
@@ -244,9 +230,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->share(
             'foo',
-            static function () {
-                return new \stdClass();
-            }
+            static fn() => new \stdClass()
         );
 
         $this->assertTrue($container->isShared('foo'));
@@ -264,9 +248,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->share(
             'foo',
-            static function () {
-                return new \stdClass();
-            },
+            static fn() => new \stdClass(),
             true
         );
 
@@ -285,9 +267,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function (Container $c) {
-                return $c;
-            }
+            static fn(Container $c) => $c
         );
 
         $this->assertSame($container, $container->get('foo'));
@@ -306,9 +286,7 @@ class ContainerSetupTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return 'original';
-            }
+            static fn() => 'original'
         );
 
         $container->set(
@@ -327,9 +305,7 @@ class ContainerSetupTest extends TestCase
     public function testCreateLazyProxy()
     {
         $container = new Container();
-        $container->set(Stub6::class, $container->lazy(Stub6::class, function () {
-            return new Stub6();
-        }));
+        $container->set(Stub6::class, $container->lazy(Stub6::class, fn() => new Stub6()));
 
         $resource = $container->get(Stub6::class);
 

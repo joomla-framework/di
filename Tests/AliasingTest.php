@@ -28,9 +28,7 @@ class AliasingTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return new \stdClass();
-            },
+            static fn() => new \stdClass(),
             true,
             true
         );
@@ -54,9 +52,7 @@ class AliasingTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return new \stdClass();
-            },
+            static fn() => new \stdClass(),
             true,
             true
         );

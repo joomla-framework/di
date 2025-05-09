@@ -34,9 +34,7 @@ class TaggedServiceTest extends TestCase
 
         $container->set(
             Stub6::class,
-            static function () {
-                return new Stub6();
-            }
+            static fn() => new Stub6()
         );
 
         $container->tag('stub', [Stub6::class]);
@@ -56,23 +54,17 @@ class TaggedServiceTest extends TestCase
 
         $container->set(
             Stub1::class,
-            static function () {
-                return new Stub1();
-            }
+            static fn() => new Stub1()
         );
 
         $container->set(
             Stub2::class,
-            static function (Container $container) {
-                return new Stub2($container->get(Stub1::class));
-            }
+            static fn(Container $container) => new Stub2($container->get(Stub1::class))
         );
 
         $container->set(
             Stub4::class,
-            static function (Container $container) {
-                return new Stub4();
-            }
+            static fn(Container $container) => new Stub4()
         );
 
         $container->tag('stub', [Stub1::class, Stub2::class, Stub4::class]);

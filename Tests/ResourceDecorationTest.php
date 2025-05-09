@@ -37,9 +37,7 @@ class ResourceDecorationTest extends TestCase
         $container = new Container();
         $container->share(
             'foo',
-            static function () {
-                return new \stdClass();
-            }
+            static fn() => new \stdClass()
         );
 
         $container->extend(
@@ -104,9 +102,7 @@ class ResourceDecorationTest extends TestCase
 
         $container->extend(
             'foo',
-            static function ($originalResult, Container $c) {
-                return $originalResult . 'baz';
-            }
+            static fn($originalResult, Container $c) => $originalResult . 'baz'
         );
 
         $this->assertEquals('barbaz', $container->get('foo'));
@@ -139,9 +135,7 @@ class ResourceDecorationTest extends TestCase
         $container = new Container();
         $container->protect(
             'foo',
-            static function () {
-                return new \stdClass();
-            }
+            static fn() => new \stdClass()
         );
 
         $container->extend(
