@@ -97,9 +97,7 @@ class ContainerResourceTest extends TestCase
 
         $resource = new ContainerResource(
             $container,
-            static function () {
-                return new Stub6();
-            }
+            static fn() => new Stub6()
         );
 
         $this->assertInstanceOf(Stub6::class, $resource->getInstance());
@@ -116,9 +114,7 @@ class ContainerResourceTest extends TestCase
         $container = new Container();
         $resource  = new ContainerResource(
             $container,
-            static function () {
-                return new Stub6();
-            },
+            static fn() => new Stub6(),
             ContainerResource::NO_SHARE
         );
 
@@ -136,9 +132,7 @@ class ContainerResourceTest extends TestCase
         $container = new Container();
         $resource  = new ContainerResource(
             $container,
-            static function () {
-                return new Stub6();
-            },
+            static fn() => new Stub6(),
             ContainerResource::SHARE
         );
 
@@ -194,9 +188,7 @@ class ContainerResourceTest extends TestCase
         $container = new Container();
         $resource  = new ContainerResource(
             $container,
-            static function () {
-                return new Stub6();
-            },
+            static fn() => new Stub6(),
             ContainerResource::SHARE
         );
 

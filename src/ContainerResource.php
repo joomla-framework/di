@@ -112,13 +112,9 @@ final class ContainerResource
             }
 
             if (\is_object($value)) {
-                $this->factory = function () use ($value) {
-                    return clone $value;
-                };
+                $this->factory = fn() => clone $value;
             } else {
-                $this->factory = function () use ($value) {
-                    return $value;
-                };
+                $this->factory = fn() => $value;
             }
         }
     }

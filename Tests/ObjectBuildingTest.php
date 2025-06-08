@@ -187,9 +187,7 @@ class ObjectBuildingTest extends TestCase
         $container = new Container();
         $container->set(
             StubInterface::class,
-            static function () {
-                return new Stub1();
-            }
+            static fn() => new Stub1()
         );
 
         $object = $container->buildObject(Stub2::class);

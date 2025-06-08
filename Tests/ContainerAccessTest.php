@@ -28,9 +28,7 @@ class ContainerAccessTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return new \stdClass();
-            },
+            static fn() => new \stdClass(),
             true
         );
 
@@ -48,9 +46,7 @@ class ContainerAccessTest extends TestCase
         $container = new Container();
         $container->set(
             'foo',
-            static function () {
-                return new \stdClass();
-            },
+            static fn() => new \stdClass(),
             false
         );
 
@@ -96,9 +92,7 @@ class ContainerAccessTest extends TestCase
         $container = new Container();
         $container->share(
             'foo',
-            static function () {
-                return new \stdClass();
-            }
+            static fn() => new \stdClass()
         );
 
         $this->assertNotSame($container->getNewInstance('foo'), $container->getNewInstance('foo'));

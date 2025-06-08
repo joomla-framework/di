@@ -369,15 +369,11 @@ class Container implements ContainerInterface
         // If there are no parameters, just return a new object.
         if ($constructor === null) {
             // There is no constructor, just return a new object.
-            $callback = function () use ($key) {
-                return new $key();
-            };
+            $callback = fn() => new $key();
         } else {
             $newInstanceArgs = $this->getMethodArgs($constructor);
 
-            $callback = function () use ($reflection, $newInstanceArgs) {
-                return $reflection->newInstanceArgs($newInstanceArgs);
-            };
+            $callback = fn() => $reflection->newInstanceArgs($newInstanceArgs);
         }
 
         $this->set($key, $callback, $shared);
@@ -434,9 +430,7 @@ class Container implements ContainerInterface
         $key      = $this->resolveAlias($resourceName);
         $resource = $this->getResource($key, true);
 
-        $closure = function ($c) use ($callable, $resource) {
-            return $callable($resource->getInstance(), $c);
-        };
+        $closure = fn($c) => $callable($resource->getInstance(), $c);
 
         $this->set($key, $closure, $resource->isShared());
     }
@@ -663,6 +657,26 @@ class Container implements ContainerInterface
     public function share($key, $value, $protected = false)
     {
         return $this->set($key, $value, true, $protected);
+    }
+
+    /**
+     * Create a lazy proxy factory for given class.
+     *
+     * @param   string         $class      Full class name of the resource.
+     * @param   callable       $factory    Callback to create the class instance. The callback must return instance of the given class.
+     *
+     * @return  callable
+     *
+     * @since   3.1.0
+     */
+    final public function lazy(string $class, callable $factory): callable
+    {
+        if (PHP_VERSION_ID < 80400) {
+            return $factory;
+        }
+
+        // Create a Lazy Proxy factory
+        return fn() => (new \ReflectionClass($class))->newLazyProxy(fn() => $factory($this));
     }
 
     /**
