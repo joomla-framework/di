@@ -29,9 +29,7 @@ class HierarchicalTest extends TestCase
         $container = new Container();
         $container->set(
             StubInterface::class,
-            static function () {
-                return new Stub1();
-            }
+            static fn() => new Stub1()
         );
 
         $child = $container->createChild();
@@ -49,9 +47,7 @@ class HierarchicalTest extends TestCase
         $container = new Container();
         $container->set(
             StubInterface::class,
-            static function () {
-                return new Stub1();
-            }
+            static fn() => new Stub1()
         );
         $container->alias('stub', StubInterface::class);
 
@@ -113,16 +109,12 @@ class HierarchicalTest extends TestCase
         $container = new Container();
         $container->protect(
             StubInterface::class,
-            static function () {
-                return new Stub1();
-            }
+            static fn() => new Stub1()
         );
         $child = $container->createChild();
         $child->set(
             StubInterface::class,
-            static function () {
-                return new Stub4();
-            }
+            static fn() => new Stub4()
         );
 
         $this->assertInstanceOf(Stub4::class, $child->get(StubInterface::class));
