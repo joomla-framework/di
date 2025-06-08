@@ -673,7 +673,7 @@ class Container implements ContainerInterface
      *
      * @return  callable
      *
-     * @since   __DEPLOY_VERSION__
+     * @since   3.1.0
      */
     final public function lazy(string $class, callable $factory): callable
     {
