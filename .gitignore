@@ -1,25 +1,16 @@
-# IDE & System Related Files
+# IDE Related Files #
 .buildpath
 .project
 .settings
 .DS_Store
 .idea
-.vscode
-.docker
 
-# OSX
-._*
-.Spotlight-V100
-.Trashes
-
-# Windows
-Thumbs.db
-Desktop.ini
-
-# Project specific
+# Composer and test related files #
 vendor/
 composer.phar
 composer.lock
 phpunit.xml
-.phpunit.result.cache
-/build/
+.phpunit.cache/
+.idea/
+/.phpunit.result.cache
+/.phpunit.cache/
