@@ -1,4 +1,4 @@
-# The DI Package [![Build Status](https://ci.joomla.org/api/badges/joomla-framework/di/status.svg?ref=refs/heads/3.x-dev)](https://ci.joomla.org/joomla-framework/di)
+# The DI Package [![Build Status](https://github.com/joomla-framework/di/actions/workflows/ci.yml/badge.svg?branch=3.x-dev)](https://github.com/joomla-framework/di)
 
 [![Latest Stable Version](https://poser.pugx.org/joomla/di/v/stable)](https://packagist.org/packages/joomla/di)
 [![Total Downloads](https://poser.pugx.org/joomla/di/downloads)](https://packagist.org/packages/joomla/di)
