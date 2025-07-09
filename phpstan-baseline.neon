@@ -1,0 +1,31 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method ReflectionClass\<object\>\:\:newLazyProxy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Container.php
+
+		-
+			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Container.php
+
+		-
+			message: '#^Call to an undefined method ReflectionType\:\:isBuiltin\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Container.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: src/Container.php
+
+		-
+			message: '#^Trait Joomla\\DI\\ContainerAwareTrait is used zero times and is not analysed\.$#'
+			identifier: trait.unused
+			count: 1
+			path: src/ContainerAwareTrait.php
