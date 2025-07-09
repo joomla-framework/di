@@ -104,7 +104,7 @@ class Container implements ContainerInterface
      *
      * @since   1.5.0
      */
-    public function has($resourceName)
+    public function has($resourceName): bool
     {
         $key = $this->resolveAlias($resourceName);
 
@@ -117,29 +117,6 @@ class Container implements ContainerInterface
         }
 
         return true;
-    }
-
-    /**
-     * Method to check if specified dataStore key exists.
-     *
-     * @param   string  $key  Name of the dataStore key to check.
-     *
-     * @return  boolean  True for success
-     *
-     * @since   1.0
-     * @deprecated  3.0  Use ContainerInterface::has() instead
-     */
-    public function exists($key)
-    {
-        trigger_deprecation(
-            'joomla/di',
-            '1.5.0',
-            '%s() is deprecated and will be removed in 3.0, use %s::has() instead.',
-            __METHOD__,
-            ContainerInterface::class
-        );
-
-        return $this->has($key);
     }
 
     /**
