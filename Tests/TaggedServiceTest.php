@@ -20,8 +20,8 @@ class TaggedServiceTest extends TestCase
     /**
      * @testdox  A registered resource can be tagged
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testARegisteredResourceCanBeTagged()
     {
@@ -45,8 +45,8 @@ class TaggedServiceTest extends TestCase
     /**
      * @testdox  All tagged services can be retrieved
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testAllTaggedServicesCanBeRetrieved()
     {

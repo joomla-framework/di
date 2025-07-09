@@ -9,6 +9,7 @@ namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
 use Joomla\DI\ContainerResource;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -18,59 +19,54 @@ include_once __DIR__ . '/Stubs/stubs.php';
  */
 class ContainerResourceTest extends TestCase
 {
-    public function dataInstantiation(): \Generator
+    public static function dataInstantiation(): array
     {
-        yield 'shared, protected' => [
-            'mode'      => ContainerResource::SHARE | ContainerResource::PROTECT,
-            'shared'    => true,
-            'protected' => true,
-        ];
-
-        yield 'shared, not protected (explicit)' => [
-            'mode'      => ContainerResource::SHARE | ContainerResource::NO_PROTECT,
-            'shared'    => true,
-            'protected' => false,
-        ];
-
-        yield 'not shared, protected (explicit)' => [
-            'mode'      => ContainerResource::NO_SHARE | ContainerResource::PROTECT,
-            'shared'    => false,
-            'protected' => true,
-        ];
-
-        yield 'not shared, not protected (explicit)' => [
-            'mode'      => ContainerResource::NO_SHARE | ContainerResource::NO_PROTECT,
-            'shared'    => false,
-            'protected' => false,
-        ];
-
-        yield 'shared, not protected (implicit)' => [
-            'mode'      => ContainerResource::SHARE,
-            'shared'    => true,
-            'protected' => false,
-        ];
-
-        yield 'not shared, protected (implicit)' => [
-            'mode'      => ContainerResource::PROTECT,
-            'shared'    => false,
-            'protected' => true,
-        ];
-
-        yield 'not shared, not protected (implicit)' => [
-            'mode'      => null,
-            'shared'    => false,
-            'protected' => false,
+        return [
+            'shared, protected' => [
+                'mode'      => ContainerResource::SHARE | ContainerResource::PROTECT,
+                'shared'    => true,
+                'protected' => true,
+            ],
+            'shared, not protected (explicit)' => [
+                'mode'      => ContainerResource::SHARE | ContainerResource::NO_PROTECT,
+                'shared'    => true,
+                'protected' => false,
+            ],
+            'not shared, protected (explicit)' => [
+                'mode'      => ContainerResource::NO_SHARE | ContainerResource::PROTECT,
+                'shared'    => false,
+                'protected' => true,
+            ],
+            'not shared, not protected (explicit)' => [
+                'mode'      => ContainerResource::NO_SHARE | ContainerResource::NO_PROTECT,
+                'shared'    => false,
+                'protected' => false,
+            ],
+            'shared, not protected (implicit)' => [
+                'mode'      => ContainerResource::SHARE,
+                'shared'    => true,
+                'protected' => false,
+            ],
+            'not shared, protected (implicit)' => [
+                'mode'      => ContainerResource::PROTECT,
+                'shared'    => false,
+                'protected' => true,
+            ],
+            'not shared, not protected (implicit)' => [
+                'mode'      => null,
+                'shared'    => false,
+                'protected' => false,
+            ],
         ];
     }
 
     /**
      * @testdox  The resource supports 'shared' and 'protected' modes, defaulting to 'not shared' and 'not protected'
      *
-     * @covers   Joomla\DI\ContainerResource
-     * @uses     Joomla\DI\Container
-     *
-     * @dataProvider dataInstantiation
+     * @covers   \Joomla\DI\ContainerResource
+     * @uses     \Joomla\DI\Container
      */
+    #[DataProvider('dataInstantiation')]
     public function testInstantiation(?int $mode, bool $shared, bool $protected)
     {
         $container = new Container();
@@ -88,8 +84,8 @@ class ContainerResourceTest extends TestCase
     /**
      * @testdox  If a factory is provided, the instance is created on retrieval
      *
-     * @covers   Joomla\DI\ContainerResource
-     * @uses     Joomla\DI\Container
+     * @covers   \Joomla\DI\ContainerResource
+     * @uses     \Joomla\DI\Container
      */
     public function testGetInstanceWithFactory()
     {
@@ -106,8 +102,8 @@ class ContainerResourceTest extends TestCase
     /**
      * @testdox  If a factory is provided in non-shared mode, the instance is not cached
      *
-     * @covers   Joomla\DI\ContainerResource
-     * @uses     Joomla\DI\Container
+     * @covers   \Joomla\DI\ContainerResource
+     * @uses     \Joomla\DI\Container
      */
     public function testGetInstanceWithFactoryInNonSharedMode()
     {
@@ -124,8 +120,8 @@ class ContainerResourceTest extends TestCase
     /**
      * @testdox  If a factory is provided in shared mode, the instance is cached
      *
-     * @covers   Joomla\DI\ContainerResource
-     * @uses     Joomla\DI\Container
+     * @covers   \Joomla\DI\ContainerResource
+     * @uses     \Joomla\DI\Container
      */
     public function testGetInstanceWithFactoryInSharedMode()
     {
@@ -142,8 +138,8 @@ class ContainerResourceTest extends TestCase
     /**
      * @testdox  If an instance is provided directly in shared mode, that instance is returned
      *
-     * @covers   Joomla\DI\ContainerResource
-     * @uses     Joomla\DI\Container
+     * @covers   \Joomla\DI\ContainerResource
+     * @uses     \Joomla\DI\Container
      */
     public function testGetInstanceWithInstanceInSharedMode()
     {
@@ -161,7 +157,7 @@ class ContainerResourceTest extends TestCase
     /**
      * @testdox  If an instance is provided directly in non-shared mode, a copy (clone) of that instance is returned
      *
-     * @covers   Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\ContainerResource
      * @uses     Joomla\DI\Container
      */
     public function testGetInstanceWithInstanceInNonSharedMode()

@@ -21,8 +21,8 @@ class HierarchicalTest extends TestCase
     /**
      * @testdox  Child container has access to parent's resources
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testCreateChild()
     {
@@ -39,8 +39,8 @@ class HierarchicalTest extends TestCase
     /**
      * @testdox  Child container resolves parent's alias to parent's resource
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testChildResolveAlias()
     {
@@ -58,8 +58,8 @@ class HierarchicalTest extends TestCase
     /**
      * @testdox  Container can decorate an arbitrary PSR-11 compatible container
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testDecorateArbitraryPsr11Container()
     {
@@ -72,8 +72,8 @@ class HierarchicalTest extends TestCase
     /**
      * @testdox  Container can manage an alias for a resource from an arbitrary PSR-11 compatible container
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testDecorateArbitraryPsr11ContainerAlias()
     {
@@ -87,8 +87,8 @@ class HierarchicalTest extends TestCase
     /**
      * @testdox  Resources from an arbitrary PSR-11 compatible container are 'shared' and 'protected'
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testDecorateArbitraryPsr11ContainerModes()
     {
@@ -101,7 +101,7 @@ class HierarchicalTest extends TestCase
     /**
      * @testdox  Test possibility to override 'protected' item in Child container
      *
-     * @covers   Joomla\DI\Container
+     * @covers   \Joomla\DI\Container
      * @uses     Joomla\DI\ContainerResource
      */
     public function testOverrideProtectedItemLocally()

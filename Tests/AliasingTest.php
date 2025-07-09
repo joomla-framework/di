@@ -20,8 +20,8 @@ class AliasingTest extends TestCase
     /**
      * @testdox  Both the original key and the alias return the same resource
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testResolveAliasSameAsKey()
     {
@@ -44,8 +44,8 @@ class AliasingTest extends TestCase
     /**
      * @testdox  has() also resolves the alias if set.
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testExistsResolvesAlias()
     {

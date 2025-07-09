@@ -33,7 +33,7 @@ class ArbitraryInteropContainer implements \Psr\Container\ContainerInterface
      *
      * @return boolean
      */
-    public function has($id)
+    public function has($id): bool
     {
         return isset($this->data[$id]);
     }

@@ -22,8 +22,8 @@ class ObjectBuildingTest extends TestCase
     /**
      * @testdox  Building an object returns an instance of the requested class
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testBuildObjectNoDependencies()
     {
@@ -33,8 +33,8 @@ class ObjectBuildingTest extends TestCase
     /**
      * @testdox  Building a non-shared object returns a new object whenever requested
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testBuildObject()
     {
@@ -48,8 +48,8 @@ class ObjectBuildingTest extends TestCase
     /**
      * @testdox  Building a shared object returns the same object whenever requested
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testBuildSharedObject()
     {
@@ -63,8 +63,8 @@ class ObjectBuildingTest extends TestCase
     /**
      * @testdox  Building a non-shared object whose constructor contains a nullable argument with an unknown class returns a new object whenever requested
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testBuildObjectWithNullableArgumentForUnknownClass()
     {
@@ -80,7 +80,7 @@ class ObjectBuildingTest extends TestCase
     /**
      * @testdox  Building a non-shared object whose constructor contains a nullable argument with a known class returns a new object whenever requested
      *
-     * @covers   Joomla\DI\Container
+     * @covers   \Joomla\DI\Container
      * @uses     Joomla\DI\ContainerResource
      */
     public function testBuildObjectWithNullableArgumentForKnownClass()

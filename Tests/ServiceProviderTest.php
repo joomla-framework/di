@@ -20,7 +20,7 @@ class ServiceProviderTest extends TestCase
     /**
      * @testdox  When registering a service provider, its register() method is called with the container instance
      *
-     * @covers   Joomla\DI\Container
+     * @covers   \Joomla\DI\Container
      */
     public function testRegisterServiceProvider()
     {

@@ -9,6 +9,7 @@ namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
 use Joomla\DI\Exception\KeyNotFoundException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -29,8 +30,8 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  Resources can be set up with Callables
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testSetCallable()
     {
@@ -46,8 +47,8 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  Resources can be set up with Closures
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testSetClosure()
     {
@@ -63,8 +64,8 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  Resources can be scalar values
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testSetNotCallable()
     {
@@ -77,8 +78,8 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  Setting an existing protected resource throws an OutOfBoundsException
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testSetAlreadySetProtected()
     {
@@ -104,8 +105,8 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  Setting an existing non-protected resource replaces the resource
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testSetAlreadySetNotProtected()
     {
@@ -125,8 +126,8 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  Default mode is 'not shared' and 'not protected'
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testSetDefault()
     {
@@ -140,34 +141,35 @@ class ContainerSetupTest extends TestCase
         $this->assertFalse($container->isProtected('foo'));
     }
 
-    public function dataForSetFlags(): \Generator
+    public static function dataForSetFlags(): array
     {
-        yield 'shared, protected' => [
-            'shared'    => true,
-            'protected' => true,
-        ];
-        yield 'shared, not protected' => [
-            'shared'    => true,
-            'protected' => false,
-        ];
-        yield 'not shared, protected' => [
-            'shared'    => false,
-            'protected' => true,
-        ];
-        yield 'not shared, not protected' => [
-            'shared'    => false,
-            'protected' => false,
+        return [
+            'shared, protected' => [
+                'shared'    => true,
+                'protected' => true,
+            ],
+            'shared, not protected' => [
+                'shared'    => true,
+                'protected' => false,
+            ],
+            'not shared, protected' => [
+                'shared'    => false,
+                'protected' => true,
+            ],
+            'not shared, not protected' => [
+                'shared'    => false,
+                'protected' => false,
+            ],
         ];
     }
 
     /**
      * @testdox  'shared' and 'protected' mode can be set independently
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     *
-     * @dataProvider dataForSetFlags
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
+    #[DataProvider('dataForSetFlags')]
     public function testSetSharedProtected(bool $shared, bool $protected)
     {
         $container = new Container();
@@ -185,8 +187,8 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  The convenience method protect() sets resources as protected, but not as shared by default
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testProtect()
     {
@@ -203,7 +205,7 @@ class ContainerSetupTest extends TestCase
     /**
      * @testdox  The convenience method protect() sets resources as shared when passed true as third arg
      *
-     * @covers   Joomla\DI\Container
+     * @covers   \Joomla\DI\Container
      * @uses     Joomla\DI\ContainerResource
      */
     public function testProtectShared()

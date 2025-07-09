@@ -29,8 +29,8 @@ class ResourceDecorationTest extends TestCase
     /**
      * @testdox  An extended resource replaces the original resource with a Closure
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testExtendClosure()
     {
@@ -61,8 +61,8 @@ class ResourceDecorationTest extends TestCase
     /**
      * @testdox  An extended resource replaces the original resource with a callback function
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testExtendCallback()
     {
@@ -89,8 +89,8 @@ class ResourceDecorationTest extends TestCase
     /**
      * @testdox  Scalar resources can be extended
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testExtendScalar()
     {
@@ -111,8 +111,8 @@ class ResourceDecorationTest extends TestCase
     /**
      * @testdox  Attempting to extend an undefined resource throws a KeyNotFoundException
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testExtendValidatesKeyIsPresent()
     {

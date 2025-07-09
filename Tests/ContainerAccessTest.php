@@ -20,8 +20,8 @@ class ContainerAccessTest extends TestCase
     /**
      * @testdox  The same resource instance is returned for shared resources
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testGetShared()
     {
@@ -38,8 +38,8 @@ class ContainerAccessTest extends TestCase
     /**
      * @testdox  A new resource instance is returned for non-shared resources
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testGetNotShared()
     {
@@ -56,8 +56,8 @@ class ContainerAccessTest extends TestCase
     /**
      * @testdox  Accessing an undefined resource throws an InvalidArgumentException
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testGetNotExists()
     {
@@ -69,8 +69,8 @@ class ContainerAccessTest extends TestCase
     /**
      * @testdox  The existence of a resource can be checked
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testExists()
     {
@@ -84,8 +84,8 @@ class ContainerAccessTest extends TestCase
     /**
      * @testdox  getNewInstance() will always return a new instance, even if the resource was set to be shared
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testGetNewInstance()
     {
@@ -101,8 +101,8 @@ class ContainerAccessTest extends TestCase
     /**
      * @testdox  The unique service keys for the container are returned
      *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
+     * @covers   \Joomla\DI\Container
+     * @uses     \Joomla\DI\ContainerResource
      */
     public function testRetrievingTheContainerKeys()
     {
