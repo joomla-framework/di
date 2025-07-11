@@ -1,0 +1,21 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method ReflectionClass\\<object\\>\\:\\:newLazyProxy\\(\\)\\.$#"
+			count: 1
+			path: src/Container.php
+
+		-
+			message: "#^Call to an undefined method ReflectionType\\:\\:getName\\(\\)\\.$#"
+			count: 1
+			path: src/Container.php
+
+		-
+			message: "#^Call to an undefined method ReflectionType\\:\\:isBuiltin\\(\\)\\.$#"
+			count: 1
+			path: src/Container.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Container.php
