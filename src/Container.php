@@ -353,6 +353,24 @@ class Container implements ContainerInterface
             $callback = fn() => $reflection->newInstanceArgs($newInstanceArgs);
         }
 
+        if (\in_array(AbstractAutowireInterface::class, $reflection->getInterfaceNames(), true)) {
+            /** @var AbstractAutowireInterface $key */
+
+            $callback = function() use ($callback, $key) {
+                $instance = $callback();
+
+                $resolved = array_flip($instance::getAutowireResources());
+
+                foreach($resolved as $name => $value) {
+                    if ($this->has($name)) {
+                        $resolved[$name] = $this->get($name);
+                    }
+                }
+
+                $instance->setAutowireResources($resolved);
+            };
+        }
+
         $this->set($key, $callback, $shared);
 
         $resource = $this->get($key);
@@ -452,6 +470,13 @@ class Container implements ContainerInterface
 
                 // Check for a class, if it doesn't have one then it is a scalar type, which we cannot handle if a mandatory argument
                 if ($dependency->isBuiltin()) {
+                    // We only support scalar values by name using the scalar prefix
+                    if ($this->has('scalar.' . $param->getName())) {
+                        $methodArgs[] = $this->get('scalar.' . $param->getName());
+
+                        continue;
+                    }
+
                     // If the param is optional, then fall through to the optional param handling later in this method
                     if (!$param->isOptional()) {
                         $message = 'Could not resolve the parameter "$%s" of "%s::%s()":';
@@ -526,6 +551,13 @@ class Container implements ContainerInterface
                         continue;
                     }
                 }
+            }
+
+            // We only support scalar values by name using the scalar prefix
+            if ($this->has('scalar.' . $param->getName())) {
+                $methodArgs[] = $this->get('scalar.' . $param->getName());
+
+                continue;
             }
 
             // If there is a default parameter and it can be read, use it.
