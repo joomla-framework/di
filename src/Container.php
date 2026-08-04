@@ -369,6 +369,8 @@ class Container implements ContainerInterface
                 }
 
                 $instance->setAutowireResources($resolved);
+
+                return $instance;
             };
         }
 
