@@ -354,10 +354,11 @@ class Container implements ContainerInterface
         }
 
         if (\in_array(AbstractAutowireInterface::class, $reflection->getInterfaceNames(), true)) {
-            /** @var AbstractAutowireInterface $key */
+            // We warp the constructor callback created with arguments for autowiring for later use
+            $constructorCallback = $callback;
 
-            $callback = function() use ($callback, $key) {
-                $instance = $callback();
+            $callback = function() use ($constructorCallback) {
+                $instance = $constructorCallback();
 
                 $resolved = array_flip($instance::getAutowireResources());
 
