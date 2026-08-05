@@ -44,5 +44,5 @@ interface AbstractAutowireInterface
      *
      * @since  __DEPLOY_VERSION__
      */
-    public static function setAutowireResources(array $resources): void;
+    public function setAutowireResources(array $resources): void;
 }

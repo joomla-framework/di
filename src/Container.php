@@ -359,10 +359,9 @@ class Container implements ContainerInterface
 
             $callback = function() use ($constructorCallback) {
                 $instance = $constructorCallback();
+                $resolved = [];
 
-                $resolved = array_flip($instance::getAutowireResources());
-
-                foreach($resolved as $name => $value) {
+                foreach(array_flip($instance::getAutowireResources()) as $name => $value) {
                     if ($this->has($name)) {
                         $resolved[$name] = $this->get($name);
                     }

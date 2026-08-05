@@ -42,19 +42,19 @@ trait AbstractAutowireSetterAwareTrait
      *
      * @since  __DEPLOY_VERSION__
      */
-    public static function setAutowireResources(array $resources): void {
-        $autowire = self::getAutowireResources();
+    public function setAutowireResources(array $resources): void {
+        $autowire = static::getAutowireResources();
 
         foreach ($autowire as $setter => $name) {
             if (!isset($resources[$name])) {
-                throw new ContainerNotFoundException(sprintf('Resource "%s" not found in container', $name));
+                throw new ContainerNotFoundException(sprintf('Resource "%s" not found in container.', $name));
             }
 
             if (!method_exists(static::class, $setter)) {
-                throw new \RuntimeException(sprintf('Setter method "%s" not found in class "%s"', $setter, static::class));
+                throw new \RuntimeException(sprintf('Setter method "%s" not found in class "%s".', $setter, static::class));
             }
 
-            static::$setter($resources[$name]);
+            $this->$setter($resources[$name]);
         }
     }
 }
