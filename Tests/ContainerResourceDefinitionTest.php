@@ -65,6 +65,23 @@ class ContainerResourceDefinitionTest extends TestCase
     }
 
     /**
+     * @testdox  Creates factory automatically with dependency
+     *
+     * @covers   Joomla\DI\ContainerResourceDefinition
+     */
+    public function testDefAutoFactoryWithDependency(): void
+    {
+        $container = new Container();
+        $container->def(Stub4::class)->end();
+        $container->def(Stub5::class)->end();
+
+        $stub5 = $container->get(Stub5::class);
+
+        $this->assertInstanceOf(Stub5::class, $stub5);
+        $this->assertInstanceOf(Stub4::class, $stub5->stub);
+    }
+
+    /**
      * @testdox  Defines lazy services
      *
      * @covers   Joomla\DI\ContainerResourceDefinition

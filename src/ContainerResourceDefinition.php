@@ -213,6 +213,51 @@ class ContainerResourceDefinition
     }
 
     /**
+     * Create a factory for the given class.
+     *
+     * @param   string  $class  The class name
+     *
+     * @return  callable
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private function makeFactory(string $class): callable
+    {
+        return function () use ($class) {
+            $reflection = new \ReflectionClass($class);
+            $constructor = $reflection->getConstructor();
+
+            if ($constructor === null) {
+                return new $class();
+            }
+
+            $args = [];
+
+            foreach ($constructor->getParameters() as $parameter) {
+                $type = $parameter->getType();
+
+                if ($type && !$type->isBuiltin()) {
+                    $typeName = $type->getName();
+
+                    if ($this->container->has($typeName)) {
+                        $args[] = $this->container->get($typeName);
+                        continue;
+                    }
+                }
+
+                if ($parameter->isDefaultValueAvailable()) {
+                    $args[] = $parameter->getDefaultValue();
+                    continue;
+                }
+
+                throw new \RuntimeException(sprintf('Cannot resolve dependency "%s" for class "%s"', $parameter->getName(), $class));
+            }
+
+            return $reflection->newInstanceArgs($args);
+        };
+    }
+
+    /**
      * Apply the resource definition to the container.
      *
      * @return  Container
@@ -224,10 +269,10 @@ class ContainerResourceDefinition
         if ($this->lazy) {
             $this->value = $this->container->lazy(
                 $this->lazyClass,
-                $this->value ?? fn () => new $this->lazyClass(),
+                $this->value ?? $this->makeFactory($this->lazyClass),
             );
         } else {
-            $this->value = $this->value ?? fn () => new $this->key();
+            $this->value = $this->value ?? $this->makeFactory($this->key);
         }
 
         $this->container->set($this->key, $this->value, $this->shared, $this->protected);
