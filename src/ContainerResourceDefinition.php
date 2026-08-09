@@ -213,6 +213,37 @@ class ContainerResourceDefinition
     }
 
     /**
+     * Apply the resource definition to the container.
+     *
+     * @return  Container
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function end(): Container
+    {
+        if ($this->lazy) {
+            $this->value = $this->container->lazy(
+                $this->lazyClass,
+                $this->value ?? $this->makeFactory($this->lazyClass),
+            );
+        } else {
+            $this->value = $this->value ?? $this->makeFactory($this->key);
+        }
+
+        $this->container->set($this->key, $this->value, $this->shared, $this->protected);
+
+        foreach ($this->aliases as $alias) {
+            $this->container->alias($alias, $this->key);
+        }
+
+        foreach ($this->tags as $tag) {
+            $this->container->tag($tag, [ $this->key ]);
+        }
+
+        return $this->container;
+    }
+
+    /**
      * Create a factory for the given class.
      *
      * @param   string  $class  The class name
@@ -255,36 +286,5 @@ class ContainerResourceDefinition
 
             return $reflection->newInstanceArgs($args);
         };
-    }
-
-    /**
-     * Apply the resource definition to the container.
-     *
-     * @return  Container
-     *
-     * @since   __DEPLOY_VERSION__
-     */
-    public function end(): Container
-    {
-        if ($this->lazy) {
-            $this->value = $this->container->lazy(
-                $this->lazyClass,
-                $this->value ?? $this->makeFactory($this->lazyClass),
-            );
-        } else {
-            $this->value = $this->value ?? $this->makeFactory($this->key);
-        }
-
-        $this->container->set($this->key, $this->value, $this->shared, $this->protected);
-
-        foreach ($this->aliases as $alias) {
-            $this->container->alias($alias, $this->key);
-        }
-
-        foreach ($this->tags as $tag) {
-            $this->container->tag($tag, [ $this->key ]);
-        }
-
-        return $this->container;
     }
 }
