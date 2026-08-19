@@ -708,8 +708,171 @@ class MyController extends AbstractController implements ContainerAwareInterface
 <!-- [x] If an instance is provided directly in shared mode, that instance is returned -->
 <!-- [x] If an instance is provided directly in non-shared mode, a copy (clone) of that instance is returned -->
 <!-- [x] After a reset, a new instance is returned even for shared resources -->
-@todo
+The container does not store your values directly. Every entry is wrapped in a `ContainerResource`
+object, which holds the factory, the mode flags and - for shared resources - the created instance.
+
+```php
+namespace Joomla\DI;
+
+final class ContainerResource
+{
+    public const NO_SHARE   = 0;
+    public const SHARE      = 1;
+    public const NO_PROTECT = 0;
+    public const PROTECT    = 2;
+
+    public function __construct(Container $container, $value, int $mode = 0);
+
+    public function isShared(): bool;
+    public function isProtected(): bool;
+    public function getInstance();
+    public function getFactory(): callable;
+    public function reset(): bool;
+}
+```
+
+The class is marked `@internal`. It describes how the container works, it is not an API to build on -
+but its behaviour explains what `get()` hands back to you.
+
+#### Mode
+
+The mode is a bit mask built from the four constants above, defaulting to
+`ContainerResource::NO_SHARE | ContainerResource::NO_PROTECT`, i.e. 'not shared' and 'not protected'.
+`set`, `share` and `protect` translate their boolean arguments into that mask.
+
+#### Factory and Instance
+
+If the value passed in is callable, it is kept as the factory and called on retrieval, with the
+container as its only argument. Any other value is wrapped in a factory: an object becomes
+`fn () => clone $value`, everything else `fn () => $value`. In shared mode, a value that was passed
+in directly is additionally stored as the instance, so it is returned as is.
+
+That gives four combinations:
+
+| Value      | Mode       | Result of `get()`                                                    |
+|------------|------------|----------------------------------------------------------------------|
+| factory    | non-shared | The factory is called on every request, nothing is cached.            |
+| factory    | shared     | The factory is called once, the result is cached and reused.          |
+| instance   | shared     | Exactly that instance is returned.                                    |
+| instance   | non-shared | A clone of that instance is returned, the original is never given out.|
+
+The clone is a shallow copy, so an object that must not share its internal state needs a `__clone`
+method of its own.
+
+#### Resetting
+
+`reset` clears the cached instance, so the next retrieval creates a new one. It returns `true` if it
+did that, and `false` otherwise, because it only applies to resources that are shared and *not*
+protected - a protected resource is meant to stay what it is.
+
+`Container::getNewInstance` is built on top of that, which has a consequence worth remembering: for a
+resource registered as shared *and* protected, `getNewInstance` returns the cached instance again
+instead of a new one.
+
+> The instance cache is keyed on the stored instance being `null`. A shared factory that returns
+> `null` is therefore called again on every retrieval.
+
+#### Access
+
+`Container::getResource` returns the `ContainerResource` for a key, walking up the container chain if
+the local container does not know it.
+
+```php
+<?php
+$resource = $container->getResource('foo');        // null if the key is unknown
+$resource = $container->getResource('foo', true);  // throws KeyNotFoundException instead
+```
+
+Resources coming from an arbitrary PSR-11 parent container are not stored, but wrapped in a new
+`ContainerResource` with `SHARE | PROTECT` on each access, since the container cannot know how the
+foreign container handles those concepts.
+
+`getFactory` returns the factory closure without executing it. That is what `extend` uses to wrap an
+existing definition in a new one.
 
 ### Exceptions
 
-@todo
+All exceptions of this package live in the `Joomla\DI\Exception` namespace and implement the PSR-11
+interfaces, so a consumer can catch them without knowing this implementation. Each of them also
+extends the SPL exception class that the package used before PSR-11 existed, so existing catch blocks
+keep working.
+
+| Exception                       | extends                    | implements                    |
+|---------------------------------|----------------------------|-------------------------------|
+| `KeyNotFoundException`          | `\InvalidArgumentException`| `NotFoundExceptionInterface`  |
+| `ProtectedKeyException`         | `\OutOfBoundsException`    | `ContainerExceptionInterface` |
+| `DependencyResolutionException` | `\RuntimeException`        | `ContainerExceptionInterface` |
+| `ContainerNotFoundException`    | `\RuntimeException`        | `ContainerExceptionInterface` |
+
+**`KeyNotFoundException`** is thrown when a key is requested that neither the container nor its
+parents know: by `get`, by `isShared` and `isProtected`, and by `getResource` when it was called with
+`$bail` set to `true`. `getNewInstance` throws it through `getResource`.
+
+**`ProtectedKeyException`** is thrown by `set` when the key already exists and is protected. Since
+`share`, `protect` and `extend` all end in `set`, they throw it as well.
+
+**`DependencyResolutionException`** is thrown by `buildObject` when a class cannot be autowired: a
+circular dependency, an interface or an abstract class with no service registered for it, a class
+that cannot be instantiated for another reason, or a constructor argument that can neither be
+resolved from the container nor filled from a default value.
+
+> A class that does not exist at all is the exception to this: `buildObject` returns `false` for it
+> rather than throwing.
+
+**`ContainerNotFoundException`** is thrown by `ContainerAwareTrait::getContainer` when the object was
+never given a container.
+
+```php
+<?php
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+
+try {
+    $service = $container->get('service');
+} catch (NotFoundExceptionInterface $e) {
+    // The key is not registered.
+} catch (ContainerExceptionInterface $e) {
+    // The key is registered, but the resource could not be provided.
+}
+```
+
+## Things to know before you build on this
+
+**An invokable object registered as a value is treated as a factory.** `ContainerResource` checks
+`is_callable($value)`, so an object with `__invoke()` is called instead of returned:
+
+```php
+$container->share(MyHandler::class, $handlerInstance);   // calls $handlerInstance($container)
+$container->share(MyHandler::class, static fn () => $handlerInstance);   // returns it
+```
+
+Wrap any invokable service in a closure.
+
+**Autowiring freezes the dependencies it resolves.** `buildObject()` resolves the constructor
+arguments once and captures them in the factory closure, so even a non-shared resource receives the
+same collaborators on every call, and a service redefined later is not picked up. Register services
+explicitly when that matters.
+
+**Autowiring cannot resolve scalars.** A constructor parameter with a built-in type and no default
+raises `DependencyResolutionException`. Any service needing a configuration value has to be
+registered with an explicit factory.
+
+**A type mismatch is reported as an untyped argument.** If a registered service does not match the
+parameter's type hint, resolution falls through to the default-value branch and the resulting
+message reads "The argument is untyped and has no default value" — which points away from the
+actual cause. Check the registration when you see it.
+
+**`extend()` does not work on protected resources.** It ends in `set()`, which throws
+`ProtectedKeyException` for anything registered with `protect()`. Register services you intend to
+decorate without protection. Extending a non-protected resource also drops its protected flag.
+
+**Tags are not inherited by child containers.** `getTagged()` only looks at the container it is
+called on, so a `createChild()` container returns an empty list. Resolve tagged services from the
+parent, or re-tag in the child.
+
+**`set($key, null)` does not remove a parent's resource.** The removal only touches the local
+store, but the existence check consults the parent, so the call reports success and changes
+nothing.
+
+**`buildObject()` returns `false` for a missing class** rather than throwing, unlike every other
+error path in the container.
