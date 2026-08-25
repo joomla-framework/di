@@ -249,7 +249,7 @@ class ContainerSetupTest extends TestCase
 
         $resource = $container->get(Stub6::class);
 
-        $this->assertTrue($resource instanceof Stub6);
+        $this->assertInstanceOf(Stub6::class, $resource);
     }
 
     #[RequiresPhp('>= 8.4.0')]
