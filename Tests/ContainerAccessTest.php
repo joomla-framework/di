@@ -8,6 +8,10 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ContainerResource;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -15,14 +19,11 @@ include_once __DIR__ . '/Stubs/stubs.php';
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
+#[UsesClass(ContainerResource::class)]
 class ContainerAccessTest extends TestCase
 {
-    /**
-     * @testdox  The same resource instance is returned for shared resources
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('The same resource instance is returned for shared resources')]
     public function testGetShared()
     {
         $container = new Container();
@@ -35,12 +36,7 @@ class ContainerAccessTest extends TestCase
         $this->assertSame($container->get('foo'), $container->get('foo'));
     }
 
-    /**
-     * @testdox  A new resource instance is returned for non-shared resources
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('A new resource instance is returned for non-shared resources')]
     public function testGetNotShared()
     {
         $container = new Container();
@@ -53,12 +49,7 @@ class ContainerAccessTest extends TestCase
         $this->assertNotSame($container->get('foo'), $container->get('foo'));
     }
 
-    /**
-     * @testdox  Accessing an undefined resource throws an InvalidArgumentException
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Accessing an undefined resource throws an InvalidArgumentException')]
     public function testGetNotExists()
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -66,12 +57,7 @@ class ContainerAccessTest extends TestCase
         (new Container())->get('foo');
     }
 
-    /**
-     * @testdox  The existence of a resource can be checked
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('The existence of a resource can be checked')]
     public function testExists()
     {
         $container = new Container();
@@ -81,12 +67,7 @@ class ContainerAccessTest extends TestCase
         $this->assertFalse($container->has('baz'), "'baz' should not be present");
     }
 
-    /**
-     * @testdox  getNewInstance() will always return a new instance, even if the resource was set to be shared
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('getNewInstance() will always return a new instance, even if the resource was set to be shared')]
     public function testGetNewInstance()
     {
         $container = new Container();
@@ -98,12 +79,7 @@ class ContainerAccessTest extends TestCase
         $this->assertNotSame($container->getNewInstance('foo'), $container->getNewInstance('foo'));
     }
 
-    /**
-     * @testdox  The unique service keys for the container are returned
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('The unique service keys for the container are returned')]
     public function testRetrievingTheContainerKeys()
     {
         $container = new Container();

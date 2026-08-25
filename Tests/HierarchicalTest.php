@@ -8,6 +8,10 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ContainerResource;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -16,14 +20,11 @@ include_once __DIR__ . '/Stubs/ArbitraryInteropContainer.php';
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
+#[UsesClass(ContainerResource::class)]
 class HierarchicalTest extends TestCase
 {
-    /**
-     * @testdox  Child container has access to parent's resources
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox("Child container has access to parent's resources")]
     public function testCreateChild()
     {
         $container = new Container();
@@ -36,12 +37,7 @@ class HierarchicalTest extends TestCase
         $this->assertInstanceOf(Stub1::class, $child->get(StubInterface::class));
     }
 
-    /**
-     * @testdox  Child container resolves parent's alias to parent's resource
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox("Child container resolves parent's alias to parent's resource")]
     public function testChildResolveAlias()
     {
         $container = new Container();
@@ -55,12 +51,7 @@ class HierarchicalTest extends TestCase
         $this->assertInstanceOf(Stub1::class, $child->get('stub'));
     }
 
-    /**
-     * @testdox  Container can decorate an arbitrary PSR-11 compatible container
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Container can decorate an arbitrary PSR-11 compatible container')]
     public function testDecorateArbitraryPsr11Container()
     {
         $container = new Container(new \ArbitraryInteropContainer());
@@ -69,12 +60,7 @@ class HierarchicalTest extends TestCase
         $this->assertEquals('aic_foo_content', $container->get('aic_foo'), "Container does not return the correct value for 'aic_foo'");
     }
 
-    /**
-     * @testdox  Container can manage an alias for a resource from an arbitrary PSR-11 compatible container
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Container can manage an alias for a resource from an arbitrary PSR-11 compatible container')]
     public function testDecorateArbitraryPsr11ContainerAlias()
     {
         $container = new Container(new \ArbitraryInteropContainer());
@@ -84,12 +70,7 @@ class HierarchicalTest extends TestCase
         $this->assertEquals('aic_foo_content', $container->get('foo'), "Container does not return the correct value for alias 'foo'");
     }
 
-    /**
-     * @testdox  Resources from an arbitrary PSR-11 compatible container are 'shared' and 'protected'
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox("Resources from an arbitrary PSR-11 compatible container are 'shared' and 'protected'")]
     public function testDecorateArbitraryPsr11ContainerModes()
     {
         $container = new Container(new \ArbitraryInteropContainer());
@@ -98,12 +79,7 @@ class HierarchicalTest extends TestCase
         $this->assertTrue($container->isProtected('aic_foo'), "'aic_foo' is expected to be protected");
     }
 
-    /**
-     * @testdox  Test possibility to override 'protected' item in Child container
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox("Test possibility to override 'protected' item in Child container")]
     public function testOverrideProtectedItemLocally()
     {
         $container = new Container();

@@ -8,8 +8,13 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ContainerResource;
 use Joomla\DI\Exception\KeyNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -17,6 +22,8 @@ include_once __DIR__ . '/Stubs/stubs.php';
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
+#[UsesClass(ContainerResource::class)]
 class ContainerSetupTest extends TestCase
 {
     /**
@@ -27,12 +34,7 @@ class ContainerSetupTest extends TestCase
         return 'called';
     }
 
-    /**
-     * @testdox  Resources can be set up with Callables
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Resources can be set up with Callables')]
     public function testSetCallable()
     {
         $container = new Container();
@@ -44,12 +46,7 @@ class ContainerSetupTest extends TestCase
         $this->assertSame('called', $container->get('foo'));
     }
 
-    /**
-     * @testdox  Resources can be set up with Closures
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Resources can be set up with Closures')]
     public function testSetClosure()
     {
         $container = new Container();
@@ -61,12 +58,7 @@ class ContainerSetupTest extends TestCase
         $this->assertSame('called', $container->get('foo'));
     }
 
-    /**
-     * @testdox  Resources can be scalar values
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Resources can be scalar values')]
     public function testSetNotCallable()
     {
         $container = new Container();
@@ -75,12 +67,7 @@ class ContainerSetupTest extends TestCase
         $this->assertSame('bar', $container->get('foo'));
     }
 
-    /**
-     * @testdox  Setting an existing protected resource throws an OutOfBoundsException
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Setting an existing protected resource throws an OutOfBoundsException')]
     public function testSetAlreadySetProtected()
     {
         $this->expectException(\OutOfBoundsException::class);
@@ -102,12 +89,7 @@ class ContainerSetupTest extends TestCase
         );
     }
 
-    /**
-     * @testdox  Setting an existing non-protected resource replaces the resource
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Setting an existing non-protected resource replaces the resource')]
     public function testSetAlreadySetNotProtected()
     {
         $container = new Container();
@@ -123,12 +105,7 @@ class ContainerSetupTest extends TestCase
         $this->assertSame('changed', $container->get('foo'));
     }
 
-    /**
-     * @testdox  Default mode is 'not shared' and 'not protected'
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox("Default mode is 'not shared' and 'not protected'")]
     public function testSetDefault()
     {
         $container = new Container();
@@ -163,13 +140,8 @@ class ContainerSetupTest extends TestCase
         ];
     }
 
-    /**
-     * @testdox  'shared' and 'protected' mode can be set independently
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
     #[DataProvider('dataForSetFlags')]
+    #[TestDox("'shared' and 'protected' mode can be set independently")]
     public function testSetSharedProtected(bool $shared, bool $protected)
     {
         $container = new Container();
@@ -184,12 +156,7 @@ class ContainerSetupTest extends TestCase
         $this->assertSame($protected, $container->isProtected('foo'));
     }
 
-    /**
-     * @testdox  The convenience method protect() sets resources as protected, but not as shared by default
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('The convenience method protect() sets resources as protected, but not as shared by default')]
     public function testProtect()
     {
         $container = new Container();
@@ -202,12 +169,7 @@ class ContainerSetupTest extends TestCase
         $this->assertTrue($container->isProtected('foo'));
     }
 
-    /**
-     * @testdox  The convenience method protect() sets resources as shared when passed true as third arg
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('The convenience method protect() sets resources as shared when passed true as third arg')]
     public function testProtectShared()
     {
         $container = new Container();
@@ -221,12 +183,7 @@ class ContainerSetupTest extends TestCase
         $this->assertTrue($container->isProtected('foo'));
     }
 
-    /**
-     * @testdox  The convenience method share() sets resources as shared, but not as protected by default
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('The convenience method share() sets resources as shared, but not as protected by default')]
     public function testShare()
     {
         $container = new Container();
@@ -239,12 +196,7 @@ class ContainerSetupTest extends TestCase
         $this->assertFalse($container->isProtected('foo'));
     }
 
-    /**
-     * @testdox  The convenience method share() sets resources as protected when passed true as third arg
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('The convenience method share() sets resources as protected when passed true as third arg')]
     public function testShareProtected()
     {
         $container = new Container();
@@ -258,12 +210,7 @@ class ContainerSetupTest extends TestCase
         $this->assertTrue($container->isProtected('foo'));
     }
 
-    /**
-     * @testdox  The callback gets the container instance as a parameter
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('The callback gets the container instance as a parameter')]
     public function testGetPassesContainerInstanceShared()
     {
         $container = new Container();
@@ -275,12 +222,7 @@ class ContainerSetupTest extends TestCase
         $this->assertSame($container, $container->get('foo'));
     }
 
-    /**
-     * @testdox  The setting an object and then setting it again as null should remove the object
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('The setting an object and then setting it again as null should remove the object')]
     public function testSettingNullUnsetsAResource()
     {
         $this->expectException(KeyNotFoundException::class);
@@ -299,11 +241,7 @@ class ContainerSetupTest extends TestCase
         $container->get('foo');
     }
 
-    /**
-     * @testdox  Create Lazy Proxy
-     *
-     * @covers   Joomla\DI\Container
-     */
+    #[TestDox('Create Lazy Proxy')]
     public function testCreateLazyProxy()
     {
         $container = new Container();
@@ -314,17 +252,10 @@ class ContainerSetupTest extends TestCase
         $this->assertTrue($resource instanceof Stub6);
     }
 
-    /**
-     * @testdox  If the resource is created with a proxy class
-     *
-     * @uses     Joomla\DI\Container
-     */
+    #[RequiresPhp('>= 8.4.0')]
+    #[TestDox('If the resource is created with a proxy class')]
     public function testGetLazyProxyInstance()
     {
-        if (PHP_VERSION_ID < 80400) {
-            $this->markTestSkipped('Lazy objects are only supported in PHP 8.4 or newer.');
-        }
-
         $factoryCalled = false;
 
         $container = new Container();

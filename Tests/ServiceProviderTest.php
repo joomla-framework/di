@@ -9,19 +9,18 @@ namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
 class ServiceProviderTest extends TestCase
 {
-    /**
-     * @testdox  When registering a service provider, its register() method is called with the container instance
-     *
-     * @covers   \Joomla\DI\Container
-     */
+    #[TestDox('When registering a service provider, its register() method is called with the container instance')]
     public function testRegisterServiceProvider()
     {
         $container = new Container();

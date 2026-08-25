@@ -8,6 +8,10 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ContainerResource;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -15,14 +19,11 @@ include_once __DIR__ . '/Stubs/stubs.php';
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
+#[UsesClass(ContainerResource::class)]
 class AliasingTest extends TestCase
 {
-    /**
-     * @testdox  Both the original key and the alias return the same resource
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Both the original key and the alias return the same resource')]
     public function testResolveAliasSameAsKey()
     {
         $container = new Container();
@@ -41,12 +42,7 @@ class AliasingTest extends TestCase
         );
     }
 
-    /**
-     * @testdox  has() also resolves the alias if set.
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('has() also resolves the alias if set.')]
     public function testExistsResolvesAlias()
     {
         $container = new Container();

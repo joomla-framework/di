@@ -8,6 +8,10 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ContainerResource;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -15,14 +19,11 @@ include_once __DIR__ . '/Stubs/stubs.php';
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
+#[UsesClass(ContainerResource::class)]
 class TaggedServiceTest extends TestCase
 {
-    /**
-     * @testdox  A registered resource can be tagged
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('A registered resource can be tagged')]
     public function testARegisteredResourceCanBeTagged()
     {
         $container = new class () extends Container {
@@ -42,12 +43,7 @@ class TaggedServiceTest extends TestCase
         $this->assertSame($container->getTags()['stub'], [Stub6::class]);
     }
 
-    /**
-     * @testdox  All tagged services can be retrieved
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('All tagged services can be retrieved')]
     public function testAllTaggedServicesCanBeRetrieved()
     {
         $container = new Container();
