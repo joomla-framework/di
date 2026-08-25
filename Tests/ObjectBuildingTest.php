@@ -8,7 +8,11 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ContainerResource;
 use Joomla\DI\Exception\DependencyResolutionException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
@@ -17,25 +21,17 @@ include_once __DIR__ . '/Stubs/stubs.php';
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
+#[UsesClass(ContainerResource::class)]
 class ObjectBuildingTest extends TestCase
 {
-    /**
-     * @testdox  Building an object returns an instance of the requested class
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building an object returns an instance of the requested class')]
     public function testBuildObjectNoDependencies()
     {
         $this->assertInstanceOf(Stub1::class, (new Container())->buildObject(Stub1::class));
     }
 
-    /**
-     * @testdox  Building a non-shared object returns a new object whenever requested
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building a non-shared object returns a new object whenever requested')]
     public function testBuildObject()
     {
         $container = new Container();
@@ -45,12 +41,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertNotSame($container->get(Stub1::class), $container->get(Stub1::class));
     }
 
-    /**
-     * @testdox  Building a shared object returns the same object whenever requested
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building a shared object returns the same object whenever requested')]
     public function testBuildSharedObject()
     {
         $container = new Container();
@@ -60,12 +51,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertSame($container->get(Stub1::class), $container->get(Stub1::class));
     }
 
-    /**
-     * @testdox  Building a non-shared object whose constructor contains a nullable argument with an unknown class returns a new object whenever requested
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building a non-shared object whose constructor contains a nullable argument with an unknown class returns a new object whenever requested')]
     public function testBuildObjectWithNullableArgumentForUnknownClass()
     {
         $container = new Container();
@@ -77,12 +63,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertNull($object->stub);
     }
 
-    /**
-     * @testdox  Building a non-shared object whose constructor contains a nullable argument with a known class returns a new object whenever requested
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building a non-shared object whose constructor contains a nullable argument with a known class returns a new object whenever requested')]
     public function testBuildObjectWithNullableArgumentForKnownClass()
     {
         $container = new Container();
@@ -94,12 +75,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertNull($object->stub);
     }
 
-    /**
-     * @testdox  Building a non-shared object whose constructor contains an untyped variadic argument returns a new object whenever requested
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building a non-shared object whose constructor contains an untyped variadic argument returns a new object whenever requested')]
     public function testBuildObjectWithUntypedVariadic()
     {
         $container = new Container();
@@ -111,12 +87,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertEmpty($object->stubs);
     }
 
-    /**
-     * @testdox  Building a non-shared object whose constructor contains a typed variadic argument returns a new object whenever requested
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building a non-shared object whose constructor contains a typed variadic argument returns a new object whenever requested')]
     public function testBuildObjectWithTypedVariadic()
     {
         $container = new Container();
@@ -129,12 +100,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertContainsOnlyInstancesOf(Stub9::class, $object->stubs);
     }
 
-    /**
-     * @testdox  Building a non-shared object whose constructor contains an optional scalar argument returns a new object whenever requested
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('Building a non-shared object whose constructor contains an optional scalar argument returns a new object whenever requested')]
     public function testBuildObjectWithOptionalScalar()
     {
         $container = new Container();
@@ -146,12 +112,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertTrue($object->enabled);
     }
 
-    /**
-     * @testdox  A DependencyResolutionException is thrown, if an object can not be built due to a required scalar constructor parameter
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('A DependencyResolutionException is thrown, if an object can not be built due to a required scalar constructor parameter')]
     public function testBuildObjectWithRequiredScalarThrowsAnException()
     {
         $this->expectException(DependencyResolutionException::class);
@@ -165,23 +126,13 @@ class ObjectBuildingTest extends TestCase
         (new Container())->buildObject(StubRequiredScalar::class);
     }
 
-    /**
-     * @testdox  Attempting to build a non-class returns false
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('Attempting to build a non-class returns false')]
     public function testBuildObjectNonClass()
     {
         $this->assertFalse((new Container())->buildObject('foobar'));
     }
 
-    /**
-     * @testdox  Dependencies are resolved from the container's known resources
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox("Dependencies are resolved from the container's known resources")]
     public function testBuildObjectGetDependencyFromContainer()
     {
         $container = new Container();
@@ -195,12 +146,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertInstanceOf(Stub1::class, $object->stub);
     }
 
-    /**
-     * @testdox  Resources are created, if they are not present in the container
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('Resources are created, if they are not present in the container')]
     public function testGetMethodArgsConcreteClass()
     {
         $container = new Container();
@@ -209,12 +155,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertInstanceOf(Stub4::class, $object->stub);
     }
 
-    /**
-     * @testdox  Dependencies are resolved from their default values
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('Dependencies are resolved from their default values')]
     public function testGetMethodArgsDefaultValues()
     {
         $container = new Container();
@@ -223,12 +164,7 @@ class ObjectBuildingTest extends TestCase
         $this->assertEquals('foo', $object->stub);
     }
 
-    /**
-     * @testdox  A DependencyResolutionException is thrown, if an object can not be built due to unspecified constructor parameter types
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('A DependencyResolutionException is thrown, if an object can not be built due to unspecified constructor parameter types')]
     public function testGetMethodArgsCantResolve()
     {
         $this->expectException(DependencyResolutionException::class);
@@ -242,12 +178,7 @@ class ObjectBuildingTest extends TestCase
         (new Container())->buildObject(Stub7::class);
     }
 
-    /**
-     * @testdox  A DependencyResolutionException is thrown, if an object can not be built due to dependency on unknown interfaces
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('A DependencyResolutionException is thrown, if an object can not be built due to dependency on unknown interfaces')]
     public function testGetMethodArgsResolvedIsNotInstanceOfHintedDependency()
     {
         $this->expectException(DependencyResolutionException::class);
@@ -262,12 +193,7 @@ class ObjectBuildingTest extends TestCase
         (new Container())->buildObject(Stub2::class);
     }
 
-    /**
-     * @testdox  A DependencyResolutionException is thrown, if an object can not be built due to autowiring an unregistered interface
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('A DependencyResolutionException is thrown, if an object can not be built due to autowiring an unregistered interface')]
     public function testGetMethodArgsResolvedIsNotAutowiredForAnUnregisteredInterface()
     {
         $this->expectException(DependencyResolutionException::class);
@@ -281,12 +207,7 @@ class ObjectBuildingTest extends TestCase
         (new Container())->buildObject(ContainerInterface::class);
     }
 
-    /**
-     * @testdox  A DependencyResolutionException is thrown, if an object can not be built due to autowiring an unregistered abstract class
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('A DependencyResolutionException is thrown, if an object can not be built due to autowiring an unregistered abstract class')]
     public function testGetMethodArgsResolvedIsNotAutowiredForAnUnregisteredAbstractClass()
     {
         $this->expectException(DependencyResolutionException::class);
@@ -300,12 +221,7 @@ class ObjectBuildingTest extends TestCase
         (new Container())->buildObject(AbstractStub::class);
     }
 
-    /**
-     * @testdox  A DependencyResolutionException is thrown, if an object can not be built due to autowiring a non-existing class
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('A DependencyResolutionException is thrown, if an object can not be built due to autowiring a non-existing class')]
     public function testGetMethodArgsResolvedIsNotAutowiredForANonExistingClass()
     {
         $this->expectException(DependencyResolutionException::class);
@@ -320,12 +236,7 @@ class ObjectBuildingTest extends TestCase
         (new Container())->buildObject(Stub8::class);
     }
 
-    /**
-     * @testdox  When a circular dependency is detected, a DependencyResolutionException is thrown (Bug #4)
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('When a circular dependency is detected, a DependencyResolutionException is thrown (Bug #4)')]
     public function testBug4()
     {
         $fqcn = 'Extension\\vendor\\FooComponent\\FooComponent';

@@ -8,8 +8,12 @@
 namespace Joomla\DI\Tests;
 
 use Joomla\DI\Container;
+use Joomla\DI\ContainerResource;
 use Joomla\DI\Exception\KeyNotFoundException;
 use Joomla\DI\Exception\ProtectedKeyException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 include_once __DIR__ . '/Stubs/stubs.php';
@@ -17,6 +21,8 @@ include_once __DIR__ . '/Stubs/stubs.php';
 /**
  * Tests for Container class.
  */
+#[CoversClass(Container::class)]
+#[UsesClass(ContainerResource::class)]
 class ResourceDecorationTest extends TestCase
 {
     /**
@@ -26,12 +32,7 @@ class ResourceDecorationTest extends TestCase
      */
     private $value = 42;
 
-    /**
-     * @testdox  An extended resource replaces the original resource with a Closure
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('An extended resource replaces the original resource with a Closure')]
     public function testExtendClosure()
     {
         $container = new Container();
@@ -58,12 +59,7 @@ class ResourceDecorationTest extends TestCase
         $this->assertSame($one, $two);
     }
 
-    /**
-     * @testdox  An extended resource replaces the original resource with a callback function
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('An extended resource replaces the original resource with a callback function')]
     public function testExtendCallback()
     {
         $container = new Container();
@@ -86,12 +82,7 @@ class ResourceDecorationTest extends TestCase
         $this->assertSame($one, $two);
     }
 
-    /**
-     * @testdox  Scalar resources can be extended
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Scalar resources can be extended')]
     public function testExtendScalar()
     {
         $container = new Container();
@@ -108,12 +99,7 @@ class ResourceDecorationTest extends TestCase
         $this->assertEquals('barbaz', $container->get('foo'));
     }
 
-    /**
-     * @testdox  Attempting to extend an undefined resource throws a KeyNotFoundException
-     *
-     * @covers   \Joomla\DI\Container
-     * @uses     \Joomla\DI\ContainerResource
-     */
+    #[TestDox('Attempting to extend an undefined resource throws a KeyNotFoundException')]
     public function testExtendValidatesKeyIsPresent()
     {
         $this->expectException(KeyNotFoundException::class);
@@ -122,12 +108,7 @@ class ResourceDecorationTest extends TestCase
         });
     }
 
-    /**
-     * @testdox  A protected resource can not be extended
-     *
-     * @covers   Joomla\DI\Container
-     * @uses     Joomla\DI\ContainerResource
-     */
+    #[TestDox('A protected resource can not be extended')]
     public function testExtendProtected()
     {
         $this->expectException(ProtectedKeyException::class);

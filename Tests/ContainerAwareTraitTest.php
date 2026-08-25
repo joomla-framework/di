@@ -12,11 +12,16 @@ use Joomla\DI\ContainerAwareTrait;
 use Joomla\DI\Exception\ContainerNotFoundException;
 use Joomla\DI\Tests\Stubs\ContainerAwareTraitObject;
 use Joomla\Test\TestHelper;
+use PHPUnit\Framework\Attributes\CoversTrait;
+use PHPUnit\Framework\Attributes\TestDox;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for ContainerAwareTrait class.
  */
+#[CoversTrait(ContainerAwareTrait::class)]
+#[UsesClass(Container::class)]
 class ContainerAwareTraitTest extends TestCase
 {
     /**
@@ -24,12 +29,7 @@ class ContainerAwareTraitTest extends TestCase
      */
     protected $object;
 
-    /**
-     * @testdox  Container can be set with setContainer()
-     *
-     * @covers   \Joomla\DI\ContainerAwareTrait
-     * @uses     \Joomla\DI\Container
-     */
+    #[TestDox('Container can be set with setContainer()')]
     public function testGetContainer()
     {
         $container = new Container();
@@ -40,11 +40,7 @@ class ContainerAwareTraitTest extends TestCase
         $this->assertSame($container, TestHelper::getValue($object, 'container'));
     }
 
-    /**
-     * @testdox  getContainer() throws an ContainerNotFoundException, if no container is set
-     *
-     * @covers   \Joomla\DI\ContainerAwareTrait
-     */
+    #[TestDox('getContainer() throws an ContainerNotFoundException, if no container is set')]
     public function testGetContainerException()
     {
         $this->expectException(ContainerNotFoundException::class);
