@@ -59,6 +59,14 @@ class Container implements ContainerInterface
     protected $tags = [];
 
     /**
+     * The keys of the objects currently being built, used to detect circular dependencies.
+     *
+     * @var    string[]
+     * @since  __DEPLOY_VERSION__
+     */
+    private array $buildStack = [];
+
+    /**
      * Constructor for the DI Container
      *
      * @param   ContainerInterface|null  $parent  Parent for hierarchical containers.
@@ -296,36 +304,45 @@ class Container implements ContainerInterface
      */
     public function buildObject($resourceName, $shared = false)
     {
-        static $buildStack = [];
-
         $key = $this->resolveAlias($resourceName);
 
-        if (\in_array($key, $buildStack, true)) {
-            $buildStack = [];
-
+        if (\in_array($key, $this->buildStack, true)) {
             throw new DependencyResolutionException(sprintf('Cannot resolve circular dependency for "%s"', $key));
         }
 
-        $buildStack[] = $key;
+        $this->buildStack[] = $key;
 
+        try {
+            return $this->doBuildObject($key, $shared);
+        } finally {
+            array_pop($this->buildStack);
+        }
+    }
+
+    /**
+     * Build an object of the requested class, without circular dependency detection
+     *
+     * @param   string   $key     The resolved class name to build.
+     * @param   boolean  $shared  True to create a shared resource.
+     *
+     * @return  object|false
+     *
+     * @since   __DEPLOY_VERSION__
+     * @throws  DependencyResolutionException if the object could not be built (due to missing information)
+     */
+    private function doBuildObject(string $key, bool $shared)
+    {
         if ($this->has($key)) {
-            $resource = $this->get($key);
-            array_pop($buildStack);
-
-            return $resource;
+            return $this->get($key);
         }
 
         try {
             $reflection = new \ReflectionClass($key);
         } catch (\ReflectionException $e) {
-            array_pop($buildStack);
-
             return false;
         }
 
         if (!$reflection->isInstantiable()) {
-            $buildStack = [];
-
             if ($reflection->isInterface()) {
                 throw new DependencyResolutionException(
                     sprintf('There is no service for "%s" defined, cannot autowire a class service for an interface.', $key)
@@ -355,10 +372,7 @@ class Container implements ContainerInterface
 
         $this->set($key, $callback, $shared);
 
-        $resource = $this->get($key);
-        array_pop($buildStack);
-
-        return $resource;
+        return $this->get($key);
     }
 
     /**

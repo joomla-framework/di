@@ -483,6 +483,8 @@ $container->get($fqcn);
 
 It is not possible for the container to resolve that, as it produces an endless loop. However, `Container` detects that and throws a `DependencyResolutionException`.
 
+Each container instance keeps track of the classes it is currently building, and a class is removed from that list as soon as its build ends, whether it succeeded or failed. A dependency that cannot be built for a nullable argument (which then receives `null`) therefore does not cause a false circular dependency error when the class is built again, and a failed build in one container does not affect any other container.
+
 #### Shared and non-shared Objects
 
 <!-- [x] Building a non-shared object returns a new object whenever requested -->
