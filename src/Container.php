@@ -674,7 +674,7 @@ class Container implements ContainerInterface
         }
 
         if ($this->parent instanceof self) {
-            return $this->parent->getResource($key);
+            return $this->parent->getResource($this->parent->resolveAlias($key), $bail);
         }
 
         if ($this->parent instanceof ContainerInterface && $this->parent->has($key)) {

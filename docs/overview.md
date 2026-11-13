@@ -775,7 +775,8 @@ instead of a new one.
 #### Access
 
 `Container::getResource` returns the `ContainerResource` for a key, walking up the container chain if
-the local container does not know it.
+the local container does not know it. The key is not resolved as an alias of the container it is
+called on, but it is resolved as an alias of each parent container on the way up.
 
 ```php
 <?php
@@ -806,7 +807,8 @@ keep working.
 
 **`KeyNotFoundException`** is thrown when a key is requested that neither the container nor its
 parents know: by `get`, by `isShared` and `isProtected`, and by `getResource` when it was called with
-`$bail` set to `true`. `getNewInstance` throws it through `getResource`.
+`$bail` set to `true`. `getNewInstance` and `extend` throw it through `getResource`, in child
+containers as well.
 
 **`ProtectedKeyException`** is thrown by `set` when the key already exists and is protected. Since
 `share`, `protect` and `extend` all end in `set`, they throw it as well.
