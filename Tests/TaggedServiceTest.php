@@ -69,4 +69,33 @@ class TaggedServiceTest extends TestCase
 
         $this->assertCount(3, $container->getTagged('stub'));
     }
+
+    #[TestDox("A child container returns the services tagged in its parents and its own")]
+    public function testChildReturnsParentTaggedServices()
+    {
+        $parent = new Container();
+        $parent->set('first', 'first');
+        $parent->set('second', 'second');
+        $parent->tag('stub', ['first', 'second']);
+
+        $child = $parent->createChild()->createChild();
+        $child->set('third', 'third');
+        $child->tag('stub', ['third', 'first']);
+
+        $this->assertSame(['first', 'second', 'third'], $child->getTagged('stub'));
+        $this->assertSame(['first', 'second'], $parent->getTagged('stub'));
+    }
+
+    #[TestDox("A child container resolves the services tagged in its parent from its own scope")]
+    public function testChildResolvesParentTaggedServicesLocally()
+    {
+        $parent = new Container();
+        $parent->set('service', 'parent');
+        $parent->tag('stub', ['service']);
+
+        $child = $parent->createChild();
+        $child->set('service', 'child');
+
+        $this->assertSame(['child'], $child->getTagged('stub'));
+    }
 }

@@ -118,6 +118,8 @@ You pass the `set` method a string `$key` and a `$value`, which can be pretty mu
 <!-- [x] The callback gets the container instance as a parameter -->
 > If the `$value` you are setting is a closure or a callable, it will receive a single function argument, the calling container. This allows access to the container within your resolving callback.
 
+Setting a `$value` of `null` for a registered `$key` removes it from the container. This only affects the container it is called on: a resource of a parent container cannot be removed through a child container and stays reachable from the child.
+
 ```php
 <?php
 use Joomla\DI\Container;
@@ -584,6 +586,8 @@ To tag a collection of services, the container's `tag()` method should be called
 <!-- [x] All tagged services can be retrieved -->
 To fetch all services with a tag, the container's `getTagged()` method should be called with a tag name. This will execute a resource's callback if it has not yet already been called.
 
+On a child container, `getTagged()` also returns the services tagged in its parent containers (if they are `Container` instances). The parent's services come first, each key is returned only once, and all keys are resolved through the child container, so a service the child overrides is returned in the child's version.
+
 ```php
 <?php
 use Joomla\Application\Event\ApplicationErrorEvent;
@@ -865,10 +869,6 @@ actual cause. Check the registration when you see it.
 **`extend()` does not work on protected resources.** It ends in `set()`, which throws
 `ProtectedKeyException` for anything registered with `protect()`. Register services you intend to
 decorate without protection. Extending a non-protected resource also drops its protected flag.
-
-**Tags are not inherited by child containers.** `getTagged()` only looks at the container it is
-called on, so a `createChild()` container returns an empty list. Resolve tagged services from the
-parent, or re-tag in the child.
 
 **`set($key, null)` does not remove a parent's resource.** The removal only touches the local
 store, but the existence check consults the parent, so the call reports success and changes
