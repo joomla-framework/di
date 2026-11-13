@@ -490,7 +490,7 @@ class Container implements ContainerInterface
                     }
 
                     // If the dependency class name is registered with this container or a parent, use it.
-                    if ($this->getResource($dependencyClassName) !== null) {
+                    if ($this->has($dependencyClassName)) {
                         $depObject = $this->get($dependencyClassName);
                     } else {
                         try {
@@ -678,7 +678,8 @@ class Container implements ContainerInterface
         }
 
         if ($this->parent instanceof ContainerInterface && $this->parent->has($key)) {
-            return new ContainerResource($this, $this->parent->get($key), ContainerResource::SHARE | ContainerResource::PROTECT);
+            // Fetch the service only when it is actually needed
+            return new ContainerResource($this, fn() => $this->parent->get($key), ContainerResource::SHARE | ContainerResource::PROTECT);
         }
 
         if ($bail) {
