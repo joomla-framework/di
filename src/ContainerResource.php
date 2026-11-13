@@ -66,6 +66,14 @@ final class ContainerResource
     private $instance;
 
     /**
+     * Flag if the instance of a shared resource has been created
+     *
+     * @var    boolean
+     * @since  __DEPLOY_VERSION__
+     */
+    private bool $instantiated = false;
+
+    /**
      * The factory object
      *
      * @var    callable
@@ -108,7 +116,8 @@ final class ContainerResource
             $this->factory = $value;
         } else {
             if ($this->shared) {
-                $this->instance = $value;
+                $this->instance     = $value;
+                $this->instantiated = true;
             }
 
             if (\is_object($value)) {
@@ -158,8 +167,9 @@ final class ContainerResource
         $callable = $this->factory;
 
         if ($this->isShared()) {
-            if ($this->instance === null) {
-                $this->instance = $callable($this->container);
+            if (!$this->instantiated) {
+                $this->instance     = $callable($this->container);
+                $this->instantiated = true;
             }
 
             return $this->instance;
@@ -193,7 +203,8 @@ final class ContainerResource
     public function reset(): bool
     {
         if ($this->isShared() && !$this->isProtected()) {
-            $this->instance = null;
+            $this->instance     = null;
+            $this->instantiated = false;
 
             return true;
         }
