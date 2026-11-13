@@ -36,6 +36,8 @@ In this document,
 
 The Joomla! Dependency Injection package implements the [PSR-11 ContainerInterface](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md) for Dependency Injection Containers to achieve interoperability.
 
+It is built on `psr/container` 2.0 and declares the virtual package `psr/container-implementation` in versions 1.0 and 2.0 in its `composer.json`, so it satisfies packages that require an implementation of either version.
+
 ### Creating a Container object
 
 Creating a container usually happens very early in the application lifecycle. It can be created even before the application is instantiated, and provided to the application as an external dependency. This allows your application access to the DI Container, which you can then use within the application class to build your controllers and their dependencies.
