@@ -769,8 +769,8 @@ protected - a protected resource is meant to stay what it is.
 resource registered as shared *and* protected, `getNewInstance` returns the cached instance again
 instead of a new one.
 
-> The instance cache is keyed on the stored instance being `null`. A shared factory that returns
-> `null` is therefore called again on every retrieval.
+> A shared factory is called only once, even if it returns `null`: the `null` is cached like any
+> other result until the resource is reset.
 
 #### Access
 
