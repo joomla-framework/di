@@ -699,9 +699,15 @@ class Container implements ContainerInterface
      */
     public function getNewInstance($key)
     {
-        $key = $this->resolveAlias($key);
+        $key      = $this->resolveAlias($key);
+        $resource = $this->getResource($key, true);
 
-        $this->getResource($key, true)->reset();
+        // Don't discard the shared instance of a parent container
+        if (!$this->isLocal($key) && $resource->isShared() && !$resource->isProtected()) {
+            return $resource->createInstance();
+        }
+
+        $resource->reset();
 
         return $this->get($key);
     }
