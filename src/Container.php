@@ -348,9 +348,15 @@ class Container implements ContainerInterface
             // There is no constructor, just return a new object.
             $callback = fn() => new $key();
         } else {
+            // Resolve the arguments now to fail early, use them for the first instance and resolve them again for every later one
             $newInstanceArgs = $this->getMethodArgs($constructor);
 
-            $callback = fn() => $reflection->newInstanceArgs($newInstanceArgs);
+            $callback = function () use ($reflection, $constructor, &$newInstanceArgs) {
+                $args            = $newInstanceArgs ?? $this->getMethodArgs($constructor);
+                $newInstanceArgs = null;
+
+                return $reflection->newInstanceArgs($args);
+            };
         }
 
         $this->set($key, $callback, $shared);
