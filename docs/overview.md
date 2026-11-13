@@ -491,6 +491,8 @@ When you build an object, it is stored as a known resource in the container with
 <!-- [x] Building a shared object returns the same object whenever requested -->
 You can also specify to build a shared object by using the function `buildSharedObject($key)`. This works exactly as you would expect. The instantiated object is cached and returned on subsequent requests.
 
+The constructor arguments are resolved from the container every time a new instance is created. Each instance of a non-shared object therefore receives its own non-shared dependencies, and a dependency that is redefined after the object was built is used for the instances created afterwards. The arguments are first resolved when `buildObject` is called, so a dependency that cannot be resolved makes `buildObject` throw right away.
+
 ### Extending an Item
 
 The Container also allows you to extend items. Extending an item can be thought of as a way to implement the decorator pattern, although it's not really in the strictest sense. When you `extend` an item, you must pass the key for the item you want to extend, and then a closure as the second argument.
@@ -847,11 +849,6 @@ $container->share(MyHandler::class, static fn () => $handlerInstance);   // retu
 ```
 
 Wrap any invokable service in a closure.
-
-**Autowiring freezes the dependencies it resolves.** `buildObject()` resolves the constructor
-arguments once and captures them in the factory closure, so even a non-shared resource receives the
-same collaborators on every call, and a service redefined later is not picked up. Register services
-explicitly when that matters.
 
 **Autowiring cannot resolve scalars.** A constructor parameter with a built-in type and no default
 raises `DependencyResolutionException`. Any service needing a configuration value has to be
