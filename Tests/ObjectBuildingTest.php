@@ -126,10 +126,25 @@ class ObjectBuildingTest extends TestCase
         (new Container())->buildObject(StubRequiredScalar::class);
     }
 
-    #[TestDox('Attempting to build a non-class returns false')]
+    #[TestDox('Attempting to build a non-class throws a DependencyResolutionException')]
     public function testBuildObjectNonClass()
     {
-        $this->assertFalse((new Container())->buildObject('foobar'));
+        $this->expectException(DependencyResolutionException::class);
+        $this->expectExceptionMessage('The class "foobar" does not exist.');
+
+        (new Container())->buildObject('foobar');
+    }
+
+    #[TestDox('Attempting to build a resource that is not an object throws a DependencyResolutionException')]
+    public function testBuildObjectNonObjectResource()
+    {
+        $container = new Container();
+        $container->set('foobar', 'value');
+
+        $this->expectException(DependencyResolutionException::class);
+        $this->expectExceptionMessage('The resource "foobar" is of type "string", not an object.');
+
+        $container->buildObject('foobar');
     }
 
     #[TestDox("Dependencies are resolved from the container's known resources")]

@@ -452,8 +452,8 @@ Scalar arguments are provided with their default value.
 <!-- [x] A DependencyResolutionException is thrown, if an object can not be built due to dependency on unknown interfaces -->
 The container can only resolve dependencies that have been properly typehinted or given a default value. If the resource can not be built, a `DependencyResolutionException` is thrown.
 
-<!-- [x] Attempting to build a non-class returns false -->
-When you try to build a non-class, `buildObject` and `buildSharedObject` both return `false`.
+<!-- [x] Attempting to build a non-class throws a DependencyResolutionException -->
+When you try to build a class that does not exist, `buildObject` and `buildSharedObject` both throw a `DependencyResolutionException`. The same applies when the key is already registered, but its resource is not an object.
 
 <!-- [x] When a circular dependency is detected, a DependencyResolutionException is thrown (Bug #4) -->
 Sometimes circular dependencies are encountered.
@@ -721,11 +721,11 @@ final class ContainerResource
     public const NO_PROTECT = 0;
     public const PROTECT    = 2;
 
-    public function __construct(Container $container, $value, int $mode = 0);
+    public function __construct(Container $container, mixed $value, int $mode = 0);
 
     public function isShared(): bool;
     public function isProtected(): bool;
-    public function getInstance();
+    public function getInstance(): mixed;
     public function getFactory(): callable;
     public function reset(): bool;
 }
@@ -812,12 +812,10 @@ parents know: by `get`, by `isShared` and `isProtected`, and by `getResource` wh
 `share`, `protect` and `extend` all end in `set`, they throw it as well.
 
 **`DependencyResolutionException`** is thrown by `buildObject` when a class cannot be autowired: a
-circular dependency, an interface or an abstract class with no service registered for it, a class
-that cannot be instantiated for another reason, or a constructor argument that can neither be
-resolved from the container nor filled from a default value.
-
-> A class that does not exist at all is the exception to this: `buildObject` returns `false` for it
-> rather than throwing.
+class that does not exist, a circular dependency, an interface or an abstract class with no service
+registered for it, a class that cannot be instantiated for another reason, or a constructor argument
+that can neither be resolved from the container nor filled from a default value. It is also thrown
+when the requested key is registered, but its resource is not an object.
 
 **`ContainerNotFoundException`** is thrown by `ContainerAwareTrait::getContainer` when the object was
 never given a container.
@@ -873,6 +871,3 @@ parent, or re-tag in the child.
 **`set($key, null)` does not remove a parent's resource.** The removal only touches the local
 store, but the existence check consults the parent, so the call reports success and changes
 nothing.
-
-**`buildObject()` returns `false` for a missing class** rather than throwing, unlike every other
-error path in the container.
