@@ -169,6 +169,22 @@ final class ContainerResource
     }
 
     /**
+     * Create a new instance of the resource
+     *
+     * The factory is called, but the result is not cached, not even for a shared resource.
+     *
+     * @return  mixed
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    public function createInstance(): mixed
+    {
+        $callable = $this->factory;
+
+        return $callable($this->container);
+    }
+
+    /**
      * Get the factory
      *
      * @return  callable

@@ -361,6 +361,8 @@ var_dump($twitter === $twitter2); // prints bool(true)
 If you've specified an item as shared, but you really need a new instance of it for some reason, you can force the creation of a new instance by using the `getNewInstance` method.
 
 > When you force create a new instance on a shared object, that new instance replaces the instance that is stored in the container and will be used on subsequent requests.
+>
+> On a child container, this only applies to resources registered in the child itself. For a shared resource of a parent container, `getNewInstance` returns a new instance created by the parent's factory, but leaves the parent's shared instance in place.
 
 ```php
 <?php
@@ -726,6 +728,7 @@ final class ContainerResource
     public function isShared(): bool;
     public function isProtected(): bool;
     public function getInstance();
+    public function createInstance(): mixed;
     public function getFactory(): callable;
     public function reset(): bool;
 }
@@ -768,6 +771,10 @@ protected - a protected resource is meant to stay what it is.
 `Container::getNewInstance` is built on top of that, which has a consequence worth remembering: for a
 resource registered as shared *and* protected, `getNewInstance` returns the cached instance again
 instead of a new one.
+
+`createInstance` calls the factory without caching the result, even for a shared resource. That is
+what `getNewInstance` uses for a shared resource of a parent container, so that a child container
+does not replace the parent's instance.
 
 > The instance cache is keyed on the stored instance being `null`. A shared factory that returns
 > `null` is therefore called again on every retrieval.
