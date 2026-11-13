@@ -280,6 +280,8 @@ $container->alias('config', 'Really\Long\ConfigClassName');
 $container->get('config'); // Returns the value set on the aliased key.
 ```
 
+An alias can also point to another alias; it is followed until it reaches a key that is not an alias. An alias that would close a cycle (for example `alias('a', 'b')` after `alias('b', 'a')`) is rejected with a `DependencyResolutionException`.
+
 ### Getting an Item
 
 At its most basic level, the DI Container is a registry that holds keys and values. When you set an item on the container, you can retrieve it by passing the same `$key` to the `get` method that you did when you set the method in the container.
@@ -818,6 +820,9 @@ resolved from the container nor filled from a default value.
 
 > A class that does not exist at all is the exception to this: `buildObject` returns `false` for it
 > rather than throwing.
+
+`alias` throws a `DependencyResolutionException` as well, when the new alias would create a cycle of
+aliases.
 
 **`ContainerNotFoundException`** is thrown by `ContainerAwareTrait::getContainer` when the object was
 never given a container.

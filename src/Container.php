@@ -128,9 +128,16 @@ class Container implements ContainerInterface
      * @return  $this
      *
      * @since   1.0
+     * @throws  DependencyResolutionException if the alias would create a cycle of aliases
      */
     public function alias($alias, $key)
     {
+        if ($alias !== $key && $this->resolveAlias($key) === $alias) {
+            throw new DependencyResolutionException(
+                sprintf('Cannot alias "%s" to "%s", as "%s" is already an alias of "%s".', $alias, $key, $key, $alias)
+            );
+        }
+
         $this->aliases[$alias] = $key;
 
         return $this;
@@ -139,7 +146,7 @@ class Container implements ContainerInterface
     /**
      * Resolve a resource name.
      *
-     * If the resource name is an alias, the corresponding key is returned.
+     * If the resource name is an alias, the corresponding key is returned, following aliases of aliases.
      * If the resource name is not an alias, the resource name is returned unchanged.
      *
      * @param   string  $resourceName  The key to search for.
@@ -147,10 +154,23 @@ class Container implements ContainerInterface
      * @return  string
      *
      * @since   1.0
+     * @throws  DependencyResolutionException if the aliases form a cycle
      */
     protected function resolveAlias($resourceName)
     {
-        return $this->aliases[$resourceName] ?? $resourceName;
+        $key     = $resourceName;
+        $visited = [];
+
+        while (isset($this->aliases[$key]) && $this->aliases[$key] !== $key) {
+            if (isset($visited[$key])) {
+                throw new DependencyResolutionException(sprintf('Cannot resolve circular alias for "%s"', $resourceName));
+            }
+
+            $visited[$key] = true;
+            $key           = $this->aliases[$key];
+        }
+
+        return $key;
     }
 
     /**
