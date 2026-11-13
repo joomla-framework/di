@@ -452,6 +452,8 @@ Scalar arguments are provided with their default value.
 <!-- [x] A DependencyResolutionException is thrown, if an object can not be built due to dependency on unknown interfaces -->
 The container can only resolve dependencies that have been properly typehinted or given a default value. If the resource can not be built, a `DependencyResolutionException` is thrown.
 
+Union types (`A|B`) and intersection types (`A&B`) cannot be autowired either. A nullable argument with such a type (`A|B|null`, `(A&B)|null`) receives `null`; any other one makes `buildObject` throw a `DependencyResolutionException`.
+
 <!-- [x] Attempting to build a non-class returns false -->
 When you try to build a non-class, `buildObject` and `buildSharedObject` both return `false`.
 

@@ -431,8 +431,8 @@ class Container implements ContainerInterface
             if ($param->hasType()) {
                 $dependency = $param->getType();
 
-                // Don't support PHP 8 union types
-                if ($dependency instanceof \ReflectionUnionType) {
+                // Don't support union and intersection types
+                if (!$dependency instanceof \ReflectionNamedType) {
                     // If this is a nullable parameter, then don't error out
                     if ($param->allowsNull()) {
                         $methodArgs[] = null;
@@ -442,7 +442,7 @@ class Container implements ContainerInterface
 
                     throw new DependencyResolutionException(
                         sprintf(
-                            'Could not resolve the parameter "$%s" of "%s::%s()": Union typehints are not supported.',
+                            'Could not resolve the parameter "$%s" of "%s::%s()": Union and intersection typehints are not supported.',
                             $param->name,
                             $method->class,
                             $method->name
