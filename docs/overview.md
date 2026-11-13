@@ -785,7 +785,8 @@ $resource = $container->getResource('foo', true);  // throws KeyNotFoundExceptio
 
 Resources coming from an arbitrary PSR-11 parent container are not stored, but wrapped in a new
 `ContainerResource` with `SHARE | PROTECT` on each access, since the container cannot know how the
-foreign container handles those concepts.
+foreign container handles those concepts. The wrapper fetches the service from the parent container
+only when its instance is requested, and returns it as it is, even if it is callable.
 
 `getFactory` returns the factory closure without executing it. That is what `extend` uses to wrap an
 existing definition in a new one.
