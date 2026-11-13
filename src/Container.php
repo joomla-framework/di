@@ -260,6 +260,8 @@ class Container implements ContainerInterface
     /**
      * Fetch all services registered to the given tag.
      *
+     * Services tagged in a parent container are included. They come first and are resolved through this container.
+     *
      * @param   string  $tag  The tag name
      *
      * @return  array  The resolved services for the given tag
@@ -270,13 +272,27 @@ class Container implements ContainerInterface
     {
         $services = [];
 
-        if (isset($this->tags[$tag])) {
-            foreach ($this->tags[$tag] as $service) {
-                $services[] = $this->get($service);
-            }
+        foreach ($this->getTaggedKeys($tag) as $service) {
+            $services[] = $this->get($service);
         }
 
         return $services;
+    }
+
+    /**
+     * Get the keys of all services registered to the given tag in this container and its parents.
+     *
+     * @param   string  $tag  The tag name
+     *
+     * @return  string[]
+     *
+     * @since   __DEPLOY_VERSION__
+     */
+    private function getTaggedKeys(string $tag): array
+    {
+        $keys = $this->parent instanceof self ? $this->parent->getTaggedKeys($tag) : [];
+
+        return array_values(array_unique(array_merge($keys, $this->tags[$tag] ?? [])));
     }
 
     /**
