@@ -815,6 +815,8 @@ parents know: by `get`, by `isShared` and `isProtected`, and by `getResource` wh
 circular dependency, an interface or an abstract class with no service registered for it, a class
 that cannot be instantiated for another reason, or a constructor argument that can neither be
 resolved from the container nor filled from a default value.
+`get` throws it when a resource's factory needs that same resource again, directly or through other
+factories, instead of recursing until PHP runs out of memory or stack.
 
 > A class that does not exist at all is the exception to this: `buildObject` returns `false` for it
 > rather than throwing.

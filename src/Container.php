@@ -51,6 +51,14 @@ class Container implements ContainerInterface
     protected $parent;
 
     /**
+     * The keys of the resources whose factories are currently running, used to detect circular dependencies.
+     *
+     * @var    array<string, true>
+     * @since  __DEPLOY_VERSION__
+     */
+    private array $resolving = [];
+
+    /**
      * Holds the service tag mapping.
      *
      * @var    array
@@ -79,6 +87,7 @@ class Container implements ContainerInterface
      *
      * @since   1.0
      * @throws  KeyNotFoundException
+     * @throws  DependencyResolutionException if the resource depends on itself
      */
     public function get($resourceName)
     {
@@ -92,7 +101,17 @@ class Container implements ContainerInterface
             throw new KeyNotFoundException(sprintf("Resource '%s' has not been registered with the container.", $resourceName));
         }
 
-        return $this->resources[$key]->getInstance();
+        if (isset($this->resolving[$key])) {
+            throw new DependencyResolutionException(sprintf('Cannot resolve circular dependency for "%s"', $key));
+        }
+
+        $this->resolving[$key] = true;
+
+        try {
+            return $this->resources[$key]->getInstance();
+        } finally {
+            unset($this->resolving[$key]);
+        }
     }
 
     /**
