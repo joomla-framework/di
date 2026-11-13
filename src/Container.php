@@ -30,7 +30,7 @@ class Container implements ContainerInterface
      * @var    array
      * @since  1.0
      */
-    protected $aliases = [];
+    protected array $aliases = [];
 
     /**
      * Holds the resources.
@@ -38,7 +38,7 @@ class Container implements ContainerInterface
      * @var    ContainerResource[]
      * @since  2.0.0
      */
-    protected $resources = [];
+    protected array $resources = [];
 
     /**
      * Parent for hierarchical containers.
@@ -48,7 +48,7 @@ class Container implements ContainerInterface
      * @var    Container|ContainerInterface|null
      * @since  1.0
      */
-    protected $parent;
+    protected ?ContainerInterface $parent = null;
 
     /**
      * Holds the service tag mapping.
@@ -56,7 +56,7 @@ class Container implements ContainerInterface
      * @var    array
      * @since  1.5.0
      */
-    protected $tags = [];
+    protected array $tags = [];
 
     /**
      * Constructor for the DI Container
@@ -80,7 +80,7 @@ class Container implements ContainerInterface
      * @since   1.0
      * @throws  KeyNotFoundException
      */
-    public function get($resourceName)
+    public function get(string $resourceName): mixed
     {
         $key = $this->resolveAlias($resourceName);
 
@@ -104,7 +104,7 @@ class Container implements ContainerInterface
      *
      * @since   1.5.0
      */
-    public function has($resourceName): bool
+    public function has(string $resourceName): bool
     {
         $key = $this->resolveAlias($resourceName);
 
@@ -125,11 +125,11 @@ class Container implements ContainerInterface
      * @param   string  $alias  The alias name
      * @param   string  $key    The key to alias
      *
-     * @return  $this
+     * @return  static
      *
      * @since   1.0
      */
-    public function alias($alias, $key)
+    public function alias(string $alias, string $key): static
     {
         $this->aliases[$alias] = $key;
 
@@ -148,7 +148,7 @@ class Container implements ContainerInterface
      *
      * @since   1.0
      */
-    protected function resolveAlias($resourceName)
+    protected function resolveAlias(string $resourceName): string
     {
         return $this->aliases[$resourceName] ?? $resourceName;
     }
@@ -235,11 +235,11 @@ class Container implements ContainerInterface
      * @param   string  $tag   The tag name
      * @param   array   $keys  The service keys to tag
      *
-     * @return  $this
+     * @return  static
      *
      * @since   1.5.0
      */
-    public function tag($tag, array $keys)
+    public function tag(string $tag, array $keys): static
     {
         foreach ($keys as $key) {
             $resolvedKey = $this->resolveAlias($key);
@@ -266,7 +266,7 @@ class Container implements ContainerInterface
      *
      * @since   1.5.0
      */
-    public function getTagged($tag)
+    public function getTagged(string $tag): array
     {
         $services = [];
 
@@ -288,13 +288,12 @@ class Container implements ContainerInterface
      * @param   string   $resourceName  The class name to build.
      * @param   boolean  $shared        True to create a shared resource.
      *
-     * @return  object|false  Instance of class specified by $resourceName with all dependencies injected.
-     *                        Returns an object if the class exists and false otherwise
+     * @return  object  Instance of class specified by $resourceName with all dependencies injected.
      *
      * @since   1.0
-     * @throws  DependencyResolutionException if the object could not be built (due to missing information)
+     * @throws  DependencyResolutionException if the object could not be built (due to missing information or a missing class)
      */
-    public function buildObject($resourceName, $shared = false)
+    public function buildObject(string $resourceName, bool $shared = false): object
     {
         static $buildStack = [];
 
@@ -312,6 +311,12 @@ class Container implements ContainerInterface
             $resource = $this->get($key);
             array_pop($buildStack);
 
+            if (!\is_object($resource)) {
+                throw new DependencyResolutionException(
+                    sprintf('The resource "%s" is of type "%s", not an object.', $key, get_debug_type($resource))
+                );
+            }
+
             return $resource;
         }
 
@@ -320,7 +325,7 @@ class Container implements ContainerInterface
         } catch (\ReflectionException $e) {
             array_pop($buildStack);
 
-            return false;
+            throw new DependencyResolutionException(sprintf('The class "%s" does not exist.', $key), 0, $e);
         }
 
         if (!$reflection->isInstantiable()) {
@@ -366,12 +371,12 @@ class Container implements ContainerInterface
      *
      * @param   string  $resourceName  The class name to build.
      *
-     * @return  object|false  Instance of class specified by $resourceName with all dependencies injected.
-     *                        Returns an object if the class exists and false otherwise
+     * @return  object  Instance of class specified by $resourceName with all dependencies injected.
      *
      * @since   1.0
+     * @throws  DependencyResolutionException if the object could not be built (due to missing information or a missing class)
      */
-    public function buildSharedObject($resourceName)
+    public function buildSharedObject(string $resourceName): object
     {
         return $this->buildObject($resourceName, true);
     }
@@ -379,11 +384,11 @@ class Container implements ContainerInterface
     /**
      * Create a child Container with a new property scope that has the ability to access the parent scope when resolving.
      *
-     * @return  Container  A new container with the current as a parent
+     * @return  static  A new container with the current as a parent
      *
      * @since   1.0
      */
-    public function createChild()
+    public function createChild(): static
     {
         return new static($this);
     }
@@ -402,7 +407,7 @@ class Container implements ContainerInterface
      * @since   1.0
      * @throws  KeyNotFoundException
      */
-    public function extend($resourceName, callable $callable)
+    public function extend(string $resourceName, callable $callable): void
     {
         $key      = $this->resolveAlias($resourceName);
         $resource = $this->getResource($key, true);
@@ -575,12 +580,12 @@ class Container implements ContainerInterface
      * @param   boolean  $shared     True to create and store a shared instance.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
      *
-     * @return  $this
+     * @return  static
      *
      * @since   1.0
      * @throws  ProtectedKeyException  Thrown if the provided key is already set and is protected.
      */
-    public function set($key, $value, $shared = false, $protected = false)
+    public function set(string $key, mixed $value, bool $shared = false, bool $protected = false): static
     {
         $key = $this->resolveAlias($key);
 
@@ -611,11 +616,11 @@ class Container implements ContainerInterface
      * @param   mixed    $value   Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $shared  True to create and store a shared instance.
      *
-     * @return  $this
+     * @return  static
      *
      * @since   1.0
      */
-    public function protect($key, $value, $shared = false)
+    public function protect(string $key, mixed $value, bool $shared = false): static
     {
         return $this->set($key, $value, $shared, true);
     }
@@ -627,11 +632,11 @@ class Container implements ContainerInterface
      * @param   mixed    $value      Callable function to run or string to retrieve when requesting the specified $key.
      * @param   boolean  $protected  True to protect this item from being overwritten. Useful for services.
      *
-     * @return  $this
+     * @return  static
      *
      * @since   1.0
      */
-    public function share($key, $value, $protected = false)
+    public function share(string $key, mixed $value, bool $protected = false): static
     {
         return $this->set($key, $value, true, $protected);
     }
@@ -697,7 +702,7 @@ class Container implements ContainerInterface
      *
      * @since   1.0
      */
-    public function getNewInstance($key)
+    public function getNewInstance(string $key): mixed
     {
         $key = $this->resolveAlias($key);
 
@@ -711,11 +716,11 @@ class Container implements ContainerInterface
      *
      * @param   ServiceProviderInterface  $provider  The service provider to register.
      *
-     * @return  $this
+     * @return  static
      *
      * @since   1.0
      */
-    public function registerServiceProvider(ServiceProviderInterface $provider)
+    public function registerServiceProvider(ServiceProviderInterface $provider): static
     {
         $provider->register($this);
 
@@ -729,7 +734,7 @@ class Container implements ContainerInterface
      *
      * @since   1.5.0
      */
-    public function getKeys()
+    public function getKeys(): array
     {
         return array_unique(array_merge(array_keys($this->aliases), array_keys($this->resources)));
     }

@@ -55,7 +55,7 @@ final class ContainerResource
      * @var    Container
      * @since  2.0.0
      */
-    private $container;
+    private Container $container;
 
     /**
      * The object instance for a shared object
@@ -63,7 +63,7 @@ final class ContainerResource
      * @var    mixed
      * @since  2.0.0
      */
-    private $instance;
+    private mixed $instance = null;
 
     /**
      * The factory object
@@ -79,7 +79,7 @@ final class ContainerResource
      * @var    boolean
      * @since  2.0.0
      */
-    private $shared = false;
+    private bool $shared = false;
 
     /**
      * Flag if the resource is protected
@@ -87,7 +87,7 @@ final class ContainerResource
      * @var    boolean
      * @since  2.0.0
      */
-    private $protected = false;
+    private bool $protected = false;
 
     /**
      * Create a resource representation
@@ -98,7 +98,7 @@ final class ContainerResource
      *
      * @since   2.0.0
      */
-    public function __construct(Container $container, $value, int $mode = 0)
+    public function __construct(Container $container, mixed $value, int $mode = 0)
     {
         $this->container = $container;
         $this->shared    = ($mode & self::SHARE) === self::SHARE;
@@ -153,7 +153,7 @@ final class ContainerResource
      *
      * @since   2.0.0
      */
-    public function getInstance()
+    public function getInstance(): mixed
     {
         $callable = $this->factory;
 
