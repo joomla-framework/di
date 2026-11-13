@@ -525,6 +525,20 @@ class Container implements ContainerInterface
 
                         continue;
                     }
+
+                    // The service has the wrong type, report that unless there is a default value to fall back to
+                    if (!$param->isDefaultValueAvailable()) {
+                        throw new DependencyResolutionException(
+                            sprintf(
+                                'Could not resolve the parameter "$%s" of "%s::%s()": The service for "%s" is of type "%s", which does not match the parameter type.',
+                                $param->name,
+                                $method->class,
+                                $method->name,
+                                $dependencyClassName,
+                                get_debug_type($depObject)
+                            )
+                        );
+                    }
                 }
             }
 

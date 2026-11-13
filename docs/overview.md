@@ -439,6 +439,7 @@ To do that, the container looks at the constructor of the class being instantiat
 
 <!-- [x] Dependencies are resolved from the container's known resources -->
 If a typehint requires an interface, the dependency is resolved from the container's known resources.
+If the service registered for it is not an instance of the typehinted class or interface, the argument receives its default value. Without a default value, a `DependencyResolutionException` names the service and the type it actually has.
 
 <!-- [x] Resources are created, if they are not present in the container -->
 Dependencies not known by the container are created, if possible, following the same rules as the current resource.
@@ -856,11 +857,6 @@ explicitly when that matters.
 **Autowiring cannot resolve scalars.** A constructor parameter with a built-in type and no default
 raises `DependencyResolutionException`. Any service needing a configuration value has to be
 registered with an explicit factory.
-
-**A type mismatch is reported as an untyped argument.** If a registered service does not match the
-parameter's type hint, resolution falls through to the default-value branch and the resulting
-message reads "The argument is untyped and has no default value" — which points away from the
-actual cause. Check the registration when you see it.
 
 **`extend()` does not work on protected resources.** It ends in `set()`, which throws
 `ProtectedKeyException` for anything registered with `protect()`. Register services you intend to
